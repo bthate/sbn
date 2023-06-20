@@ -24,7 +24,7 @@ import sbn.modules
 Commands.modules = sbn.modules
 
 
-__VERSION__ = "11"
+__VERSION__ = "12"
 
 
 NAME = "sbn"
