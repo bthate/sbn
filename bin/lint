@@ -24,28 +24,27 @@ SKIP = [
 
 SKIPDIR = [
            ".",
-           "setup.py",
-           "docs",
            "files",
            "env",
            ".git",
           ]
 
 SKIPFILE = [
+           "setup.py",
            "README.rst",
            "MANUAL.rst",
            'MANIFEST.in',
-           'tsd',
+           '.tsd',
            'pyproject.toml'
            ]
 
 
 def doskip(txt, skiplist):
-    if ".tsd" in skiplist:
-        return True
     if not txt.strip():
         return True
     for skp in skiplist:
+        if ".tsd" == skp:
+            continue
         if skp in txt:
             return True
     return False
@@ -55,6 +54,8 @@ def diff(obj, obj2):
     result = {}
     for key, value in obj2.items():
         if key in obj and obj[key] != value:
+            result[key] = value
+        else:
             result[key] = value
     return result
 
@@ -94,11 +95,12 @@ if __name__ == "__main__":
         except json.decoder.JSONDecodeError:
             pass
     dump(os.getcwd(), result)
-    tsd = open(".tsd", "w")
-    json.dump(result, tsd)
-    tsd.flush()
-    tsd.close()
     dif = diff(old, result)
+    if dif:
+        tsd = open(".tsd", "w")
+        json.dump(result, tsd)
+        tsd.flush()
+        tsd.close()
     nr = 0
     for fn in dif.keys():
         if ".tsd" in fn:
