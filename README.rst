@@ -37,17 +37,7 @@ INSTALL
 
 ::
 
-    with sudo
-
-    $ python3 -m pip install sbn
-
-    as user
-
     $ pipx install sbn
-
-    or download the tar, see
-
-    https://pypi.org/project/sbn
 
 
 USAGE
@@ -151,7 +141,6 @@ FILES
     ~/.local/bin/sbn
     ~/.local/pipx/venvs/sbn/
     /usr/local/bin/sbn
-    /usr/local/share/doc/sbn
 
 AUTHOR
 
