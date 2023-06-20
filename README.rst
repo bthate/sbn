@@ -1,9 +1,13 @@
 NAME
 
+::
+
     SBN - Skull, Bones and Number
 
 
 SYNOPSIS
+
+::
 
     sbn <cmd> [key=val] 
     sbn <cmd> [key==val]
@@ -12,23 +16,26 @@ SYNOPSIS
 
 DESCRIPTION
 
+::
+
 
     SBN is a python3 IRC bot is intended to be programmable  in a
     static, only code, no popen, no user imports and no reading modules from
     a directory, way. It can show genocide and suicide stats of king netherlands
     his genocide into a IRC channel, display rss feeds and log simple text
-    messages, source is `here <source.html>`_.
+    messages.
 
-    SBN contains `correspondence <writings.html>`_ with the
-    International Criminal Court, asking for arrest of the king of the 
-    netherlands, for the genocide he is committing with his new treatement laws.
-    Current status is "no basis to proceed" judgement of the prosecutor 
-    which requires a :ref:`basis to prosecute <reconsider>` to have the king actually
-    arrested.
+    SBN contains correspondence <writings> with the International Criminal Court, 
+    asking for arrest of the king of the  netherlands, for the genocide he is
+    committing with his new treatement laws. Current status is "no basis to
+    proceed" judgement of the prosecutor which requires a basis to prosecute
+    <reconsider> to have the king actually arrested.
 
 
 INSTALL
 
+
+::
 
     with sudo
 
@@ -45,6 +52,8 @@ INSTALL
 
 USAGE
 
+
+::
 
     list of commands
 
@@ -87,6 +96,8 @@ USAGE
 CONFIGURATION
 
 
+::
+
  irc
 
     $ sbn cfg server=<server>
@@ -107,6 +118,9 @@ CONFIGURATION
 
 
 COMMANDS
+
+
+::
 
     cmd - commands
     cfg - irc configuration
@@ -132,6 +146,8 @@ COMMANDS
 
 FILES
 
+::
+
     ~/.local/bin/sbn
     ~/.local/pipx/venvs/sbn/
     /usr/local/bin/sbn
@@ -140,9 +156,13 @@ FILES
 AUTHOR
 
 
+::
+
     Bart Thate <bthate@dds.nl>
 
 
 COPYRIGHT
+
+::
 
     SBN is Public Domain.
