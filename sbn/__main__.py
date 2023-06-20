@@ -99,7 +99,7 @@ def main():
     Commands.add(ver)
     dowait = False
     if Cfg.txt:
-        scanstr(genocide.modules, Cfg.mod, doall=True)
+        scanstr(sbn.modules, Cfg.mod, doall=True)
         cli = CLI()
         command(cli, Cfg.otxt)
     elif 'd' in Cfg.opts:
