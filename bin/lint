@@ -29,12 +29,15 @@ SKIPDIR = [
            "files",
            "env",
            ".git",
+          ]
+
+SKIPFILE = [
            "README.rst",
            "MANUAL.rst",
            'MANIFEST.in',
            'tsd',
            'pyproject.toml'
-          ]
+           ]
 
 
 def doskip(txt, skiplist):
@@ -60,6 +63,8 @@ def dump(path, result):
     old = os.getcwd()
     os.chdir(path)
     for fnn in os.listdir(path):
+        if doskip(fnn, SKIPFILE):
+            continue
         fpath = os.path.abspath(os.path.join(path, fnn))
         if os.path.isdir(fpath):
             if doskip(fnn, SKIPDIR):

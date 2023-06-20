@@ -1,16 +1,16 @@
-**NAME**
+NAME
 
     SBN - Skull, Bones and Number
 
 
-**SYNOPSIS**
+SYNOPSIS
 
     sbn <cmd> [key=val] 
     sbn <cmd> [key==val]
     sbn [-c] [-d] [-v]
 
 
-**DESCRIPTION**
+DESCRIPTION
 
 
     SBN is a python3 IRC bot is intended to be programmable  in a
@@ -27,7 +27,8 @@
     arrested.
 
 
-**INSTALL**
+INSTALL
+
 
     with sudo
 
@@ -41,7 +42,8 @@
 
     https://pypi.org/project/sbn
 
-**USAGE**
+
+USAGE
 
 
     list of commands
@@ -82,21 +84,21 @@
     $ 
 
 
-**CONFIGURATION**
+CONFIGURATION
 
 
- *irc*
+ irc
 
     $ sbn cfg server=<server>
     $ sbn cfg channel=<channel>
     $ sbn cfg nick=<nick>
 
- *sasl*
+ sasl
 
     $ sbn pwd <nsvnick> <nspass>
     $ sbn cfg password=<frompwd>
 
- *rss*
+ rss
 
     $ sbn rss <url>
     $ sbn dpl <url> <item1,item2>
@@ -104,7 +106,7 @@
     $ sbn nme <url< <name>
 
 
-**COMMANDS**
+COMMANDS
 
     cmd - commands
     cfg - irc configuration
@@ -128,19 +130,19 @@
     tpc - genocide stats into topic
 
 
-**FILES**
+FILES
 
     ~/.local/bin/sbn
     ~/.local/pipx/venvs/sbn/
     /usr/local/bin/sbn
     /usr/local/share/doc/sbn
 
-**AUTHOR**
+AUTHOR
 
 
     Bart Thate <bthate@dds.nl>
 
 
-**COPYRIGHT**
+COPYRIGHT
 
     SBN is Public Domain.
