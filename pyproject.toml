@@ -28,7 +28,7 @@ classifiers=[
 
 
 [project.scripts]
-genocide = "sbn.__main__:main"
+sbn = "sbn.__main__:main"
 
 
 [project.optional-dependencies]
@@ -36,7 +36,7 @@ dev = []
 
 [tool.setuptools]
 packages = [
-            "genocide",
-            "genocide.modules"
+            "sbn",
+            "sbn.modules"
            ]
 zip-safe = true

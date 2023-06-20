@@ -1,101 +1,82 @@
-.. _manual:
-
-
-.. raw:: html
-
-    <br><br>
-
-
-.. title:: Manual
-
-    
 **NAME**
 
- | ``SBN`` - Skull, Bones and Number
+    SBN - Skull, Bones and Number
 
 
 **SYNOPSIS**
 
- ::
-
-  sbn <cmd> [key=val] 
-  sbn <cmd> [key==val]
-  sbn [-c] [-d] [-v]
+    sbn <cmd> [key=val] 
+    sbn <cmd> [key==val]
+    sbn [-c] [-d] [-v]
 
 
 **DESCRIPTION**
 
 
- ``SBN`` is a python3 IRC bot is intended to be programmable  in a
- static, only code, no popen, no user imports and no reading modules from
- a directory, way. It can show genocide and suicide stats of king netherlands
- his genocide into a IRC channel, display rss feeds and log simple text
- messages, source is `here <source.html>`_.
+    SBN is a python3 IRC bot is intended to be programmable  in a
+    static, only code, no popen, no user imports and no reading modules from
+    a directory, way. It can show genocide and suicide stats of king netherlands
+    his genocide into a IRC channel, display rss feeds and log simple text
+    messages, source is `here <source.html>`_.
 
- ``SBN`` holds evidence that king netherlands is doing a genocide, a 
- written :ref:`response <king>` where king netherlands confirmed taking note
- of “what i have written”, namely :ref:`proof <evidence>` that medicine he
- uses in treatement laws like zyprexa, haldol, abilify and clozapine are poison
- that make impotent, is both physical (contracted muscles) and mental (let 
- people hallucinate) torture and kills members of the victim groups. 
-
- ``SBN`` contains `correspondence <writings.html>`_ with the
- International Criminal Court, asking for arrest of the king of the 
- netherlands, for the genocide he is committing with his new treatement laws.
- Current status is "no basis to proceed" judgement of the prosecutor 
- which requires a :ref:`basis to prosecute <reconsider>` to have the king actually
- arrested.
+    SBN contains `correspondence <writings.html>`_ with the
+    International Criminal Court, asking for arrest of the king of the 
+    netherlands, for the genocide he is committing with his new treatement laws.
+    Current status is "no basis to proceed" judgement of the prosecutor 
+    which requires a :ref:`basis to prosecute <reconsider>` to have the king actually
+    arrested.
 
 
 **INSTALL**
 
- with sudo::
+    with sudo
 
-  $ python3 -m pip install sbn
+    $ python3 -m pip install sbn
 
- as user::
+    as user
 
-  $ pipx install sbn
+    $ pipx install sbn
 
- or download the tar, see::
+    or download the tar, see
 
-  https://pypi.org/project/sbn
+    https://pypi.org/project/sbn
 
 **USAGE**
 
 
- list of commands::
+    list of commands
 
     $ sbn cmd
     cmd,err,flt,sts,thr,upt
 
- start a console::
+
+    start a console
 
     $ sbn -c
     >
 
- start additional modules::
+    start additional modules
 
     $ sbn mod=<mod1,mod2> -c
     >
 
- list of modules::
+    list of modules
 
     $ sbn mod
     cmd,err,flt,fnd,irc,log,mdl,mod,
     req, rss,slg,sts,tdo,thr,upt,ver
 
- to start irc, add mod=irc when
- starting::
+    to start irc, add mod=irc when
+    starting
 
-     $ sbn mod=irc -c
+    $ sbn mod=irc -c
 
- to start rss, also add mod=rss
- when starting::
+    to start rss, also add mod=rss
+    when starting::
 
-     $ sbn mod=irc,rss -c
+    $ sbn mod=irc,rss -c
 
- start as daemon::
+    start as daemon
 
     $ sbn  mod=irc,rss -d
     $ 
@@ -106,22 +87,16 @@
 
  *irc*
 
- ::
-
     $ sbn cfg server=<server>
     $ sbn cfg channel=<channel>
     $ sbn cfg nick=<nick>
 
  *sasl*
 
- ::
-
     $ sbn pwd <nsvnick> <nspass>
     $ sbn cfg password=<frompwd>
 
  *rss*
-
- ::
 
     $ sbn rss <url>
     $ sbn dpl <url> <item1,item2>
@@ -130,9 +105,6 @@
 
 
 **COMMANDS**
-
-
- ::
 
     cmd - commands
     cfg - irc configuration
@@ -158,8 +130,6 @@
 
 **FILES**
 
- ::
-
     ~/.local/bin/sbn
     ~/.local/pipx/venvs/sbn/
     /usr/local/bin/sbn
@@ -168,13 +138,9 @@
 **AUTHOR**
 
 
- ::
- 
     Bart Thate <bthate@dds.nl>
 
 
 **COPYRIGHT**
-
- ::
 
     SBN is Public Domain.
