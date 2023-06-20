@@ -1,0 +1,4 @@
+#!/usr/bin/sh
+# This file is placed in the Public Domain.
+
+python3 -m sbn $* ;

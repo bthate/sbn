@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+# This file is placed in the Public Domain.
+#
+# pylint: disable=C0114,C0115,C0116,W0703,C0209,C0303,C0301,W0603,C0413,C0103
+# pylint: disable-E0401
+
+
+import os
+import random
+import shutil
+import sys
+import termios
+import time
+import traceback
+import _thread
+
+
+sys.path.insert(0, os.getcwd())
+
+
+from sbn.clients import Client
+from sbn.command import Commands
+from sbn.errored import Errors
+from sbn.logging import Logging
+from sbn.objects import Object, keys
+from sbn.persist import Persist
+from sbn.runtime import DATE, STARTTIME, Cfg, launch, parse_cli, scanstr
+from sbn.utility import elapsed
+
+
+import sbn.modules
+Commands.modules = sbn.modules
+
+
+NAME = "tinder"
+
+
+Cfg.debug = True
+Cfg.silent = False
+Cfg.skip = ["debug",]
+
+
+Logging.raw = print
+Persist.workdir = ".test"
+
+
+paylock = _thread.allocate_lock()
+outlock = _thread.allocate_lock()
+
+
+errors = []
+events = []
+result = 1
+
+
+param = Object()
+param.add = ["test@shell", "bart", ""]
+param.cfg = ["server=localhost", ""]
+param.dne = ["test4", ""]
+param.rem = ["reddit", ""]
+param.dpl = ["reddit title,summary,link", ""]
+param.flt = ["0", ""]
+param.fnd = [
+             "cfg",
+             "tdo",
+             "rss",
+             "tdo txt==test",
+             "cfg server==localhost",
+             "rss rss==reddit"
+            ]
+param.log = ["test1", ""]
+param.nme = ["reddit reddit"]
+param.dpl = ["reddit title,link"]
+param.rem = ["reddit"]
+param.rss = ["https://www.reddit.com/r/python/.rss"]
+param.tdo = ["test4", ""]
+param.thr = [""]
+
+
+def cprint(txt):
+    print(txt)
+    sys.stdout.flush()
+
+
+class CLI(Client):
+
+    def raw(self, txt):
+        with outlock:
+            if txt and "v" in Cfg.opts:
+                cprint(txt.rstrip())
+
+
+def consume(evts):
+    fixed = []
+    res = []
+    for evt in evts:
+        res.append(evt.wait())
+        fixed.append(evt)
+    for fff in fixed:
+        try:
+            evts.remove(fff)
+        except ValueError:
+            continue
+    return res
+
+
+def payload(clt) -> None:
+    cmds = list(keys(Commands.cmds))
+    random.shuffle(cmds)
+    with paylock:
+        nmr = 0
+        for cmnd in cmds:
+            for ex in getattr(param, cmnd, [""]):
+                evt = clt.event(cmnd + " " + ex)
+                clt.put(evt)
+                events.append(evt)
+                nmr += 1
+        return nmr
+
+
+def waiter() -> None:
+    got = []
+    for ex in Errors.errors:
+        if not Cfg.silent:
+            traceback.print_exception(type(ex), ex, ex.__traceback__)
+        got.append(ex)
+    for exc in got:
+        Errors.errors.remove(exc)
+
+
+def wrap(func) -> None:
+    old = termios.tcgetattr(sys.stdin.fileno())
+    try:
+        func()
+    except (EOFError, KeyboardInterrupt):
+        print("")
+        sys.stdout.flush()
+    finally:
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
+        waiter()
+
+
+def main() -> None:
+    global result
+    print(f"{NAME.upper()} started {DATE}")
+    if os.path.exists(Persist.workdir):
+        shutil.rmtree(Persist.workdir)
+    parse_cli(" ".join(sys.argv[1:]))
+    if "v" in Cfg.opts:
+        Logging.verbose = True
+    scanstr(sbn.modules, Cfg.mod, doall=True)
+    nrs = Cfg.index or 1
+    cli = CLI()
+    cli.start()
+    waiters = []
+    for _nr in range(nrs):
+        waiters.append(launch(payload, cli, name=_nr))
+    for wtr in waiters:
+        result += wtr.join() or 1
+    consume(events)
+    endtime = time.time()
+    lap = elapsed(endtime - STARTTIME)
+    percall = (endtime - STARTTIME)/result
+    waiter()
+    print(f"{lap} {result} {percall}")
+
+
+wrap(main)
