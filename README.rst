@@ -83,7 +83,7 @@ USAGE
     $ sbn mod=irc -c
 
     to start rss, also add mod=rss
-    when starting::
+    when starting
 
     $ sbn mod=irc,rss -c
 
