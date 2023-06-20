@@ -23,7 +23,8 @@ from sbn.runtime import scanstr, waiter
 import sbn.modules
 Commands.modules = sbn.modules
 
-__VERSION__ = "1"
+
+__VERSION__ = "11"
 
 
 NAME = "sbn"
