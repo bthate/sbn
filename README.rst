@@ -140,7 +140,7 @@ FILES
 
     ~/.local/bin/sbn
     ~/.local/pipx/venvs/sbn/
-    /usr/local/bin/sbn
+
 
 AUTHOR
 
