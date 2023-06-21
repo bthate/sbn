@@ -12,7 +12,7 @@ import inspect
 from .errored import Errors
 from .evented import Event
 from .logging import Logging
-from .objects import Object, copy
+from .objects import Object, copy, keys
 
 
 def __dir__():
@@ -62,6 +62,20 @@ class Commands(Object):
         evt.ready()
         return evt
 
+    @staticmethod
+    def remove(func) -> None:
+        cmd = func.__name__.split(".")[-1]
+        if cmd in keys(Commands.cmds):
+            delattr(Commands.cmds, cmd)
+        if cmd in keys(Commands.modnames):
+            delattr(Commands.modnames, cmd)
+
+    @staticmethod
+    def unload(mod):
+        for _key, cmd in inspect.getmembers(mod, inspect.isfunction):
+            if 'event' in cmd.__code__.co_varnames:
+                Commands.remove(cmd)
+    
     @staticmethod
     def scan(mod) -> None:
         for _key, cmd in inspect.getmembers(mod, inspect.isfunction):

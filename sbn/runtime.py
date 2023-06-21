@@ -41,7 +41,7 @@ STARTTIME = time.time()
 
 
 Cfg.debug = False
-Cfg.mod = "cmd,err,flt,mod,sts,thr,upt,ver"
+Cfg.mod = "cmd,err,flt,mod,rld,sts,thr,upt,ver"
 Cfg.skip = "PING,PONG,PRIVMSG"
 Cfg.threaded = False
 Cfg.version = "122"
