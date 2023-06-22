@@ -55,8 +55,6 @@ def diff(obj, obj2):
     for key, value in obj2.items():
         if key in obj and obj[key] != value:
             result[key] = value
-        else:
-            result[key] = value
     return result
 
 

@@ -75,7 +75,7 @@ class Commands(Object):
         for _key, cmd in inspect.getmembers(mod, inspect.isfunction):
             if 'event' in cmd.__code__.co_varnames:
                 Commands.remove(cmd)
-    
+
     @staticmethod
     def scan(mod) -> None:
         for _key, cmd in inspect.getmembers(mod, inspect.isfunction):

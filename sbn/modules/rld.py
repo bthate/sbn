@@ -1,21 +1,21 @@
 # This file is placed in the Public Domain.
 #
-#
+# pylint: disable=C0116
 
 
 "reload"
 
 
-from ..command import Commands
-
-
 import sbn.modules
+
+
+from ..command import Commands
 
 
 def rld(event):
     if not event.args:
-         event.reply("rld <modname>")
-         return
+        event.reply("rld <modname>")
+        return
     modname = event.args[0]
     mod = getattr(sbn.modules, modname)
     if not mod:
@@ -27,8 +27,8 @@ def rld(event):
 
 def unl(event):
     if not event.args:
-         event.reply("rld <modname>")
-         return
+        event.reply("rld <modname>")
+        return
     modname = event.args[0]
     if modname == "rld":
         event.reply("won't unload myself")
