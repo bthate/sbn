@@ -81,7 +81,7 @@ def wrap(func):
     try:
         func()
     except (EOFError, KeyboardInterrupt):
-        print('')
+        pass
     finally:
         if gotterm:
             termios.tcsetattr(fds, termios.TCSADRAIN, old)
