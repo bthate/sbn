@@ -27,18 +27,24 @@ def __dir__():
 
 class Object:
 
+    ""
+
     __slots__ = ('__dict__', '__oid__')
 
     def __init__(self):
+        ""
         self.__oid__ = ident(self)
 
     def __iter__(self):
+        ""
         return iter(self.__dict__)
 
     def __len__(self):
+        ""
         return len(self.__dict__)
 
     def __str__(self):
+        ""
         return dumprec(self)
 
 

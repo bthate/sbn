@@ -6,17 +6,18 @@
 """Skull, Bones and Number (OTP-CR-117/19)
 
 
-    SBN is a python3 IRC bot is intended to be programmable  in a
-    static, only code, no popen, no user imports and no reading modules from
-    a directory, way. It can show genocide and suicide stats of king netherlands
-    his genocide into a IRC channel, display rss feeds and log simple text
-    messages.
+SBN is a python3 IRC bot is intended to be programmable in a
+static, only code, no popen, no user imports and no reading
+modules from a directory, way. It can show genocide and suicide
+stats of king netherlands his genocide into a IRC channel, 
+display rss feeds and log simple text messages.
 
-    SBN contains correspondence <writings> with the International Criminal Court, 
-    asking for arrest of the king of the  netherlands, for the genocide he is
-    committing with his new treatement laws. Current status is "no basis to
-    proceed" judgement of the prosecutor which requires a basis to prosecute
-    <reconsider> to have the king actually arrested.
+SBN contains correspondence <writings> with the International
+Criminal Court, asking for arrest of the king of the
+netherlands, for the genocide he is committing with his new
+treatement laws. Current status is "no basis to proceed"
+judgement of the prosecutor which requires a basis to
+prosecute <reconsider> to have the king actually arrested.
 
 
 SYNOPSIS
@@ -132,12 +133,12 @@ AUTHOR
 
 COPYRIGHT
 
-    SBN is Public Domain.
+    SBN is placed in the Public Domain.
 
 """
 
 
-__version__ = "3"
+__version__ = "13"
 
 
 from . import clients, clocked, command, configs, decoder, default, defines
@@ -153,7 +154,6 @@ from .persist import *
 
 def __dir__():
     return (
-            'Object',
             'copy',
             'dump',
             'dumprec',
