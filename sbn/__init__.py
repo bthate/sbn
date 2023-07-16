@@ -28,7 +28,7 @@ from .utility import banner, laps, spl
 from .brokers import Broker
 
 
-import sbn.modules as modules
+from . import modules
 
 
 def __dir__():

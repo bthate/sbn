@@ -25,12 +25,14 @@ from sbn import banner, parse, scan, waiter
 from sbn import modules
 
 
+Cfg.mod = "bsc"
 Cfg.name = "sbn"
 Cfg.verbose = False
-Cfg.version = 13
+Cfg.version = 20
 
 
 Persist.workdir = os.path.expanduser("~/.{Cfg.name}")
+
 
 readline.redisplay()
 
