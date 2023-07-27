@@ -97,6 +97,8 @@ def wrap(func) -> None:
         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
         waiter()
 
+def wrapped():
+    wrap(main)
 
 def main():
     parse(Cfg, " ".join(sys.argv[1:]))
@@ -122,4 +124,4 @@ def main():
 
 
 if __name__ == "__main__":
-    wrap(main)
+    wraped()
