@@ -25,11 +25,7 @@ import sbn.modules as modules
 
 
 Cfg.mod = "bsc"
-Cfg.name = sys.argv[0].split(os.sep)[-1]
-
-if Cfg.name == "__main__.py":
-    Cfg.name = __file__.split(os.sep)[-2]
-
+Cfg.name = __file__.split(os.sep)[-2]
 Cfg.verbose = False
 Cfg.version = 250
 
@@ -69,9 +65,8 @@ class Console(CLI):
 
 def banner(cfg):
     times = time.ctime(time.time())
-    ccc = printable(cfg, "mod,opts")
     clz = ",".join([x.split(".")[-1] for x in Persist.classes])
-    return f"{cfg.name.upper()} {cfg.version}{times} ({ccc} {clz})"
+    return f"{cfg.name.upper()} {cfg.version} {cfg.mod.upper()} {times} ({cfg.opts}) {clz}"
 
 
 def cprint(txt):
