@@ -13,7 +13,7 @@ import traceback
 from .utils import skip
 
 
-class Log:
+class Error:
 
     skip = 'PING,PONG,PRIVMSG'
     verbose = False
@@ -21,13 +21,13 @@ class Log:
 
     @staticmethod
     def debug(txt) -> None:
-        if not skip(txt, Log.skip):
-            Log.raw(txt)
+        if not skip(txt, Error.skip):
+            Error.raw(txt)
 
     @staticmethod
     def handle(exc):
         excp = exc.with_traceback(exc.__traceback__)
-        Log.errors.append(excp)
+        Error.errors.append(excp)
 
     @staticmethod
     def raw(txt) -> None:
@@ -36,7 +36,7 @@ class Log:
 
 def waiter(clear=True):
     got = []
-    for ex in Log.errors:
+    for ex in Error.errors:
         stream = io.StringIO(
                              traceback.print_exception(
                                                        type(ex),
@@ -45,9 +45,9 @@ def waiter(clear=True):
                                                       )
                             )
         for line in stream.readlines():
-            Log.debug(line)
+            Error.debug(line)
         got.append(ex)
     if clear:
         for exc in got:
-            if exc in Log.errors:
-                Log.errors.remove(exc)
+            if exc in Error.errors:
+                Error.errors.remove(exc)

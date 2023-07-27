@@ -19,7 +19,7 @@ import threading
 import _thread
 
 
-from .. import Bus, Cfg, Command, Event, Log, Object, Reactor
+from .. import Bus, Cfg, Command, Error, Event, Object, Reactor
 from .. import edit, printable, keys, update, write
 from .. import fntime, find, last, laps, launch
 
@@ -51,7 +51,7 @@ class Config(Object):
     control = '!'
     edited = time.time()
     nick = Cfg.name
-    nocommands = False
+    nocommands = True
     password = ''
     port = 6667
     realname = Cfg.name
@@ -215,9 +215,9 @@ class IRC(Reactor, Output):
     def connect(self, server, port=6667):
         self.state.nrconnect += 1
         self.events.connected.clear()
-        Log.debug(f"connecting to {server}:{port}")
+        Error.debug(f"connecting to {server}:{port}")
         if self.cfg.password:
-            Log.debug("using SASL")
+            Error.debug("using SASL")
             self.cfg.sasl = True
             self.cfg.port = "6697"
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLS)
@@ -240,7 +240,7 @@ class IRC(Reactor, Output):
         return False
 
     def direct(self, txt):
-        Log.debug(txt)
+        Error.debug(txt)
         self.sock.send(bytes(txt.rstrip()+'\r\n', 'utf-8'))
 
     def disconnect(self):
@@ -251,7 +251,7 @@ class IRC(Reactor, Output):
                 OSError,
                 BrokenPipeError
                ) as ex:
-            Log.errors.append(ex)
+            Error.errors.append(ex)
 
     def doconnect(self, server, nck, port=6667):
         while 1:
@@ -264,8 +264,8 @@ class IRC(Reactor, Output):
                     ConnectionResetError
                    ) as ex:
                 self.state.errors = str(ex)
-                Log.debug(str(ex))
-            Log.debug(f"sleeping {self.cfg.sleep} seconds")
+                Error.debug(str(ex))
+            Error.debug(f"sleeping {self.cfg.sleep} seconds")
             time.sleep(self.cfg.sleep)
         self.logon(server, nck)
 
@@ -313,7 +313,7 @@ class IRC(Reactor, Output):
             self.state.pongcheck = True
             self.command('PING', self.cfg.server)
             if self.state.pongcheck:
-                Log.debug("failed pongcheck, restarting")
+                Error.debug("failed pongcheck, restarting")
                 self.state.pongcheck = False
                 self.state.keeprunning = False
                 self.events.connected.clear()
@@ -332,7 +332,7 @@ class IRC(Reactor, Output):
         rawstr = str(txt)
         rawstr = rawstr.replace('\u0001', '')
         rawstr = rawstr.replace('\001', '')
-        Log.debug(txt)
+        Error.debug(txt)
         obj = Event()
         obj.rawstr = rawstr
         obj.command = ''
@@ -404,9 +404,9 @@ class IRC(Reactor, Output):
                     ConnectionResetError,
                     BrokenPipeError
                    ) as ex:
-                Log.errors.append(ex)
+                Error.errors.append(ex)
                 self.stop()
-                Log.debug("handler stopped")
+                Error.debug("handler stopped")
                 return self.event(str(ex))
         try:
             txt = self.buffer.pop(0)
@@ -416,7 +416,7 @@ class IRC(Reactor, Output):
 
     def raw(self, txt):
         txt = txt.rstrip()
-        Log.debug(txt)
+        Error.debug(txt)
         if not txt.endswith('\r\n'):
             txt += '\r\n'
         txt = txt[:512]
@@ -432,14 +432,14 @@ class IRC(Reactor, Output):
                     ConnectionResetError,
                     BrokenPipeError
                    ) as ex:
-                Log.errors.append(ex)
+                Error.errors.append(ex)
                 self.stop()
                 return
         self.state.last = time.time()
         self.state.nrsend += 1
 
     def reconnect(self):
-        Log.debug(f"reconnecting to {self.cfg.server}")
+        Error.debug(f"reconnecting to {self.cfg.server}")
         try:
             self.disconnect()
         except (ssl.SSLError, OSError):
@@ -577,7 +577,7 @@ def cb_error(evt):
     bot = Bus.byorig(evt.orig)
     bot.state.nrerror += 1
     bot.state.errors.append(evt.txt)
-    Log.debug(evt.txt)
+    Error.debug(evt.txt)
 
 
 def cb_h903(evt):
@@ -622,13 +622,13 @@ def cb_privmsg(evt):
             return
         if bot.cfg.users and not Users.allowed(evt.origin, 'USER'):
             return
-        Log.debug(f"command from {evt.origin}: {evt.txt}")
+        Error.debug(f"command from {evt.origin}: {evt.txt}")
         Command.handle(evt)
 
 
 def cb_quit(evt):
     bot = Bus.byorig(evt.orig)
-    Log.debug(f"quit from {bot.cfg.server}")
+    Error.debug(f"quit from {bot.cfg.server}")
     if evt.orig and evt.orig in bot.zelf:
         bot.stop()
 

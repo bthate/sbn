@@ -11,8 +11,8 @@ import ssl
 import threading
 
 
+from .error  import Error
 from .event  import Event
-from .log    import Log
 from .thread import launch
 
 
@@ -33,7 +33,7 @@ class Reactor:
         try:
             func(evt)
         except Exception as exc:
-            Log.handle(exc)
+            Error.handle(exc)
             try:
                 evt.ready()
             except AttributeError:

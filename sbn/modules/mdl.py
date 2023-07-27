@@ -400,19 +400,6 @@ def cbstats(evt):
 
 
 def now(event):
-    delta = time.time() - STARTTIME
-    txt = laps(delta) + " "
-    for name in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
-        needed = seconds(getnr(name))
-        if needed > 60*60:
-            continue
-        nrtimes = int(delta/needed)
-        txt += "%s: %s " % (getalias(name), nrtimes)
-    txt += " http://genocide.rtfd.io"
-    event.reply(txt)
-
-
-def mdl(event):
     name = event.rest or "Psych"
     needed = seconds(getnr(name))
     if needed:
@@ -430,23 +417,6 @@ def mdl(event):
                                                                laps(needed)
                                                               )
         event.reply(txt)
-
-
-def tpc(event):
-    txt = "%ss " % laps(time.time() - STARTTIME)
-    for name in sorted(oorzaken, key=lambda x: seconds(getnr(x))):
-        needed = seconds(getnr(name))
-        delta = time.time() - STARTTIME
-        nrtimes = int(delta/needed)
-        if needed > 60*60:
-            continue
-        txt += "%s %s " % (getalias(name), nrtimes)
-    for bot in Bus.objs:
-        try:
-            for channel in bot.channels:
-                bot.topic(channel, txt)
-        except AttributeError:
-            pass
 
 
 # RUNTIME

@@ -214,8 +214,6 @@ def keys(self) -> []:
     return self.__dict__.keys()
 
 
-
-
 def last(self, selector=None) -> None:
     if selector is None:
         selector = {}
@@ -446,7 +444,7 @@ def files() -> []:
 def find(mtc, selector=None) -> []:
     if selector is None:
         selector = {}
-    for fnm in fns(mtc):
+    for fnm in reversed(sorted(fns(mtc), key=lambda x: fntime(x))):
         obj = hook(fnm)
         if '__deleted__' in obj:
             continue

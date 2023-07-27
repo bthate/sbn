@@ -13,7 +13,7 @@ import time
 import traceback
 
 
-from .. import Bus, Command, Log, Object
+from .. import Bus, Command, Error, Object
 from .. import launch, laps, printable, spl, update
 
 

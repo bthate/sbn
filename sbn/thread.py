@@ -14,6 +14,8 @@ import time
 
 class Thread(threading.Thread):
 
+    ""
+
     errors = []
 
     def __init__(self, func, thrname, *args, daemon=True):
@@ -38,10 +40,12 @@ class Thread(threading.Thread):
             yield k
 
     def join(self, timeout=None):
+        ""
         super().join(timeout)
         return self._result
 
     def run(self):
+        ""
         func, args = self.queue.get()
         try:
             self._result = func(*args)
