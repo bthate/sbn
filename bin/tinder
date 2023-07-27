@@ -20,8 +20,16 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from sbn import Bus, Cfg, Command, Event, Log, Object, Reactor
-from sbn import laps, keys, launch, parse, scan, spl, update
+from sbn.bus import Bus
+from sbn.command import Command, scan
+from sbn.error import Error
+from sbn.event import Event
+from sbn.object import Object, keys, update
+from sbn.parser import parse
+from sbn.reactor import Reactor
+from sbn.run import Cfg
+from sbn.thread import launch
+from sbn.utils import laps, spl
 
 
 import sbn.modules as modules
@@ -77,11 +85,6 @@ param.tdo = ["test4", ""]
 param.thr = [""]
 
 
-def cprint(txt):
-    print(txt)
-    sys.stdout.flush()
-
-
 class CLI(Reactor):
 
     def __init__(self):
@@ -92,7 +95,7 @@ class CLI(Reactor):
     def raw(self, txt):
         with outlock:
             if txt and "v" in Cfg.opts:
-                cprint(txt.rstrip())
+                print(txt.rstrip())
 
 
 def consume(evts):
@@ -125,12 +128,12 @@ def payload(clt) -> None:
 
 def waiter() -> None:
     got = []
-    for ex in Log.errors:
+    for ex in Error.errors:
         if not Cfg.silent:
             traceback.print_exception(type(ex), ex, ex.__traceback__)
         got.append(ex)
     for exc in got:
-        Log.errors.remove(exc)
+        Error.errors.remove(exc)
 
 
 def wrap(func) -> None:
@@ -151,7 +154,7 @@ def main() -> None:
         shutil.rmtree(Cfg.workdir)
     parse(Cfg, " ".join(sys.argv[1:]))
     if "v" in Cfg.opts:
-        Log.verbose = True
+        Error.verbose = True
     scan(modules, Cfg.mod, False, True)
     nrs = Cfg.index or 1
     cli = CLI()
