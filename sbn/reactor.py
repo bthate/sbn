@@ -1,12 +1,9 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212,W0718
+# pylint: disable=C,I,R,W0212,W0718,E0402
 
 
-"reacting"
-
-
-__author__ = "Bart Thate <programmingobject@gmail.com>"
+"reactor"
 
 
 import queue
@@ -14,32 +11,33 @@ import ssl
 import threading
 
 
-from .errored import Errors
-from .evented import Event
-from .objects import Object
-from .threads import launch
+from .event  import Event
+from .log    import Log
+from .thread import launch
 
 
-def __dir__():
-    return (
-            'Reactor',
-            "dispatch"
-           )
+class Reactor:
 
-
-__all__ = __dir__()
-
-
-class Reactor(Object):
+    errors = []
 
     def __init__(self):
-        Object.__init__(self)
-        self.cbs = Object()
+        self.cbs = {}
         self.queue = queue.Queue()
         self.stopped = threading.Event()
 
     def announce(self, txt) -> None:
         self.raw(txt)
+
+    @staticmethod
+    def dispatch(func, evt) -> None:
+        try:
+            func(evt)
+        except Exception as exc:
+            Log.handle(exc)
+            try:
+                evt.ready()
+            except AttributeError:
+                pass
 
     def event(self, txt) -> Event:
         msg = Event()
@@ -49,9 +47,9 @@ class Reactor(Object):
         return msg
 
     def handle(self, evt) -> Event:
-        func = getattr(self.cbs, evt.type, None)
+        func = self.cbs.get(evt.type, None)
         if func:
-            evt._thr = launch(dispatch, func, evt, name=evt.cmd)
+            evt._thr = launch(Reactor.dispatch, func, evt, name=evt.cmd)
             evt._thr.join()
         return evt
 
@@ -60,7 +58,8 @@ class Reactor(Object):
             try:
                 self.handle(self.poll())
             except (ssl.SSLError, EOFError) as ex:
-                Errors.handle(ex)
+                exc = ex.with_traceback(ex.__traceback__)
+                Reactor.errors.append(exc)
                 self.restart()
 
     def one(self, txt) -> Event:
@@ -92,15 +91,3 @@ class Reactor(Object):
     def stop(self) -> None:
         self.stopped.set()
         self.queue.put_nowait(None)
-
-
-def dispatch(func, evt) -> None:
-    try:
-        func(evt)
-    except Exception as ex:
-        exc = ex.with_traceback(ex.__traceback__)
-        Errors.errors.append(exc)
-        try:
-            evt.ready()
-        except AttributeError:
-            pass

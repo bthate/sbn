@@ -6,9 +6,6 @@
 "rich site syndicte"
 
 
-__author__ = "Bart Thate <programmingobject@gmail.com>"
-
-
 import html.parser
 import re
 import threading
@@ -22,13 +19,14 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
-from .. import Broker, Cfg, Object, Repeater
-from .. import find, fntime, laps, prt, update, write
-from .. import launch, last, spl
+from .. import Object, printable, update
+from .. import find, fntime, last, write
+from .. import Bus, Cfg, Repeater
+from .. import laps, launch, spl
 
 
 def start():
-    time.sleep(15.0)
+    time.sleep(30.0)
     fetcher = Fetcher()
     fetcher.start()
     return fetcher
@@ -133,7 +131,7 @@ class Fetcher(Object):
             txt = f'[{feedname}] '
         for obj in objs:
             txt2 = txt + self.display(obj)
-            Broker.announce(txt2.rstrip())
+            Bus.announce(txt2.rstrip())
         return counter
 
     def run(self):
@@ -176,6 +174,9 @@ class Parser(Object):
                 setattr(obj, itm, Parser.getitem(line, itm))
             res.append(obj)
         return res
+
+
+# UTILITY
 
 
 def getfeed(url, item):
@@ -231,6 +232,9 @@ def useragent(txt):
     return 'Mozilla/5.0 (X11; Linux x86_64) ' + txt
 
 
+# COMMANDS
+
+
 def dpl(event):
     if len(event.args) < 2:
         event.reply('dpl <stringinurl> <item1,item2>')
@@ -241,19 +245,6 @@ def dpl(event):
             update(feed, setter)
             write(feed)
     event.reply('ok')
-
-
-def ftc(event):
-    res = []
-    thrs = []
-    fetcher = Fetcher()
-    fetcher.start(False)
-    thrs = fetcher.run()
-    for thr in thrs:
-        res.append(thr.join())
-    if res:
-        event.reply(','.join([str(x) for x in res if x]))
-        return
 
 
 def nme(event):
@@ -285,7 +276,7 @@ def rss(event):
         nrs = 0
         for feed in find('rss'):
             elp = laps(time.time()-fntime(feed.__oid__))
-            txt = prt(feed)
+            txt = printable(feed)
             event.reply(f'{nrs} {txt} {elp}')
             nrs += 1
         if not nrs:

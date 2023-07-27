@@ -6,14 +6,10 @@
 "todo list"
 
 
-__author__ = "Bart Thate <programmingobject@gmail.com>"
-
-
 import time
 
 
-from .. import Object
-from .. import laps, find, fntime, write
+from .. import Object, find, fntime, laps, write
 
 
 class Todo(Object):

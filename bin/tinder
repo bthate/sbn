@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C0114,C0115,C0116,W0703,C0209,C0303,C0301,W0603,C0413,C0103
-# pylint: disable-E0401
+# pylint: disable=C,I,R,E0611,I1101,W0401,W0614
+
+
+"tinder tests"
+
+
+__author__ = "Bart Thate <skullbonesandnumber@gmail.com>"
 
 
 import os
@@ -18,21 +23,15 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from sbn.clients import Client
-from sbn.command import Commands
-from sbn.errored import Errors
-from sbn.logging import Logging
-from sbn.objects import Object, keys
-from sbn.persist import Persist
-from sbn.runtime import DATE, STARTTIME, Cfg, launch, parse_cli, scanstr
-from sbn.utility import elapsed
+from sbn import Broker, Cfg, Command, Errors, Event, Logging, Persist, Reactor
+from sbn import Object
+from sbn import laps, keys, launch, parse, spl, update
+from sbn import modules
 
 
-import sbn.modules
-Commands.modules = sbn.modules
-
-
+DATE = time.ctime(time.time()).replace("  ", " ")
 NAME = "tinder"
+STARTTIME = time.time()
 
 
 Cfg.debug = True
@@ -50,17 +49,19 @@ outlock = _thread.allocate_lock()
 
 errors = []
 events = []
-result = 1
 
 
 param = Object()
-param.add = ["test@shell", "bart", ""]
 param.cfg = ["server=localhost", ""]
+param.cmd = [""]
+param.dlt = ["~bart@127.0.0.1"]
 param.dne = ["test4", ""]
-param.rem = ["reddit", ""]
 param.dpl = ["reddit title,summary,link", ""]
-param.flt = ["0", ""]
+param.err = [""]
+param.flt = ["", "0"]
+param.rem = ["reddit", ""]
 param.fnd = [
+             'log',
              "cfg",
              "tdo",
              "rss",
@@ -69,12 +70,23 @@ param.fnd = [
              "rss rss==reddit"
             ]
 param.log = ["test1", ""]
+param.mdl = [""]
+param.met = ["~bart@127.0.0.1"]
+param.mod = [""]
 param.nme = ["reddit reddit"]
-param.dpl = ["reddit title,link"]
+param.now = [""]
+param.pwd = ["bla bla"]
 param.rem = ["reddit"]
+param.req = [""]
+param.rld = ["bsc"]
 param.rss = ["https://www.reddit.com/r/python/.rss"]
+param.shp = ["bread", "butter", "cheese"]
 param.tdo = ["test4", ""]
 param.thr = [""]
+param.tpc = [""]
+param.unl = ["udp"]
+param.wsd = [""]
+param.wsh = [""]
 
 
 def cprint(txt):
@@ -82,7 +94,12 @@ def cprint(txt):
     sys.stdout.flush()
 
 
-class CLI(Client):
+class CLI(Reactor):
+
+    def __init__(self):
+        Reactor.__init__(self)
+        Broker.add(self)
+        self.register("event", Command.handle)
 
     def raw(self, txt):
         with outlock:
@@ -104,15 +121,49 @@ def consume(evts):
     return res
 
 
+def parse_cli(txt) -> Cfg:
+    evt = Event()
+    parse(evt, txt)
+    if "v" in Cfg.opts:
+        Logging.verbose = True
+        Logging.raw = print
+    update(Cfg, evt, False)
+    Cfg.mod += evt.mods
+    return Cfg
+
+
+def scanstr(pkg, mods, init=None, doall=False, wait=False) -> None:
+    res = []
+    path = pkg.__path__[0]
+    if doall:
+        modlist = [x[:-3] for x in os.listdir(path) if x.endswith(".py") and x != "__init__.py"]
+        mods = ",".join(sorted(modlist))
+    threads = []
+    for modname in spl(mods):
+        module = getattr(modules, modname, None)
+        print(modname, module)
+        if module:
+            Command.scan(module)
+        if init and "start" in dir(module):
+            threads.append(launch(module.start))
+        res.append(module)
+    if wait:
+        for thread in threads:
+            thread.join()
+    return res
+
+
 def payload(clt) -> None:
-    cmds = list(keys(Commands.cmds))
+    cmds = list(keys(Command.cmds))
     random.shuffle(cmds)
+    print(cmds)
     with paylock:
         nmr = 0
         for cmnd in cmds:
             for ex in getattr(param, cmnd, [""]):
+                print(cmnd + " "  + ex)
                 evt = clt.event(cmnd + " " + ex)
-                clt.put(evt)
+                clt.handle(evt)
                 events.append(evt)
                 nmr += 1
         return nmr
@@ -141,25 +192,26 @@ def wrap(func) -> None:
 
 
 def main() -> None:
-    global result
     print(f"{NAME.upper()} started {DATE}")
     if os.path.exists(Persist.workdir):
         shutil.rmtree(Persist.workdir)
     parse_cli(" ".join(sys.argv[1:]))
     if "v" in Cfg.opts:
         Logging.verbose = True
-    scanstr(sbn.modules, Cfg.mod, doall=True)
+        Logging.raw = cprint
+    scanstr(modules, Cfg.mod, False, doall=True)
     nrs = Cfg.index or 1
     cli = CLI()
     cli.start()
     waiters = []
     for _nr in range(nrs):
         waiters.append(launch(payload, cli, name=_nr))
+    result = 1
     for wtr in waiters:
         result += wtr.join() or 1
     consume(events)
     endtime = time.time()
-    lap = elapsed(endtime - STARTTIME)
+    lap = laps(endtime - STARTTIME)
     percall = (endtime - STARTTIME)/result
     waiter()
     print(f"{lap} {result} {percall}")

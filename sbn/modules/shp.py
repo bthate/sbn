@@ -6,14 +6,10 @@
 "shopping list"
 
 
-__author__ = "Bart Thate <programmingobject@gmail.com>"
-
-
 import time
 
 
-from .. import Cfg, Object 
-from .. import find, fntime, laps, write
+from .. import Object, find, fntime, laps, write
 
 
 class Shop(Object):
@@ -36,13 +32,13 @@ def got(event):
     for obj in find('shop', selector):
         obj.__deleted__ = True
         write(obj)
-        event.reply('ok') # okdan
+        event.reply('ok')
 
 
 def shp(event):
     if not event.rest:
         nmr = 0
-        for obj in find(Cfg.workdir, 'shop'):
+        for obj in find('shop'):
             lap = laps(time.time()-fntime(obj.__oid__))
             event.reply(f'{nmr} {obj.txt} {lap}')
             nmr += 1

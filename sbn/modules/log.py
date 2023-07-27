@@ -6,14 +6,10 @@
 "log text"
 
 
-__author__ = "Bart Thate <programmingobject@gmail.com>"
-
-
 import time
 
 
-from .. import Object
-from .. import find, fntime, laps, write
+from .. import Object, find, fntime, laps, write
 
 
 class Log(Object):

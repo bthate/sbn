@@ -1,13 +1,12 @@
 # This file is placed in the Public Domain.
+#
+# flake8: noqa=F401
 
 
-"object programming modules"
+"modules"
 
 
-__author__ = "Bart Thate <programmingobject@gmail.com>"
-
-
-from . import bsc, irc, log, rss, shp, tdo, wsh
+from . import bsc, irc, log, rss, shp, tdo
 
 
 def __dir__():
@@ -18,7 +17,6 @@ def __dir__():
             "rss",
             "shp",
             "tdo",
-            "wsh"
            )
 
 

@@ -1,39 +1,24 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0718,E0402
+# pylint: disable=C,I,R,W0718
 
 
 "commands"
-
-
-__author__ = "Bart Thate <programmingobject@gmail.com>"
 
 
 import inspect
 import os
 
 
-from .errored import Errors
-from .objects import Object, get
-from .parsers import parse
-from .threads import launch
-from .utility import spl
+from .bus    import Bus
+from .thread import launch
+from .utils  import spl
 
 
-def __dir__():
-    return (
-            'Command',
-            'scan'
-           )
+class Command:
 
-
-__all__ = __dir__()
-
-
-class Command(Object):
-
-    cmds = Object()
-
+    cmds = {}
+    errors = []
 
     @staticmethod
     def add(func):
@@ -41,16 +26,16 @@ class Command(Object):
 
     @staticmethod
     def handle(evt):
-        if "txt" in evt:
-            parse(evt, evt.txt)
-            func = get(Command.cmds, evt.cmd, None)
+        if "txt" in dir(evt):
+            evt.parse(evt.txt)
+            func = Command.cmds.get(evt.cmd, None)
             if func:
                 try:
                     func(evt)
-                    evt.show()
+                    Bus.show(evt)
                 except Exception as ex:
                     exc = ex.with_traceback(ex.__traceback__)
-                    Errors.errors.append(exc)
+                    Command.errors.append(exc)
         evt.ready()
 
     @staticmethod
@@ -70,9 +55,15 @@ class Command(Object):
 
 
 def scan(pkg, mods, init=None, doall=False, wait=False) -> None:
+    if not pkg:
+        return
     path = pkg.__path__[0]
     if doall:
-        modlist = [x[:-3] for x in os.listdir(path) if x.endswith(".py") and x not in [ "__init__.py", "__main__.py"]]
+        modlist = [
+                   x[:-3] for x in os.listdir(path)
+                   if x.endswith(".py")
+                   and x not in ["__init__.py", "__main__.py"]
+                  ]
         mods = ",".join(sorted(modlist))
     threads = []
     for modname in spl(mods):

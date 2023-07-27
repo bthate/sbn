@@ -1,12 +1,9 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0401
+# pylint: disable=C,I,R,W0401,W0622
 
 
 "basic commands"
-
-
-__author__ = "Bart Thate <programmingobject@gmail.com>"
 
 
 import io
@@ -16,11 +13,14 @@ import time
 import traceback
 
 
-from .. import Broker, Command, Errors, Object
-from .. import laps, prt, spl, update
+from .. import Bus, Command, Log, Object
+from .. import launch, laps, printable, spl, update
 
 
-from ..threads import name
+try:
+    import mod as modules
+except ModuleNotFoundError:
+    modules = None
 
 
 STARTTIME = time.time()
@@ -32,9 +32,8 @@ def __dir__():
             "err",
             "flt",
             'mod',
-            "rld",
+            'sts',
             "thr",
-            "unl"
            )
 
 
@@ -47,7 +46,7 @@ def cmd(event):
 
 def err(event):
     nmr = 0
-    for exc in Errors.errors:
+    for exc in Log.errors:
         stream = io.StringIO(
                              traceback.print_exception(
                                                        type(exc),
@@ -65,43 +64,28 @@ def err(event):
 def flt(event):
     try:
         index = int(event.args[0])
-        event.reply(prt(Broker.objs[index]))
+        event.reply(printable(Bus.objs[index]))
         return
     except (KeyError, TypeError, IndexError, ValueError):
         pass
-    event.reply(' | '.join([name(obj) for obj in Broker.objs]))
+    event.reply(' | '.join([repr(obj).split()[0].split(".")[-1] for obj in Bus.objs]))
 
 
 def mod(event):
-    from .. import modules
     path = modules.__path__[0]
-    modlist = [x[:-3] for x in os.listdir(path) if x.endswith(".py") and x not in ["__main__.py", "__init__.py"]]
-    mods = ",".join(sorted(modlist))
-    event.reply(mods)
-
-
-def rld(event):
-    if not event.args:
-        event.reply("rld <modname>")
-        return
-    from .. import modules
-    modnames = event.args[0]
-    for modname in spl(modnames):
-        mods = getattr(modules, modname, None)
-        if not mods:
-            event.reply(f"{modname} is not available")
-            continue
-        Command.scan(mods)
-        if "start" in dir(mods):
-            mods.start()
-        event.reply(f"reloaded {modname}")
+    modlist = [
+               x[:-3] for x in os.listdir(path)
+               if x.endswith(".py")
+               and x not in ["__main__.py", "__init__.py"]
+              ]
+    event.reply(",".join(sorted(modlist)))
 
 
 def sts(event):
     nmr = 0
-    for bot in Broker.objs:
+    for bot in Bus.objs:
         if 'state' in dir(bot):
-            event.reply(prt(bot.state, skip='lastline'))
+            event.reply(printable(bot.state, skip='lastline'))
             nmr += 1
     if not nmr:
         event.reply("no status")
@@ -129,18 +113,3 @@ def thr(event):
         event.reply(' '.join(res))
     else:
         event.reply('no threads')
-
-
-def unl(event):
-    if not event.args:
-        event.reply("unl <modname>")
-        return
-    from .. import modules
-    modnames = event.args[0]
-    for modname in spl(modnames):
-        mods = getattr(modules, modname, None)
-        if mods:
-            Command.remove(mods)
-            if "stop" in dir(mods):
-                mods.stop()
-        event.reply(f"unloaded {modname}")

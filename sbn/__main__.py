@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R,W0212
@@ -18,15 +17,16 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from sbn import Bus, Cfg, Command, Event, Log, Object, Reactor
-from sbn import launch, parse, scan, update, wait, waiter
+from opr import Bus, Cfg, Command, Event, Log, Object, Reactor
+from opr import launch, parse, scan, update, wait, waiter
 
 
 import opr.modules as modules
 
 
 Cfg.mod = "bsc"
-Cfg.name = sys.argv[0].split(os.sep)[-1]
+#Cfg.name = sys.argv[0].split(os.sep)[-1]
+Cfg.name = __file__.split(os.sep)[-2]
 Cfg.verbose = False
 Cfg.version = 250
 Cfg.workdir = os.path.expanduser(f"~/.{Cfg.name}")

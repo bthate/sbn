@@ -1,12 +1,10 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0401
+# pylint: disable=C,I,R,W0401,W0622
+# flake8: noqa=C901
 
 
 "internet relay chat"
-
-
-__author__ = "Bart Thate <programmingobject@gmail.com>"
 
 
 import base64
@@ -18,14 +16,15 @@ import ssl
 import time
 import textwrap
 import threading
+import _thread
 
 
-from .. import Broker, Cfg, Command, Errors, Event, Logging, Object, Reactor
-from .. import edit, find, fntime, keys, laps, last, prt, write
-from .. import launch, parse, update
+from .. import Bus, Cfg, Command, Event, Log, Object, Reactor
+from .. import edit, printable, keys, update, write
+from .. import fntime, find, last, laps, launch
 
 
-from ..locking import saylock
+saylock = _thread.allocate_lock()
 
 
 def start():
@@ -36,7 +35,7 @@ def start():
 
 
 def stop():
-    for bot in Broker.objs:
+    for bot in Bus.objs:
         if "IRC" in str(type(bot)):
             bot.stop()
 
@@ -191,7 +190,7 @@ class IRC(Reactor, Output):
         self.register('NOTICE', cb_notice)
         self.register('PRIVMSG', cb_privmsg)
         self.register('QUIT', cb_quit)
-        Broker.add(self)
+        Bus.add(self)
 
     def announce(self, txt):
         for channel in self.channels:
@@ -216,9 +215,9 @@ class IRC(Reactor, Output):
     def connect(self, server, port=6667):
         self.state.nrconnect += 1
         self.events.connected.clear()
-        Logging.debug(f"connecting to {server}:{port}")
+        Log.debug(f"connecting to {server}:{port}")
         if self.cfg.password:
-            Logging.debug("using SASL")
+            Log.debug("using SASL")
             self.cfg.sasl = True
             self.cfg.port = "6697"
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLS)
@@ -242,7 +241,7 @@ class IRC(Reactor, Output):
 
     def direct(self, txt):
         time.sleep(1.0)
-        Logging.debug(txt)
+        Log.debug(txt)
         self.sock.send(bytes(txt.rstrip()+'\r\n', 'utf-8'))
 
     def disconnect(self):
@@ -253,7 +252,7 @@ class IRC(Reactor, Output):
                 OSError,
                 BrokenPipeError
                ) as ex:
-            Errors.errors.append(ex)
+            Log.errors.append(ex)
 
     def doconnect(self, server, nck, port=6667):
         while 1:
@@ -266,8 +265,8 @@ class IRC(Reactor, Output):
                     ConnectionResetError
                    ) as ex:
                 self.state.errors = str(ex)
-                Logging.debug(str(ex))
-            Logging.debug(f"sleeping {self.cfg.sleep} seconds")
+                Log.debug(str(ex))
+            Log.debug(f"sleeping {self.cfg.sleep} seconds")
             time.sleep(self.cfg.sleep)
         self.logon(server, nck)
 
@@ -315,7 +314,7 @@ class IRC(Reactor, Output):
             self.state.pongcheck = True
             self.command('PING', self.cfg.server)
             if self.state.pongcheck:
-                Logging.debug("failed pongcheck, restarting")
+                Log.debug("failed pongcheck, restarting")
                 self.state.pongcheck = False
                 self.state.keeprunning = False
                 self.events.connected.clear()
@@ -330,12 +329,11 @@ class IRC(Reactor, Output):
         self.command(f'NICK {nck}')
         self.command(f'USER {nck} {server} {server} {nck}')
 
-
     def parsing(self, txt):
         rawstr = str(txt)
         rawstr = rawstr.replace('\u0001', '')
         rawstr = rawstr.replace('\001', '')
-        Logging.debug(txt)
+        Log.debug(txt)
         obj = Event()
         obj.rawstr = rawstr
         obj.command = ''
@@ -384,6 +382,8 @@ class IRC(Reactor, Output):
         spl = obj.txt.split()
         if len(spl) > 1:
             obj.args = spl[1:]
+        if obj.args:
+            obj.rest = " ".join(obj.args)
         obj.orig = repr(self)
         obj.txt = obj.txt.strip()
         obj.type = obj.command
@@ -405,9 +405,9 @@ class IRC(Reactor, Output):
                     ConnectionResetError,
                     BrokenPipeError
                    ) as ex:
-                Errors.errors.append(ex)
+                Log.errors.append(ex)
                 self.stop()
-                Logging.debug("handler stopped")
+                Log.debug("handler stopped")
                 return self.event(str(ex))
         try:
             txt = self.buffer.pop(0)
@@ -417,7 +417,7 @@ class IRC(Reactor, Output):
 
     def raw(self, txt):
         txt = txt.rstrip()
-        Logging.debug(txt)
+        Log.debug(txt)
         if not txt.endswith('\r\n'):
             txt += '\r\n'
         txt = txt[:512]
@@ -433,14 +433,14 @@ class IRC(Reactor, Output):
                     ConnectionResetError,
                     BrokenPipeError
                    ) as ex:
-                Errors.errors.append(ex)
+                Log.errors.append(ex)
                 self.stop()
                 return
         self.state.last = time.time()
         self.state.nrsend += 1
 
     def reconnect(self):
-        Logging.debug(f"reconnecting to {self.cfg.server}")
+        Log.debug(f"reconnecting to {self.cfg.server}")
         try:
             self.disconnect()
         except (ssl.SSLError, OSError):
@@ -484,90 +484,10 @@ class IRC(Reactor, Output):
             launch(self.keep)
 
     def stop(self):
-        Broker.remove(self)
+        Bus.remove(self)
         Reactor.stop(self)
         Output.stop(self)
         self.disconnect()
-
-
-def cb_auth(evt):
-    bot = evt.bot()
-    assert evt
-    assert bot.cfg.password
-    bot.direct(f'AUTHENTICATE {bot.cfg.password}')
-
-
-def cb_cap(evt):
-    bot = evt.bot()
-    if bot.cfg.password and 'ACK' in evt.arguments:
-        bot.direct('AUTHENTICATE PLAIN')
-    else:
-        bot.direct('CAP REQ :sasl')
-
-
-def cb_command(evt):
-    Command.handle(evt)
-
-
-def cb_error(evt):
-    bot = evt.bot()
-    bot.state.nrerror += 1
-    bot.state.errors.append(evt.txt)
-    Logging.debug(evt.txt)
-
-
-def cb_h903(evt):
-    assert evt
-    bot = evt.bot()
-    bot.direct('CAP END')
-    bot.events.authed.set()
-
-
-def cb_h904(evt):
-    assert evt
-    bot = evt.bot()
-    bot.direct('CAP END')
-    bot.events.authed.set()
-
-
-def cb_kill(evt):
-    pass
-
-
-def cb_log(evt):
-    pass
-
-
-def cb_notice(evt):
-    bot = evt.bot()
-    if evt.txt.startswith('VERSION'):
-        txt = f'\001VERSION {Cfg.name.upper()} 140 - {bot.cfg.username}\001'
-        bot.command('NOTICE', evt.channel, txt)
-
-
-def cb_privmsg(evt):
-    bot = evt.bot()
-    if bot.cfg.nocommands:
-        return
-    if evt.txt:
-        if evt.txt[0] in ['!',]:
-            evt.txt = evt.txt[1:]
-        elif evt.txt.startswith(f'{bot.cfg.nick}:'):
-            evt.txt = evt.txt[len(bot.cfg.nick)+1:]
-        else:
-            return
-        if bot.cfg.users and not Users.allowed(evt.origin, 'USER'):
-            return
-        Logging.debug(f"command from {evt.origin}: {evt.txt}")
-        parse(evt, evt.txt)
-        Command.handle(evt)
-
-
-def cb_quit(evt):
-    bot = evt.bot()
-    Logging.debug(f"quit from {bot.cfg.server}")
-    if evt.orig and evt.orig in bot.zelf:
-        bot.stop()
 
 
 class User(Object):
@@ -633,12 +553,96 @@ class Users(Object):
         return user
 
 
+# CALLBACKS
+
+
+def cb_auth(evt):
+    bot = Bus.byorig(evt.orig)
+    assert bot.cfg.password
+    bot.direct(f'AUTHENTICATE {bot.cfg.password}')
+
+
+def cb_cap(evt):
+    bot = Bus.byorig(evt.orig)
+    if bot.cfg.password and 'ACK' in evt.arguments:
+        bot.direct('AUTHENTICATE PLAIN')
+    else:
+        bot.direct('CAP REQ :sasl')
+
+
+def cb_command(evt):
+    Command.handle(evt)
+
+
+def cb_error(evt):
+    bot = Bus.byorig(evt.orig)
+    bot.state.nrerror += 1
+    bot.state.errors.append(evt.txt)
+    Log.debug(evt.txt)
+
+
+def cb_h903(evt):
+    assert evt
+    bot = Bus.byorig(evt.orig)
+    bot.direct('CAP END')
+    bot.events.authed.set()
+
+
+def cb_h904(evt):
+    assert evt
+    bot = Bus.byorig(evt.orig)
+    bot.direct('CAP END')
+    bot.events.authed.set()
+
+
+def cb_kill(evt):
+    pass
+
+
+def cb_log(evt):
+    pass
+
+
+def cb_notice(evt):
+    bot = Bus.byorig(evt.orig)
+    if evt.txt.startswith('VERSION'):
+        txt = f'\001VERSION {Cfg.name.upper()} 140 - {bot.cfg.username}\001'
+        bot.command('NOTICE', evt.channel, txt)
+
+
+def cb_privmsg(evt):
+    bot = Bus.byorig(evt.orig)
+    if bot.cfg.nocommands:
+        return
+    if evt.txt:
+        if evt.txt[0] in ['!',]:
+            evt.txt = evt.txt[1:]
+        elif evt.txt.startswith(f'{bot.cfg.nick}:'):
+            evt.txt = evt.txt[len(bot.cfg.nick)+1:]
+        else:
+            return
+        if bot.cfg.users and not Users.allowed(evt.origin, 'USER'):
+            return
+        Log.debug(f"command from {evt.origin}: {evt.txt}")
+        Command.handle(evt)
+
+
+def cb_quit(evt):
+    bot = Bus.byorig(evt.orig)
+    Log.debug(f"quit from {bot.cfg.server}")
+    if evt.orig and evt.orig in bot.zelf:
+        bot.stop()
+
+
+# COMMANDS
+
+
 def cfg(event):
     config = Config()
     last(config)
     if not event.sets:
         event.reply(
-                    prt(
+                    printable(
                         config,
                         keys(config),
                         skip='control,password,realname,sleep,username'

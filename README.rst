@@ -42,8 +42,12 @@ INSTALL
 
 USAGE
 
-
 ::
+
+    use the following alias for easier typing
+
+    $ alias sbn="python3 -m sbn"
+
 
     list of commands
 
