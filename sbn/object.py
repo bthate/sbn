@@ -60,7 +60,6 @@ class Persist:
     classes = {}
     workdir = ""
 
-
     @staticmethod
     def add(clz):
         Persist.classes[f"{clz.__module__}.{clz.__name__}"] = clz

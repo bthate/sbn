@@ -7,30 +7,39 @@
 
 
 import os
-import readline
+
+
+NAME  = __file__.split(os.sep)[-2]
+VERSION = 30
+WORKDIR = os.path.expanduser(f"~/.{NAME}")
+
+
 import sys
-import termios
-import time
-import _thread
 
 
 sys.path.insert(0, os.getcwd())
 
 
-from sbn import Bus, Cfg, Command, Error, Event, Persist, Reactor
-from sbn import launch, parse, scan, wait, waiter
+import readline
+import termios
+import time
+import _thread
 
 
-import sbn.modules as modules
+from .bus import Bus
+from .command import Command, scan
+from .error import Error, waiter
+from .event import Event
+from .object import Persist, printable
+from .parser import parse
+from .reactor import Reactor
+from .run import Cfg
+from .thread import launch
+from .utils import wait
+from . import modules
 
 
-Cfg.mod = "bsc"
-Cfg.name = __file__.split(os.sep)[-2]
-Cfg.verbose = False
-Cfg.version = 250
-
-
-Persist.workdir = os.path.expanduser(f"~/.{Cfg.name}")
+Persist.workdir = WORKDIR
 
 
 class CLI(Reactor):
@@ -66,12 +75,8 @@ class Console(CLI):
 def banner(cfg):
     times = time.ctime(time.time())
     clz = ",".join([x.split(".")[-1] for x in Persist.classes])
-    return f"{cfg.name.upper()} {cfg.version} {cfg.mod.upper()} {times} ({cfg.opts}) {clz}"
-
-
-def cprint(txt):
-    print(txt)
-    sys.stdout.flush()
+    cfgg = printable(cfg, skip="otxt,password")
+    return f"{NAME.upper()} {VERSION} {times} {cfgg} {clz}"
 
 
 def daemon():
@@ -103,7 +108,7 @@ def wrap(func) -> None:
 def main():
     parse(Cfg, " ".join(sys.argv[1:]))
     if "v" in Cfg.opts:
-        Error.raw = cprint
+        Error.raw = print
     if "d" in Cfg.opts:
         daemon()
         scan(modules, Cfg.mod, True, "a" in Cfg.opts)
@@ -121,7 +126,8 @@ def main():
         evt.orig = repr(cli)
         evt.txt = Cfg.otxt
         Command.handle(evt)
-
+        evt.wait()
+        waiter()
 
 if __name__ == "__main__":
     wrap(main)

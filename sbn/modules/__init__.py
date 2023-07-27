@@ -6,16 +6,18 @@
 "modules"
 
 
-from . import bsc, irc, mdl, req, rss
+from . import bsc, irc, mdl, log, req, rss, tdo
 
 
 def __dir__():
     return (
             "bsc",
             "irc",
+            'log',
             'mdl',
             'req',
-            "rss"
+            "rss",
+            "tdo"
            )
 
 
