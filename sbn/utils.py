@@ -83,7 +83,7 @@ def strip(path) -> str:
     return os.sep.join(path.split(os.sep)[-4:])
 
 
-def wait(func):
+def wait(func=None):
     while 1:
         time.sleep(1.0)
         if func:

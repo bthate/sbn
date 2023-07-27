@@ -21,8 +21,8 @@
 
     sbn.bus	   bus
     sbn.command	   commands
+    sbn.error	   errors
     sbn.event	   events
-    sbn.log	   logging
     sbn.modules	   plugins
     sbn.object	   clean namespace
     sbn.parser	   parsing

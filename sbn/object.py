@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0622
+# pylint: disable=C,I,R,W0622,W0108
 # flake8: noqa=C901
 
 

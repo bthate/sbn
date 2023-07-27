@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212
+# pylint: disable=C,I,R,W0212,W0611
 
 
 "runtime"
@@ -17,8 +17,8 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from sbn import Bus, Cfg, Command, Error, Event, Object, Persist, Reactor
-from sbn import launch, parse, printable, scan, update, wait, waiter
+from sbn import Bus, Cfg, Command, Error, Event, Persist, Reactor
+from sbn import launch, parse, scan, wait, waiter
 
 
 import sbn.modules as modules

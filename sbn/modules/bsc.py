@@ -14,7 +14,7 @@ import traceback
 
 
 from .. import Bus, Command, Error, Object
-from .. import launch, laps, printable, spl, update
+from .. import laps, printable, update
 
 
 try:
@@ -46,7 +46,7 @@ def cmd(event):
 
 def err(event):
     nmr = 0
-    for exc in Log.errors:
+    for exc in Error.errors:
         stream = io.StringIO(
                              traceback.print_exception(
                                                        type(exc),
