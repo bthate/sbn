@@ -9,7 +9,7 @@
 import time
 
 
-from .. import Object, Persist, find, fntime, laps, write
+from .. import Object, find, fntime, laps, write
 
 
 class Log(Object):
@@ -24,9 +24,6 @@ class Log(Object):
 
     def __since__(self):
         return self.createtime
-
-
-Persist.add(Log)
 
 
 def log(event):
