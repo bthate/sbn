@@ -17,19 +17,22 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from . import Bus, Cfg, Command, Event, Log, Object, Reactor
-from . import launch, parse, scan, update, wait, waiter
+from sbn import Bus, Cfg, Command, Event, Log, Object, Persist, Reactor
+from sbn import launch, parse, scan, update, wait, waiter
 
 
-from . import modules
+import sbn.modules as modules
 
 
-Cfg.mod = "bsc"
-#Cfg.name = sys.argv[0].split(os.sep)[-1]
-Cfg.name = __file__.split(os.sep)[-2]
+Cfg.mod = "bsc,log"
+Cfg.name = sys.argv[0].split(os.sep)[-1]
+if Cfg.name == "__main__.py":
+    Cfg.name = __file__.split(os.sep)[-2]
 Cfg.verbose = False
 Cfg.version = 250
-Cfg.workdir = os.path.expanduser(f"~/.{Cfg.name}")
+
+
+Persist.workdir = os.path.expanduser(f"~/.{Cfg.name}")
 
 
 class CLI(Reactor):
@@ -97,8 +100,6 @@ def wrap(func) -> None:
         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
         waiter()
 
-def wrapped():
-    wrap(main)
 
 def main():
     parse(Cfg, " ".join(sys.argv[1:]))
@@ -124,4 +125,4 @@ def main():
 
 
 if __name__ == "__main__":
-    wraped()
+    wrap(main)

@@ -40,7 +40,8 @@ STARTDATE = "2020-01-01 00:00:00"
 STARTTIME = time.mktime(time.strptime(STARTDATE, "%Y-%m-%d %H:%M:%S"))
 
 
-oor = """"Totaal onderliggende doodsoorzaken (aantal)";
+oor = """
+         "Totaal onderliggende doodsoorzaken (aantal)";
          "1 Infectieuze en parasitaire ziekten/Totaal infectieuze en parasitaire zktn (aantal)";
          "1 Infectieuze en parasitaire ziekten/1.1 Tuberculose (aantal)";
          "1 Infectieuze en parasitaire ziekten/1.2 Meningokokkeninfecties (aantal)";
@@ -285,8 +286,8 @@ def boot():
     _nr = -1
     for key in keys(oorzaak):
         _nr += 1
-        if _nr == 0:
-            continue
+        #if _nr == 0:
+        #    continue
         if key.startswith('"'):
             key = key[1:]
         lines = key.split("/")

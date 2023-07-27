@@ -19,8 +19,8 @@ import _thread
 
 def __dir__():
     return (
-            "Cfg",
             "Object",
+            "Persist",
             'clear',
             'copy',
             'dump',
@@ -51,14 +51,25 @@ def __dir__():
 __all__ = __dir__()
 
 
-def cdir(pth) -> None:
-    if not pth.endswith(os.sep):
-        pth = os.path.dirname(pth)
-    pth = pathlib.Path(pth)
-    os.makedirs(pth, exist_ok=True)
-
 
 disklock = _thread.allocate_lock()
+
+
+class Persist:
+
+    classes = {}
+    workdir = ""
+
+
+    @staticmethod
+    def add(clz):
+        Persist.classes[f"{clz.__module__}.{clz.__name__}"] = clz
+
+    @staticmethod
+    def long(nme):
+        for name in Persist.classes:
+            if nme.lower() == name.split(".")[-1].lower():
+                return name
 
 
 class Object:
@@ -118,6 +129,31 @@ class Object:
         return res
 
 
+# UTILITY
+
+
+def cdir(pth) -> None:
+    if not pth.endswith(os.sep):
+        pth = os.path.dirname(pth)
+    pth = pathlib.Path(pth)
+    os.makedirs(pth, exist_ok=True)
+
+
+def kind(self) -> str:
+    kin = str(type(self)).split()[-1][1:-2]
+    if kin == "type":
+        kin = self.__name__
+    return kin
+
+
+def ident(self) -> str:
+    return os.path.join(
+                        kind(self),
+                        str(uuid.uuid4().hex),
+                        os.sep.join(str(datetime.datetime.now()).split())
+                       )
+
+
 # METHODS
 
 
@@ -168,15 +204,6 @@ def fromkeys(self, keyz, value):
 def get(self, key, default=None):
     return getattr(self, key, default)
 
-
-def ident(self) -> str:
-    return os.path.join(
-                        kind(self),
-                        str(uuid.uuid4().hex),
-                        os.sep.join(str(datetime.datetime.now()).split())
-                       )
-
-
 def items(self) -> []:
     if isinstance(self, type({})):
         return self.items()
@@ -187,11 +214,6 @@ def keys(self) -> []:
     return self.__dict__.keys()
 
 
-def kind(self) -> str:
-    kin = str(type(self)).split()[-1][1:-2]
-    if kin == "type":
-        kin = self.__name__
-    return kin
 
 
 def last(self, selector=None) -> None:
@@ -258,7 +280,7 @@ def printable(self, args="", skip="", plain=False):
 
 
 def read(self, pth) -> str:
-    pth = os.path.join(Cfg.workdir, "store", pth)
+    pth = os.path.join(Persist.workdir, "store", pth)
     with disklock:
         with open(pth, 'r', encoding='utf-8') as ofile:
             data = load(ofile)
@@ -302,7 +324,7 @@ def write(self) -> str:
         pth = self.__oid__
     except TypeError:
         pth = ident(self)
-    pth = os.path.join(Cfg.workdir, "store", pth)
+    pth = os.path.join(Persist.workdir, "store", pth)
     cdir(pth)
     with disklock:
         with open(pth, 'w', encoding='utf-8') as ofile:
@@ -412,16 +434,10 @@ def loads(string, *args, **kw):
 # PERSIST
 
 
-Cfg = Object()
-Cfg.mods = "bsc"
-Cfg.name = __file__.split(os.sep)[-2]
-Cfg.workdir = ""
-
-
 def files() -> []:
-    assert Cfg.workdir
+    assert Persist.workdir
     res = []
-    path = os.path.join(Cfg.workdir, "store")
+    path = os.path.join(Persist.workdir, "store")
     if os.path.exists(path):
         res = os.listdir(path)
     return res
@@ -440,10 +456,11 @@ def find(mtc, selector=None) -> []:
 
 
 def fns(mtc) -> []:
-    assert Cfg.workdir
+    assert Persist.workdir
     dname = ''
-    lst = mtc.lower().split(".")[-1]
-    path = os.path.join(Cfg.workdir, "store")
+    clz = Persist.long(mtc)
+    #lst = mtc.lower().split(".")[-1]
+    path = os.path.join(Persist.workdir, "store", clz)
     for rootdir, dirs, _files in os.walk(path, topdown=False):
         if dirs:
             dname = sorted(dirs)[-1]
@@ -451,10 +468,7 @@ def fns(mtc) -> []:
                 ddd = os.path.join(rootdir, dname)
                 fls = sorted(os.listdir(ddd))
                 if fls:
-                    path2 = os.path.join(ddd, fls[-1])
-                    splitted = strip(path2).split(os.sep, maxsplit=1)[0]
-                    if lst in splitted.lower().split(".")[-1]:
-                        yield strip(path2)
+                    yield os.path.join(ddd, fls[-1])
 
 
 def fntime(daystr) -> float:

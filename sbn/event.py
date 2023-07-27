@@ -10,7 +10,7 @@ import threading
 
 
 from .object import Object
-from .parse import parse
+from .parser import parse
 
 
 class Event(Object):

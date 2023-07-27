@@ -6,7 +6,8 @@
 "runtime"
 
 
-from . import bus, command, event, log, object, reactor, thread, utils
+from . import bus, command, event, log, object, parser, reactor
+from . import repeater, thread, utils
 
 
 from .bus      import Bus
@@ -14,9 +15,10 @@ from .command  import Command, scan
 from .event    import Event
 from .log      import Log, waiter
 from .object   import *
-from .parse    import parse
+from .parser   import parse
 from .reactor  import Reactor
 from .repeater import Timer, Repeater
+from .run      import Cfg
 from .thread   import Thread, launch, threaded
 from .utils    import fntime, laps, spl, wait
 
@@ -27,6 +29,7 @@ def __dir__():
             "Cfg",
             "Event",
             'Log',
+            "Persist",
             "Thread",
             'Timer',
             'Repeater',

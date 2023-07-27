@@ -25,7 +25,7 @@
     sbn.log	   logging
     sbn.modules	   plugins
     sbn.object	   clean namespace
-    sbn.parse	   parsing
+    sbn.parser	   parsing
     sbn.reactor    reacting
     sbn.repeater   repeating 
     sbn.thread     threading
@@ -55,7 +55,5 @@
     sbn.modules.mdl	genocide model
     sbn.modules.req	request
     sbn.modules.rss	rich site syndicate
-    sbn.modules.tdo	things todo
     sbn.modules.udp	udp to irc relay
     sbn.modules.wsd 	wisdom
-

@@ -240,7 +240,6 @@ class IRC(Reactor, Output):
         return False
 
     def direct(self, txt):
-        time.sleep(1.0)
         Log.debug(txt)
         self.sock.send(bytes(txt.rstrip()+'\r\n', 'utf-8'))
 
@@ -272,8 +271,8 @@ class IRC(Reactor, Output):
 
     def dosay(self, channel, txt):
         self.events.joined.wait()
-        txt = str(txt).replace('\n', '')
-        txt = txt.replace('  ', ' ')
+        #txt = str(txt).replace('\n', '')
+        #txt = txt.replace('  ', ' ')
         self.command('PRIVMSG', channel, txt)
 
     def event(self, txt):
@@ -559,15 +558,15 @@ class Users(Object):
 def cb_auth(evt):
     bot = Bus.byorig(evt.orig)
     assert bot.cfg.password
-    bot.direct(f'AUTHENTICATE {bot.cfg.password}')
+    bot.command(f'AUTHENTICATE {bot.cfg.password}')
 
 
 def cb_cap(evt):
     bot = Bus.byorig(evt.orig)
     if bot.cfg.password and 'ACK' in evt.arguments:
-        bot.direct('AUTHENTICATE PLAIN')
+        bot.command('AUTHENTICATE PLAIN')
     else:
-        bot.direct('CAP REQ :sasl')
+        bot.command('CAP REQ :sasl')
 
 
 def cb_command(evt):
@@ -584,14 +583,14 @@ def cb_error(evt):
 def cb_h903(evt):
     assert evt
     bot = Bus.byorig(evt.orig)
-    bot.direct('CAP END')
+    bot.command('CAP END')
     bot.events.authed.set()
 
 
 def cb_h904(evt):
     assert evt
     bot = Bus.byorig(evt.orig)
-    bot.direct('CAP END')
+    bot.command('CAP END')
     bot.events.authed.set()
 
 
