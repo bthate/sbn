@@ -17,11 +17,11 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from opr import Bus, Cfg, Command, Event, Log, Object, Reactor
-from opr import launch, parse, scan, update, wait, waiter
+from . import Bus, Cfg, Command, Event, Log, Object, Reactor
+from . import launch, parse, scan, update, wait, waiter
 
 
-import opr.modules as modules
+from . import modules
 
 
 Cfg.mod = "bsc"
