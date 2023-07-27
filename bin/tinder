@@ -4,10 +4,7 @@
 # pylint: disable=C,I,R,E0611,I1101,W0401,W0614
 
 
-"tinder tests"
-
-
-__author__ = "Bart Thate <skullbonesandnumber@gmail.com>"
+"self created clients"
 
 
 import os
@@ -23,24 +20,23 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from sbn import Broker, Cfg, Command, Errors, Event, Logging, Persist, Reactor
-from sbn import Object
-from sbn import laps, keys, launch, parse, spl, update
-from sbn import modules
+from sbn import Bus, Cfg, Command, Event, Log, Object, Reactor
+from sbn import laps, keys, launch, parse, scan, spl, update
+
+
+import sbn.modules as modules
 
 
 DATE = time.ctime(time.time()).replace("  ", " ")
-NAME = "tinder"
 STARTTIME = time.time()
 
 
 Cfg.debug = True
+Cfg.mod = "bsc,irc,rss"
+Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
-
-
-Logging.raw = print
-Persist.workdir = ".test"
+Cfg.workdir = ".test"
 
 
 paylock = _thread.allocate_lock()
@@ -53,7 +49,7 @@ events = []
 
 param = Object()
 param.cfg = ["server=localhost", ""]
-param.cmd = [""]
+param.cmds = [""]
 param.dlt = ["~bart@127.0.0.1"]
 param.dne = ["test4", ""]
 param.dpl = ["reddit title,summary,link", ""]
@@ -70,23 +66,15 @@ param.fnd = [
              "rss rss==reddit"
             ]
 param.log = ["test1", ""]
-param.mdl = [""]
 param.met = ["~bart@127.0.0.1"]
 param.mod = [""]
 param.nme = ["reddit reddit"]
-param.now = [""]
 param.pwd = ["bla bla"]
 param.rem = ["reddit"]
-param.req = [""]
-param.rld = ["bsc"]
 param.rss = ["https://www.reddit.com/r/python/.rss"]
 param.shp = ["bread", "butter", "cheese"]
 param.tdo = ["test4", ""]
 param.thr = [""]
-param.tpc = [""]
-param.unl = ["udp"]
-param.wsd = [""]
-param.wsh = [""]
 
 
 def cprint(txt):
@@ -98,7 +86,7 @@ class CLI(Reactor):
 
     def __init__(self):
         Reactor.__init__(self)
-        Broker.add(self)
+        Bus.add(self)
         self.register("event", Command.handle)
 
     def raw(self, txt):
@@ -121,47 +109,13 @@ def consume(evts):
     return res
 
 
-def parse_cli(txt) -> Cfg:
-    evt = Event()
-    parse(evt, txt)
-    if "v" in Cfg.opts:
-        Logging.verbose = True
-        Logging.raw = print
-    update(Cfg, evt, False)
-    Cfg.mod += evt.mods
-    return Cfg
-
-
-def scanstr(pkg, mods, init=None, doall=False, wait=False) -> None:
-    res = []
-    path = pkg.__path__[0]
-    if doall:
-        modlist = [x[:-3] for x in os.listdir(path) if x.endswith(".py") and x != "__init__.py"]
-        mods = ",".join(sorted(modlist))
-    threads = []
-    for modname in spl(mods):
-        module = getattr(modules, modname, None)
-        print(modname, module)
-        if module:
-            Command.scan(module)
-        if init and "start" in dir(module):
-            threads.append(launch(module.start))
-        res.append(module)
-    if wait:
-        for thread in threads:
-            thread.join()
-    return res
-
-
 def payload(clt) -> None:
-    cmds = list(keys(Command.cmds))
+    cmds = list(Command.cmds.keys())
     random.shuffle(cmds)
-    print(cmds)
     with paylock:
         nmr = 0
         for cmnd in cmds:
             for ex in getattr(param, cmnd, [""]):
-                print(cmnd + " "  + ex)
                 evt = clt.event(cmnd + " " + ex)
                 clt.handle(evt)
                 events.append(evt)
@@ -171,12 +125,12 @@ def payload(clt) -> None:
 
 def waiter() -> None:
     got = []
-    for ex in Errors.errors:
+    for ex in Log.errors:
         if not Cfg.silent:
             traceback.print_exception(type(ex), ex, ex.__traceback__)
         got.append(ex)
     for exc in got:
-        Errors.errors.remove(exc)
+        Log.errors.remove(exc)
 
 
 def wrap(func) -> None:
@@ -192,14 +146,13 @@ def wrap(func) -> None:
 
 
 def main() -> None:
-    print(f"{NAME.upper()} started {DATE}")
-    if os.path.exists(Persist.workdir):
-        shutil.rmtree(Persist.workdir)
-    parse_cli(" ".join(sys.argv[1:]))
+    print(f"{Cfg.name.upper()} started {DATE}")
+    if os.path.exists(Cfg.workdir):
+        shutil.rmtree(Cfg.workdir)
+    parse(Cfg, " ".join(sys.argv[1:]))
     if "v" in Cfg.opts:
-        Logging.verbose = True
-        Logging.raw = cprint
-    scanstr(modules, Cfg.mod, False, doall=True)
+        Log.verbose = True
+    scan(modules, Cfg.mod, False, True)
     nrs = Cfg.index or 1
     cli = CLI()
     cli.start()
