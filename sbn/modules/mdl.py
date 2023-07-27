@@ -15,7 +15,7 @@ import datetime
 import time
 
 
-from .. import Broker, Event, Object, Repeater
+from .. import Bus, Event, Object, Repeater
 from .. import laps, launch, keys
 
 
@@ -371,7 +371,7 @@ def cbnow(evt):
         nrtimes = int(delta/needed)
         txt += "%s: %s " % (getalias(name), nrtimes)
     txt += " http://genocide.rtfd.io"
-    Broker.announce(txt)
+    Bus.announce(txt)
 
 
 def cbstats(evt):
@@ -392,7 +392,7 @@ def cbstats(evt):
                                                                laps(needed),
                                                                nryear,
                                                               )
-        Broker.announce(txt)
+        Bus.announce(txt)
 
 
 # COMMANDS
@@ -440,7 +440,7 @@ def tpc(event):
         if needed > 60*60:
             continue
         txt += "%s %s " % (getalias(name), nrtimes)
-    for bot in Broker.objs:
+    for bot in Bus.objs:
         try:
             for channel in bot.channels:
                 bot.topic(channel, txt)

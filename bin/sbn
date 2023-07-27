@@ -22,7 +22,7 @@ from sbn import Bus, Cfg, Command, Event, Log, Object, Reactor
 from sbn import launch, parse, scan, update, wait, waiter
 
 
-import opr.modules as modules
+import sbn.modules as modules
 
 
 Cfg.mod = "bsc"
