@@ -71,7 +71,7 @@ def scan(pkg, mods, init=None, doall=False, wait=False) -> None:
         if module:
             Command.scan(module)
         if init and "start" in dir(module):
-            threads.append(launch(module.start))
+            threads.append(launch(module.start, name=modname))
     if wait and threads:
         for thr in threads:
             thr.join()

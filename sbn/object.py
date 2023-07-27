@@ -66,8 +66,9 @@ class Persist:
 
     @staticmethod
     def long(nme):
+        spl = nme.split(".")[-1].lower()
         for name in Persist.classes:
-            if nme.lower() == name.split(".")[-1].lower():
+            if spl == name.split(".")[-1].lower():
                 return name
 
 
@@ -456,6 +457,7 @@ def fns(mtc) -> []:
     assert Persist.workdir
     dname = ''
     clz = Persist.long(mtc)
+    print(clz)
     #lst = mtc.lower().split(".")[-1]
     path = os.path.join(Persist.workdir, "store", clz)
     for rootdir, dirs, _files in os.walk(path, topdown=False):

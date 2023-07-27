@@ -19,9 +19,19 @@ import threading
 import _thread
 
 
-from .. import Bus, Cfg, Command, Error, Event, Object, Reactor
-from .. import edit, printable, keys, update, write
-from .. import fntime, find, last, laps, launch
+from ..bus     import Bus
+from ..command import Command
+from ..error   import Error
+from ..event   import Event
+from ..object  import Object, Persist
+from ..object  import edit, fntime, find, keys, last, printable, update, write
+from ..reactor import Reactor
+from ..run     import Cfg
+from ..thread  import launch
+from ..utils   import laps
+
+
+NAME = __file__.split(os.sep)[-3]
 
 
 saylock = _thread.allocate_lock()
@@ -47,19 +57,19 @@ class NoUser(Exception):
 
 class Config(Object):
 
-    channel = f'#{Cfg.name}'
+    channel = f'#{NAME}'
     control = '!'
     edited = time.time()
-    nick = Cfg.name
+    nick = NAME
     nocommands = True
     password = ''
     port = 6667
-    realname = Cfg.name
+    realname = NAME
     sasl = False
     server = 'localhost'
     servermodes = ''
     sleep = 60
-    username = Cfg.name
+    username = NAME
     users = False
     verbose = False
 
@@ -77,6 +87,9 @@ class Config(Object):
 
     def __size__(self):
         return len(Config)
+
+
+Persist.add(Config)
 
 
 class TextWrap(textwrap.TextWrapper):
@@ -505,6 +518,9 @@ class User(Object):
         return True
 
 
+Persist.add(User)
+
+
 class Users(Object):
 
     @staticmethod
@@ -605,7 +621,7 @@ def cb_log(evt):
 def cb_notice(evt):
     bot = Bus.byorig(evt.orig)
     if evt.txt.startswith('VERSION'):
-        txt = f'\001VERSION {Cfg.name.upper()} 140 - {bot.cfg.username}\001'
+        txt = f'\001VERSION {NAME.upper()} 140 - {bot.cfg.username}\001'
         bot.command('NOTICE', evt.channel, txt)
 
 

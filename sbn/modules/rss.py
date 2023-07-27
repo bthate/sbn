@@ -19,10 +19,13 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
-from .. import Object, printable, update
-from .. import find, fntime, last, write
-from .. import Bus, Cfg, Repeater
-from .. import laps, launch, spl
+from ..bus      import Bus
+from ..object   import Object, Persist
+from ..object   import find, fntime, last, printable, update, write
+from ..run      import Cfg
+from ..repeater import Repeater
+from ..thread   import launch
+from ..utils    import laps, spl
 
 
 def start():
@@ -44,6 +47,9 @@ class Feed(Object):
         return len(self.__dict__)
 
 
+Persist.add(Feed)
+
+
 class Rss(Object):
 
     def __init__(self):
@@ -59,6 +65,9 @@ class Rss(Object):
         return len(self.__dict__)
 
 
+Persist.add(Rss)
+
+
 class Seen(Object):
 
     def __init__(self):
@@ -70,6 +79,9 @@ class Seen(Object):
 
     def size(self):
         return len(self.__dict__)
+
+
+Persist.add(Seen)
 
 
 class Fetcher(Object):

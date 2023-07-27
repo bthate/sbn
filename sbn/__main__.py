@@ -39,6 +39,7 @@ from .utils import wait
 from . import modules
 
 
+Cfg.mod = "cmd,thr"
 Persist.workdir = WORKDIR
 
 
@@ -76,7 +77,7 @@ def banner(cfg):
     times = time.ctime(time.time())
     clz = ",".join([x.split(".")[-1] for x in Persist.classes])
     cfgg = printable(cfg, skip="otxt,password")
-    return f"{NAME.upper()} {VERSION} {times} {cfgg} {clz}"
+    return f"{NAME.upper()} {VERSION} {clz} {cfgg}"
 
 
 def daemon():
@@ -125,7 +126,7 @@ def main():
         evt = Event()
         evt.orig = repr(cli)
         evt.txt = Cfg.otxt
-        Command.handle(evt)
+        thr = launch(Command.handle, evt)
         evt.wait()
         waiter()
 

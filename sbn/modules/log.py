@@ -9,7 +9,18 @@
 import time
 
 
-from .. import Object, find, fntime, laps, write
+
+from ..object import Object, Persist, find, fntime, write
+from ..utils  import laps
+
+
+def __dir__():
+    return (
+            'log',
+           ) 
+
+
+__all__ = __dir__()
 
 
 class Log(Object):
@@ -24,6 +35,9 @@ class Log(Object):
 
     def __since__(self):
         return self.createtime
+
+
+Persist.add(Log)
 
 
 def log(event):
