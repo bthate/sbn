@@ -12,15 +12,20 @@ import traceback
 
 from ..error import Error
 
+
 def __dir__():
     return (
             'err',
            )
 
 
+__all__ = __dir__()
+
+
 def err(event):
     nmr = 0
     for exc in Error.errors:
+        nmr += 1
         stream = io.StringIO(
                              traceback.print_exception(
                                                        type(exc),
@@ -30,6 +35,5 @@ def err(event):
                             )
         for line in stream.readlines():
             event.reply(line)
-            nmr += 1
     if not nmr:
         event.reply("no error")

@@ -13,13 +13,15 @@ def __dir__():
 
 
 def parse(self, txt=None) -> None:
-    self.args = self.args or []
-    self.cmd = self.cmd or""
+    args = []
+    self.args = []
+    self.cmd = self.cmd or ""
     self.gets = self.gets or {}
     self.mod = self.mod or ""
     self.opts = self.opts or ""
     self.sets = self.sets or {}
     self.otxt = txt or ""
+    _nr = -1
     for spli in self.otxt.split():
         if spli.startswith("-"):
             try:
@@ -38,12 +40,15 @@ def parse(self, txt=None) -> None:
             key, value = spli.split("==", maxsplit=1)
             self.gets[key] = value
             continue
-        if not self.cmd:
+        _nr += 1
+        if _nr == 0:
             self.cmd = spli
             continue
-        self.args.append(spli)
-    self.txt = self.cmd or ""
-    if self.args:
-        self.rest = str(" ".join(self.args))
-        if self.rest:
-            self.txt += " " + self.rest
+        args.append(spli)
+    if args:
+        self.args = args
+        self.txt = self.cmd or ""
+        self.rest = " ".join(self.args)
+        self.txt = self.cmd + " " + self.rest
+    else:
+        self.txt = self.cmd

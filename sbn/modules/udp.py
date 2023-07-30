@@ -13,7 +13,10 @@ import sys
 import time
 
 
-from .. import Bus, Object, last, launch
+from ..bus     import Bus
+from ..object  import Default, Object
+from ..persist import last
+from ..thread  import launch
 
 
 def start():
@@ -22,7 +25,7 @@ def start():
     return udpd
 
 
-class Cfg(Object):
+class Cfg(Default):
 
     def __init__(self):
         super().__init__()
@@ -54,7 +57,7 @@ class UDP(Object):
             self.cfg.addr = addr
         Bus.announce(txt.replace("\00", ""))
 
-    def server(self):
+    def loop(self):
         try:
             self._sock.bind((self.cfg.host, self.cfg.port))
         except socket.gaierror:
@@ -75,7 +78,7 @@ class UDP(Object):
 
     def start(self):
         last(self.cfg)
-        launch(self.server)
+        launch(self.loop)
 
 
 def toudp(host, port, txt):

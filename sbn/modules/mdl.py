@@ -8,19 +8,20 @@
 "genocide model of the netherlands"
 
 
-__author__ = "Bart Thate <skullbonesandnumber@gmail.com>"
-
-
 import datetime
 import time
 
 
-from .. import Bus, Event, Object, Repeater
-from .. import laps, launch, keys
+from ..bus   import Bus
+from ..event import Event
+from ..object import Object, keys
+from ..repeater import Repeater
+from ..thread import launch
+from ..utils import laps
 
 
 def start():
-    time.sleep(30.0)
+    time.sleep(6.0)
     for key in keys(oorzaken):
         val = getattr(oorzaken, key, None)
         if val and int(val) > 10000:
@@ -28,7 +29,12 @@ def start():
             evt.txt = ""
             evt.rest = key
             sec = seconds(val)
-            repeater = Repeater(sec, cbstats, evt, thrname=aliases.get(key))
+            repeater = Repeater(
+                                sec,
+                                cbstats,
+                                evt,
+                                thrname=aliases.get(key)
+                               )
             repeater.start()
     launch(daily, name="daily")
 

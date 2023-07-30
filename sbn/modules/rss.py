@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R,W0401
+# flake8: noqa=E272
 
 
 "rich site syndicte"
@@ -20,8 +21,9 @@ from urllib.request import Request, urlopen
 
 
 from ..bus      import Bus
-from ..object   import Object, Persist
-from ..object   import find, fntime, last, printable, update, write
+from ..object   import Default, Object
+from ..object   import printable, update
+from ..persist  import Persist, find, fntime, last, write
 from ..run      import Cfg
 from ..repeater import Repeater
 from ..thread   import launch
@@ -29,7 +31,7 @@ from ..utils    import laps, spl
 
 
 def start():
-    time.sleep(30.0)
+    time.sleep(5.0)
     fetcher = Fetcher()
     fetcher.start()
     return fetcher
@@ -38,7 +40,7 @@ def start():
 fetchlock = _thread.allocate_lock()
 
 
-class Feed(Object):
+class Feed(Default):
 
     def len(self):
         return len(self.__dict__)
@@ -50,7 +52,7 @@ class Feed(Object):
 Persist.add(Feed)
 
 
-class Rss(Object):
+class Rss(Default):
 
     def __init__(self):
         super().__init__()
@@ -68,7 +70,7 @@ class Rss(Object):
 Persist.add(Rss)
 
 
-class Seen(Object):
+class Seen(Default):
 
     def __init__(self):
         super().__init__()
@@ -149,7 +151,7 @@ class Fetcher(Object):
     def run(self):
         thrs = []
         for feed in find('rss'):
-            thrs.append(launch(self.fetch, feed))
+            thrs.append(launch(self.fetch, feed, name=f"{feed.rss}"))
         return thrs
 
     def start(self, repeat=True):

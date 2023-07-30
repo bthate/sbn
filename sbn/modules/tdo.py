@@ -1,28 +1,27 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R
+# flake8: noqa
 
 
 "todo list"
 
-
 import time
 
 
-from .. import Object, find, fntime, laps, write
+from ..object  import Object
+from ..persist import Persist, find, fntime, write
+from ..utils   import laps
 
 
 class Todo(Object):
 
     def __init__(self):
-        super().__init__()
+        Object.__init__(self)
         self.txt = ''
 
-    def len(self):
-        return 0
 
-    def size(self):
-        return len(self.__dict__)
+Persist.add(Todo)
 
 
 def dne(event):
@@ -37,6 +36,7 @@ def dne(event):
 
 
 def tdo(event):
+    print(Persist.classes)
     if not event.rest:
         nmr = 0
         for obj in find('todo'):

@@ -9,7 +9,9 @@
 import time
 
 
-from .. import Object, find, fntime, laps, write
+from ..object import Object
+from ..persist import find, fntime, write
+from ..utils import laps
 
 
 class Shop(Object):

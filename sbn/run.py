@@ -4,7 +4,7 @@
 "runtime"
 
 
-from .object import Object
+from .object import Default
 
 
-Cfg = Object()
+Cfg = Default()

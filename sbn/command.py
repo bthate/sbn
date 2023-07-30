@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R,W0718
+# flake8: noqa
 
 
 "commands"
@@ -11,6 +12,7 @@ import os
 
 
 from .bus    import Bus
+from .error  import Error
 from .thread import launch
 from .utils  import spl
 
@@ -35,7 +37,7 @@ class Command:
                     Bus.show(evt)
                 except Exception as ex:
                     exc = ex.with_traceback(ex.__traceback__)
-                    Command.errors.append(exc)
+                    Error.errors.append(exc)
         evt.ready()
 
     @staticmethod
@@ -68,8 +70,9 @@ def scan(pkg, mods, init=None, doall=False, wait=False) -> None:
     threads = []
     for modname in spl(mods):
         module = getattr(pkg, modname, None)
-        if module:
-            Command.scan(module)
+        if not module:
+            continue
+        Command.scan(module)
         if init and "start" in dir(module):
             threads.append(launch(module.start, name=modname))
     if wait and threads:

@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0401,W0622
+# pylint: disable=C,I,R,W0401,W0622,W0613
 # flake8: noqa=C901
 
 
@@ -23,10 +23,10 @@ from ..bus     import Bus
 from ..command import Command
 from ..error   import Error
 from ..event   import Event
-from ..object  import Object, Persist
-from ..object  import edit, fntime, find, keys, last, printable, update, write
+from ..object  import Default, Object
+from ..object  import edit, keys, printable, update
+from ..persist import Persist, find, fntime, last, write
 from ..reactor import Reactor
-from ..run     import Cfg
 from ..thread  import launch
 from ..utils   import laps
 
@@ -39,7 +39,7 @@ saylock = _thread.allocate_lock()
 
 def start():
     irc = IRC()
-    launch(irc.start)
+    irc.start()
     irc.events.joined.wait()
     return irc
 
@@ -61,7 +61,7 @@ class Config(Object):
     control = '!'
     edited = time.time()
     nick = NAME
-    nocommands = True
+    nocommands = False
     password = ''
     port = 6667
     realname = NAME
@@ -183,13 +183,13 @@ class IRC(Reactor, Output):
         Output.__init__(self)
         self.buffer = []
         self.cfg = Config()
-        self.events = Object()
+        self.events = Default()
         self.events.authed = threading.Event()
         self.events.connected = threading.Event()
         self.events.joined = threading.Event()
         self.channels = []
         self.sock = None
-        self.state = Object()
+        self.state = Default()
         self.state.keeprunning = False
         self.state.nrconnect = 0
         self.state.nrsend = 0
@@ -280,7 +280,7 @@ class IRC(Reactor, Output):
                 Error.debug(str(ex))
             Error.debug(f"sleeping {self.cfg.sleep} seconds")
             time.sleep(self.cfg.sleep)
-        self.logon(server, nck)
+        #self.logon(server, nck)
 
     def dosay(self, channel, txt):
         self.events.joined.wait()
@@ -291,6 +291,8 @@ class IRC(Reactor, Output):
     def event(self, txt):
         evt = self.parsing(txt)
         cmd = evt.command
+        if cmd == "020":
+            self.logon(self.cfg.server, self.cfg.nick)
         if cmd == 'PING':
             self.state.pongcheck = True
             self.command('PONG', evt.txt or '')
@@ -301,6 +303,7 @@ class IRC(Reactor, Output):
             if self.cfg.servermodes:
                 self.command(f'MODE {self.cfg.nick} {self.cfg.servermodes}')
             self.zelf = evt.args[-1]
+        elif cmd == "376":
             self.joinall()
         elif cmd == '002':
             self.state.host = evt.args[2][:-1]
@@ -338,8 +341,8 @@ class IRC(Reactor, Output):
         self.events.connected.wait()
         self.events.authed.wait()
         nck = self.cfg.username
-        self.command(f'NICK {nck}')
-        self.command(f'USER {nck} {server} {server} {nck}')
+        self.direct(f'NICK {nck}')
+        self.direct(f'USER {nck} {server} {server} {nck}')
 
     def parsing(self, txt):
         rawstr = str(txt)
@@ -484,8 +487,8 @@ class IRC(Reactor, Output):
             self.channels.append(self.cfg.channel)
         self.events.connected.clear()
         self.events.joined.clear()
-        launch(Reactor.start, self)
-        launch(Output.start, self)
+        Reactor.start(self)
+        Output.start(self)
         launch(
                self.doconnect,
                self.cfg.server or "localhost",
@@ -618,6 +621,10 @@ def cb_log(evt):
     pass
 
 
+def cb_001(evt):
+    bot = Bus.byorig(evt.orig)
+    bot.logon()
+
 def cb_notice(evt):
     bot = Bus.byorig(evt.orig)
     if evt.txt.startswith('VERSION'):
@@ -636,6 +643,8 @@ def cb_privmsg(evt):
             evt.txt = evt.txt[len(bot.cfg.nick)+1:]
         else:
             return
+        if evt.txt:
+            evt.txt = evt.txt[0].lower() + evt.txt[1:]
         if bot.cfg.users and not Users.allowed(evt.origin, 'USER'):
             return
         Error.debug(f"command from {evt.origin}: {evt.txt}")

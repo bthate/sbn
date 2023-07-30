@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R,W0212,W0718,E0402
+# flake8: noqa
 
 
 "thread"
@@ -12,21 +13,18 @@ import threading
 import time
 
 
+from .error import Error
+from .utils import name
+
+
 class Thread(threading.Thread):
 
     ""
 
-    errors = []
-
     def __init__(self, func, thrname, *args, daemon=True):
         super().__init__(None, self.run, thrname, (), {}, daemon=daemon)
         self._result = None
-        name = str(func)
-        if "method" in name:
-            name = name.split()[2]
-        else:
-            name = name.split()[1]
-        self.name = thrname or name
+        self.name = thrname or name(func)
         self.queue = queue.Queue()
         self.queue.put_nowait((func, args))
         self.sleep = None
@@ -51,7 +49,7 @@ class Thread(threading.Thread):
             self._result = func(*args)
         except Exception as ex:
             exc = ex.with_traceback(ex.__traceback__)
-            Thread.errors.append(exc)
+            Error.errors.append(exc)
             if args:
                 try:
                     args[0].ready()

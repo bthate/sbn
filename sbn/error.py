@@ -21,7 +21,7 @@ class Error:
 
     @staticmethod
     def debug(txt) -> None:
-        if not skip(txt, Error.skip):
+        if Error.verbose and not skip(txt, Error.skip):
             Error.raw(txt)
 
     @staticmethod
@@ -34,7 +34,7 @@ class Error:
         pass
 
 
-def waiter(clear=True):
+def waiter():
     got = []
     for ex in Error.errors:
         stream = io.StringIO(
@@ -47,7 +47,6 @@ def waiter(clear=True):
         for line in stream.readlines():
             Error.debug(line)
         got.append(ex)
-    if clear:
-        for exc in got:
-            if exc in Error.errors:
-                Error.errors.remove(exc)
+    for exc in got:
+        if exc in Error.errors:
+            Error.errors.remove(exc)

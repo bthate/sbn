@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R,W0212,W0718,E0402
+# flake8: noqa
 
 
 "reactor"
@@ -49,7 +50,7 @@ class Reactor:
     def handle(self, evt) -> Event:
         func = self.cbs.get(evt.type, None)
         if func:
-            evt._thr = launch(Reactor.dispatch, func, evt, name=evt.cmd)
+            evt._thr = launch(Reactor.dispatch, func, evt, name=evt.cmd or evt.type)
             evt._thr.join()
         return evt
 
@@ -59,7 +60,7 @@ class Reactor:
                 self.handle(self.poll())
             except (ssl.SSLError, EOFError) as ex:
                 exc = ex.with_traceback(ex.__traceback__)
-                Reactor.errors.append(exc)
+                Error.errors.append(exc)
                 self.restart()
 
     def one(self, txt) -> Event:

@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R,W0212,W0611
+# flake8: noqa
 
 
 "runtime"
@@ -22,24 +23,26 @@ sys.path.insert(0, os.getcwd())
 
 import readline
 import termios
+import threading
 import time
 import _thread
 
 
-from .bus import Bus
+from .bus     import Bus
 from .command import Command, scan
-from .error import Error, waiter
-from .event import Event
-from .object import Persist, printable
-from .parser import parse
+from .error   import Error, waiter
+from .event   import Event
+from .object  import printable
+from .parser  import parse
+from .persist import Persist
 from .reactor import Reactor
-from .run import Cfg
-from .thread import launch
-from .utils import wait
-from . import modules
+from .run     import Cfg
+from .thread  import launch
+from .utils   import wait
+from .        import modules
 
 
-Cfg.mod = "cmd,thr"
+Cfg.mod = "cmd,err,log,sts,tdo,thr"
 Persist.workdir = WORKDIR
 
 
@@ -55,9 +58,13 @@ class CLI(Reactor):
 
     def raw(self, txt):
         print(txt)
+        sys.stdout.flush()
 
 
 class Console(CLI):
+
+
+    prompting = threading.Event()
 
     def __init__(self):
         CLI.__init__(self)
@@ -66,19 +73,30 @@ class Console(CLI):
         Command.handle(evt)
         evt.wait()
 
+    def prompt(self):
+        self.prompting.set()
+        x = input("> ")
+        self.prompting.clear()
+        return x
+        
     def poll(self):
         try:
-            return self.event(input("> "))
+            return self.event(self.prompt())
         except EOFError:
             _thread.interrupt_main()
-
+      
 
 def banner(cfg):
-    times = time.ctime(time.time())
-    clz = ",".join([x.split(".")[-1] for x in Persist.classes])
     cfgg = printable(cfg, skip="otxt,password")
-    return f"{NAME.upper()} {VERSION} {clz} {cfgg}"
+    return f"{NAME.upper()} {VERSION} {cfgg}"
 
+
+def cprint(txt):
+    if Console.prompting.is_set():
+        txt = "\n" + txt
+    print(txt)
+    Console.prompting.clear()
+    sys.stdout.flush()
 
 def daemon():
     pid = os.fork()
@@ -103,32 +121,36 @@ def wrap(func) -> None:
         sys.stdout.flush()
     finally:
         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
-        waiter()
+    waiter()
+
+
+def wrapped():
+    wrap(main)
 
 
 def main():
     parse(Cfg, " ".join(sys.argv[1:]))
     if "v" in Cfg.opts:
-        Error.raw = print
+        Error.raw = cprint
+        Error.verbose = True
     if "d" in Cfg.opts:
         daemon()
         scan(modules, Cfg.mod, True, "a" in Cfg.opts)
         wait()
     elif "c" in Cfg.opts:
         print(banner(Cfg))
+        scan(modules, Cfg.mod, True, "a" in Cfg.opts, True)
         csl = Console()
-        scan(modules, Cfg.mod, True, "a" in Cfg.opts)
-        launch(csl.loop)
-        wait(waiter)
+        csl.start()
+        wait()
     else:
         cli = CLI()
         scan(modules, Cfg.mod, False, True)
         evt = Event()
         evt.orig = repr(cli)
         evt.txt = Cfg.otxt
-        thr = launch(Command.handle, evt)
+        evt._thr = launch(Command.handle, evt)
         evt.wait()
-        waiter()
 
 if __name__ == "__main__":
-    wrap(main)
+    wrapped()

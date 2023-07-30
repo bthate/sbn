@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R
+# flake8: noqa
 
 
 "log text"
@@ -9,15 +10,15 @@
 import time
 
 
-
-from ..object import Object, Persist, find, fntime, write
-from ..utils  import laps
+from ..object  import Object
+from ..persist import Persist, find, fntime, write
+from ..utils   import laps
 
 
 def __dir__():
     return (
             'log',
-           ) 
+           )
 
 
 __all__ = __dir__()

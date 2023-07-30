@@ -15,7 +15,7 @@ from .. import modules
 def __dir__():
     return (
             'mod',
-           ) 
+           )
 
 
 __all__ = __dir__()

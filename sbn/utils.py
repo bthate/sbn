@@ -7,7 +7,16 @@
 
 
 import os
+import pathlib
 import time
+import types
+
+
+def cdir(pth) -> None:
+    if not pth.endswith(os.sep):
+        pth = os.path.dirname(pth)
+    pth = pathlib.Path(pth)
+    os.makedirs(pth, exist_ok=True)
 
 
 def fntime(daystr) -> float:
@@ -52,7 +61,7 @@ def laps(seconds, short=True) -> str:
         nrdays += weeks * 7
     if nrdays:
         txt += f"{nrdays}d"
-    if years and short and txt:
+    if nrdays and short and txt:
         return txt.strip()
     if hours:
         txt += f"{hours}h"
@@ -62,6 +71,21 @@ def laps(seconds, short=True) -> str:
         txt += f"{sec}s"
     txt = txt.strip()
     return txt
+
+
+def name(obj) -> str:
+    typ = type(obj)
+    if isinstance(typ, types.ModuleType):
+        return obj.__name__
+    if '__self__' in dir(obj):
+        return '%s.%s' % (obj.__self__.__class__.__name__, obj.__name__)
+    if '__class__' in dir(obj) and '__name__' in dir(obj):
+        return '%s.%s' % (obj.__class__.__name__, obj.__name__)
+    if '__class__' in dir(obj):
+        return obj.__class__.__name__
+    if '__name__' in dir(obj):
+        return '%s.%s' % (obj.__class__.__name__, obj.__name__)
+    return None
 
 
 def skip(txt, skipping) -> bool:

@@ -9,14 +9,14 @@
 import threading
 
 
-from .object import Object
+from .object import Default
 from .parser import parse
 
 
-class Event(Object):
+class Event(Default):
 
     def __init__(self):
-        Object.__init__(self)
+        Default.__init__(self)
         self._ready = threading.Event()
         self._thr = None
         self.args = []

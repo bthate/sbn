@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R
+# flake8: noqa
 
 
 """| **Information and Evidence Unit**
@@ -78,8 +79,6 @@ p.s.
 (2) your reference: OTP-CR-117/19
 """
 
-
-__author__ = "Bart Thate <skullbonesandnumber@gmail.com>"
 
 
 def req(event):

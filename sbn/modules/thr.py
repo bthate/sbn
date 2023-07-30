@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R,W0401,W0622
+# flake8: noqa
 
 
 "running threads"
