@@ -51,7 +51,6 @@ sbn = "sbn.__main__:wrapped"
           "docs/informed.jpg",
           "docs/OTP1.png",
           "docs/reconsider.rst",
-          "docs/requirements.txt",
           "docs/skull.jpg",
           "docs/source.rst",
           "docs/verbatim2.png",
@@ -70,7 +69,6 @@ sbn = "sbn.__main__:wrapped"
           "docs/wallpaper.png",
           "docs/index.rst",
           "docs/manual.rst",
-          "docs/requirements.in",
           "docs/wallpaper.png",
          ]
 

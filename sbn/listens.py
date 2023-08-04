@@ -1,9 +1,10 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R
+# pylint: disable=C,I,R,W0212,W0718,E0402
+# flake8: noqa
 
 
-"bus"
+"reactor"
 
 
 class Bus:
@@ -46,3 +47,4 @@ class Bus:
     def show(event) -> None:
         for txt in event.result:
             Bus.say(event.orig, txt, event.channel)
+

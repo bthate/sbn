@@ -1,16 +1,16 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212,W0718,E0402,W0201
+# pylint: disable=C,I,R,W0212,W0718,E0402
+# flake8: noqa
 
 
-"event"
+"happens"
 
 
 import threading
 
 
-from .object import Default
-from .parser import parse
+from .objects import Default
 
 
 class Event(Default):
@@ -19,17 +19,7 @@ class Event(Default):
         Default.__init__(self)
         self._ready = threading.Event()
         self._thr = None
-        self.args = []
-        self.cmd = ""
-        self.gets = {}
-        self.mods = ""
-        self.opts = ""
-        self.rest = ""
-        self.sets = {}
         self.result = []
-
-    def parse(self, txt=None) -> None:
-        parse(self, txt or self.txt or "")
 
     def ready(self) -> None:
         self._ready.set()

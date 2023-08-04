@@ -1,17 +1,18 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R,W0212,W0718,E0402
+# flake8: noqa
 
 
-"rrepeater"
+"repeater"
 
 
 import threading
 import time
 
 
-from .object import Object
-from .thread import launch
+from .objects import Object
+from .threads import launch
 
 
 class Timer:
@@ -22,7 +23,7 @@ class Timer:
         self.func = func
         self.sleep = sleep
         self.name = thrname or str(self.func).split()[2]
-        self.state = Object
+        self.state = Object()
         self.timer = None
 
     def run(self) -> None:

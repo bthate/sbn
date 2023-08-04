@@ -4,19 +4,18 @@
 # flake8: noqa
 
 
-"thread"
+"threads"
 
 
-import functools
 import queue
 import threading
 import time
 
 
-from .error import Error
-from .utils import name
+from .errored import Errors
+from .utility import name
 
-
+      
 class Thread(threading.Thread):
 
     ""
@@ -49,7 +48,7 @@ class Thread(threading.Thread):
             self._result = func(*args)
         except Exception as ex:
             exc = ex.with_traceback(ex.__traceback__)
-            Error.errors.append(exc)
+            Errors.errors.append(exc)
             if args:
                 try:
                     args[0].ready()
@@ -57,23 +56,8 @@ class Thread(threading.Thread):
                     pass
 
 
-def launch(func, *args, **kwargs) -> Thread:
+def launch(func, *args, **kwargs):
     thrname = kwargs.get('name', '')
     thread = Thread(func, thrname, *args)
     thread.start()
     return thread
-
-
-def threaded(func, *args, **kwargs) -> None:
-
-    @functools.wraps(func)
-    def threadedfunc(*args, **kwargs):
-        thread = launch(func, *args, **kwargs)
-        if args:
-            args[0].thr = thread
-        return thread
-
-    threadedfunc.args = args
-    threadedfunc.kwargs = kwargs
-
-    return threadedfunc

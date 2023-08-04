@@ -4,7 +4,7 @@
 # pylint: disable=C,I,R,E0611,I1101,W0401,W0614
 
 
-"self created clients"
+"created clients"
 
 
 import os
@@ -20,19 +20,17 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from sbn.bus import Bus
-from sbn.command import Command, scan
-from sbn.error import Error
-from sbn.event import Event
-from sbn.object import Object, keys, update
-from sbn.parser import parse
+from sbn.listens import Bus
+from sbn.command import Commands
+from sbn.errored import Errors
+from sbn.objects import Object
 from sbn.reactor import Reactor
-from sbn.run import Cfg
-from sbn.thread import launch
-from sbn.utils import laps, spl
+from sbn.runtime import Cfg
+from sbn.threads import launch
+from sbn.utility import laps, parse
 
 
-import sbn.modules as modules
+from sbn import modules
 
 
 DATE = time.ctime(time.time()).replace("  ", " ")
@@ -40,7 +38,6 @@ STARTTIME = time.time()
 
 
 Cfg.debug = True
-Cfg.mod = "bsc,irc,rss"
 Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
@@ -57,7 +54,7 @@ events = []
 
 param = Object()
 param.cfg = ["server=localhost", ""]
-param.cmds = [""]
+param.cmd = [""]
 param.dlt = ["~bart@127.0.0.1"]
 param.dne = ["test4", ""]
 param.dpl = ["reddit title,summary,link", ""]
@@ -90,7 +87,7 @@ class CLI(Reactor):
     def __init__(self):
         Reactor.__init__(self)
         Bus.add(self)
-        self.register("event", Command.handle)
+        self.register("event", Commands.handle)
 
     def raw(self, txt):
         with outlock:
@@ -103,6 +100,8 @@ def consume(evts):
     res = []
     for evt in evts:
         res.append(evt.wait())
+        if not evt.result:
+            print(f"no result for {evt.cmd}")
         fixed.append(evt)
     for fff in fixed:
         try:
@@ -113,7 +112,7 @@ def consume(evts):
 
 
 def payload(clt) -> None:
-    cmds = list(Command.cmds.keys())
+    cmds = list(Commands.cmds.keys())
     random.shuffle(cmds)
     with paylock:
         nmr = 0
@@ -128,12 +127,12 @@ def payload(clt) -> None:
 
 def waiter() -> None:
     got = []
-    for ex in Error.errors:
+    for ex in Errors.errors:
         if not Cfg.silent:
             traceback.print_exception(type(ex), ex, ex.__traceback__)
         got.append(ex)
     for exc in got:
-        Error.errors.remove(exc)
+        Errors.errors.remove(exc)
 
 
 def wrap(func) -> None:
@@ -145,17 +144,20 @@ def wrap(func) -> None:
         sys.stdout.flush()
     finally:
         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
-        waiter()
+    waiter()
 
+
+def wrapped():
+    wrap(main)
 
 def main() -> None:
-    print(f"{Cfg.name.upper()} started {DATE}")
+    print(f"{Cfg.name.upper()}\n\nstarted {DATE}")
     if os.path.exists(Cfg.workdir):
         shutil.rmtree(Cfg.workdir)
     parse(Cfg, " ".join(sys.argv[1:]))
     if "v" in Cfg.opts:
-        Error.verbose = True
-    scan(modules, Cfg.mod, False, True)
+        Errors.verbose = True
+        Errors.raw = print
     nrs = Cfg.index or 1
     cli = CLI()
     cli.start()
@@ -169,8 +171,8 @@ def main() -> None:
     endtime = time.time()
     lap = laps(endtime - STARTTIME)
     percall = (endtime - STARTTIME)/result
-    waiter()
     print(f"{lap} {result} {percall}")
 
 
-wrap(main)
+if __name__ == "__main__":
+    wrapped()

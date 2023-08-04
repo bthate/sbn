@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0718
+# pylint: disable=C,I,R,W0212,W0718,E0402
 # flake8: noqa
 
 
@@ -8,42 +8,40 @@
 
 
 import inspect
-import os
 
 
-from .bus    import Bus
-from .error  import Error
-from .thread import launch
-from .utils  import spl
+from .listens import Bus
+from .errored import Errors
+from .utility import mods, parse
 
 
-class Command:
+class Commands:
 
     cmds = {}
     errors = []
 
     @staticmethod
     def add(func):
-        Command.cmds[func.__name__] = func
+        Commands.cmds[func.__name__] = func
 
     @staticmethod
     def handle(evt):
         if "txt" in dir(evt):
-            evt.parse(evt.txt)
-            func = Command.cmds.get(evt.cmd, None)
+            parse(evt, evt.txt)
+            func = Commands.cmds.get(evt.cmd, None)
             if func:
                 try:
                     func(evt)
                     Bus.show(evt)
                 except Exception as ex:
                     exc = ex.with_traceback(ex.__traceback__)
-                    Error.errors.append(exc)
+                    Errors.errors.append(exc)
         evt.ready()
 
     @staticmethod
     def remove(name):
         try:
-            del Command.cmds[name]
+            del Commands.cmds[name]
         except KeyError:
             pass
 
@@ -53,28 +51,19 @@ class Command:
             if key.startswith("cb"):
                 continue
             if 'event' in cmd.__code__.co_varnames:
-                Command.add(cmd)
+                Commands.add(cmd)
 
 
-def scan(pkg, mods, init=None, doall=False, wait=False) -> None:
-    if not pkg:
-        return
+def scan(pkg, modstr, init=None, doall=False) -> None:
     path = pkg.__path__[0]
-    if doall:
-        modlist = [
-                   x[:-3] for x in os.listdir(path)
-                   if x.endswith(".py")
-                   and x not in ["__init__.py", "__main__.py"]
-                  ]
-        mods = ",".join(sorted(modlist))
     threads = []
-    for modname in spl(mods):
+    for modname in mods(path):
+        if not doall and modname not in modstr:
+            continue
         module = getattr(pkg, modname, None)
         if not module:
             continue
-        Command.scan(module)
-        if init and "start" in dir(module):
+        Commands.scan(module)
+        if init and "init" in dir(module):
             threads.append(launch(module.start, name=modname))
-    if wait and threads:
-        for thr in threads:
-            thr.join()
+    return threads
