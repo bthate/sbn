@@ -5,14 +5,11 @@
 "clean directories"
 
 
-__author__ = "Bart Thate <skullbonesandnumber@gmail.com>"
-
-
 import os
 import sys
 
 
-SKIP = ["env",]
+SKIP = ["env", ".git"]
 
 
 def loop(path, txt):
@@ -41,11 +38,14 @@ def popen(txt):
 
 
 def main():
-    popen("rm -fR DEAD* build dist MANIFEST *.egg-info *.whl")
-    popen("rm -fR .pytest_cache .test  __pycache__ *~ .*~")
-    popen("rm -fR store env html docs/sbn*.rst")
-    loop(".", "rm -fR *~")
-    loop(".", "rm -fR __pycache__")
+    popen("rm -fRv DEAD* build dist MANIFEST *.egg-info *.whl")
+    popen("rm -fRv .pytest_cache .test __pycache__")
+    popen("rm -fRv lib/*.egg-info")
+    popen("rm -fRv .*~ *~")
+    if "-f" in sys.argv:
+        popen("rm -fRv env .opr .opv")
+    loop(".", "rm -fRv *~")
+    loop(".", "rm -fRv __pycache__")
 
 
 if __name__ == "__main__":
