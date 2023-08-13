@@ -46,7 +46,11 @@ def scan(pkg, modstr, initer=False, doall=False, wait=False) -> None:
         scanned.append(modname)
         Commands.scan(module)
         Storage.scan(module)
-        if initer and "init" in dir(module):
+        if initer:
+            try:
+                module.init
+            except AttributeError:
+                continue
             inited.append(modname)
             threads.append(launch(module.init, name=f"init {modname}"))
     if wait:
