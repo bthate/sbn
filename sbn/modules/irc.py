@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0401,W0622,W0613
-# flake8: noqa=C901
+# pylint: disable=C0115,C0116,R0912,R0915,W0105,E0402,R0903
 
 
 "internet relay chat"
@@ -19,16 +18,29 @@ import threading
 import _thread
 
 
-
 from ..command import Commands
 from ..errored import Errors
 from ..listens import Bus
 from ..message import Event
-from ..objects import Default, Object, Persist
-from ..objects import edit, keys, printable, update
-from ..objects import find, fntime, laps, last, write
+from ..objects import Default, Object, keys
+from ..objfunc import edit, prt
 from ..reactor import Reactor
+from ..storage import find, last, write
 from ..threads import launch
+from ..utility import fntime, laps
+
+
+def __dir__():
+    return (
+            "Config",
+            "IRC",
+            "NoUser",
+            "cfg",
+            "del",
+            "met",
+            "mre",
+            "pwd"
+           )
 
 
 NAME = __file__.split(os.sep)[-3]
@@ -55,7 +67,7 @@ class NoUser(Exception):
     pass
 
 
-class Config(Object):
+class Config(Default):
 
     channel = f'#{NAME}'
     control = '!'
@@ -74,7 +86,7 @@ class Config(Object):
     verbose = False
 
     def __init__(self):
-        Object.__init__(self)
+        Default.__init__(self)
         self.channel = Config.channel
         self.nick = Config.nick
         self.port = Config.port
@@ -133,7 +145,7 @@ class Output(Object):
             setattr(self.cache, channel, [])
         self.oqueue.put_nowait((channel, txt))
 
-    def output(self):
+    def loop(self):
         while not self.dostop.is_set():
             (channel, txt) = self.oqueue.get()
             if channel is None and txt is None:
@@ -163,15 +175,6 @@ class Output(Object):
             return len(getattr(self.cache, chan, []))
         return 0
 
-    def start(self):
-        self.dostop.clear()
-        launch(self.output)
-        return self
-
-    def stop(self):
-        self.dostop.set()
-        self.oqueue.put_nowait((None, None))
-
 
 class IRC(Reactor, Output):
 
@@ -184,6 +187,7 @@ class IRC(Reactor, Output):
         self.events.authed = threading.Event()
         self.events.connected = threading.Event()
         self.events.joined = threading.Event()
+        self.events.ready = threading.Event()
         self.channels = []
         self.sock = None
         self.state = Default()
@@ -200,6 +204,7 @@ class IRC(Reactor, Output):
         self.register('NOTICE', cb_notice)
         self.register('PRIVMSG', cb_privmsg)
         self.register('QUIT', cb_quit)
+        self.register("366", cb_ready)
         Bus.add(self)
 
     def announce(self, txt):
@@ -235,8 +240,7 @@ class IRC(Reactor, Output):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock = ctx.wrap_socket(sock)
             self.sock.connect((server, port))
-            time.sleep(1.0)
-            self.command('CAP LS 302')
+            self.direct('CAP LS 302')
         else:
             addr = socket.getaddrinfo(server, port, socket.AF_INET)[-1][-1]
             self.sock = socket.create_connection(addr)
@@ -250,8 +254,10 @@ class IRC(Reactor, Output):
         return False
 
     def direct(self, txt):
-        Errors.debug(txt)
-        self.sock.send(bytes(txt.rstrip()+'\r\n', 'utf-8'))
+        with saylock:
+            time.sleep(5.0)
+            Errors.debug(txt)
+            self.sock.send(bytes(txt.rstrip()+'\r\n', 'utf-8'))
 
     def disconnect(self):
         try:
@@ -277,19 +283,17 @@ class IRC(Reactor, Output):
                 Errors.debug(str(ex))
             Errors.debug(f"sleeping {self.cfg.sleep} seconds")
             time.sleep(self.cfg.sleep)
-        #self.logon(server, nck)
+        self.logon(server, nck)
 
     def dosay(self, channel, txt):
         self.events.joined.wait()
-        #txt = str(txt).replace('\n', '')
-        #txt = txt.replace('  ', ' ')
+        # txt = str(txt).replace('\n', '')
+        # txt = txt.replace('  ', ' ')
         self.command('PRIVMSG', channel, txt)
 
     def event(self, txt):
         evt = self.parsing(txt)
         cmd = evt.command
-        if cmd == "020":
-            self.logon(self.cfg.server, self.cfg.nick)
         if cmd == 'PING':
             self.state.pongcheck = True
             self.command('PONG', evt.txt or '')
@@ -396,7 +400,7 @@ class IRC(Reactor, Output):
             obj.args = spl[1:]
         if obj.args:
             obj.rest = " ".join(obj.args)
-        obj.orig = repr(self)
+        obj.orig = object.__repr__(self)
         obj.txt = obj.txt.strip()
         obj.type = obj.command
         return obj
@@ -484,8 +488,8 @@ class IRC(Reactor, Output):
             self.channels.append(self.cfg.channel)
         self.events.connected.clear()
         self.events.joined.clear()
-        Reactor.start(self)
-        Output.start(self)
+        launch(Reactor.loop, self)
+        launch(Output.loop, self)
         launch(
                self.doconnect,
                self.cfg.server or "localhost",
@@ -497,25 +501,21 @@ class IRC(Reactor, Output):
 
     def stop(self):
         Bus.remove(self)
-        Reactor.stop(self)
-        Output.stop(self)
+        Reactor.stopped.set()
+        Output.stopped.set()
         self.disconnect()
+
+
+    def wait(self):
+        self.events.ready.wait()
 
 
 class User(Object):
 
-    def __init__(self, val=None):
+    def __init__(self):
         Object.__init__(self)
         self.user = ''
         self.perms = []
-        if val:
-            update(self, val)
-
-    def isok(self):
-        return True
-
-    def isthere(self):
-        return True
 
 
 class Users(Object):
@@ -574,9 +574,9 @@ def cb_auth(evt):
 def cb_cap(evt):
     bot = Bus.byorig(evt.orig)
     if bot.cfg.password and 'ACK' in evt.arguments:
-        bot.command('AUTHENTICATE PLAIN')
+        bot.direct('AUTHENTICATE PLAIN')
     else:
-        bot.command('CAP REQ :sasl')
+        bot.direct('CAP REQ :sasl')
 
 
 def cb_command(evt):
@@ -593,14 +593,14 @@ def cb_error(evt):
 def cb_h903(evt):
     assert evt
     bot = Bus.byorig(evt.orig)
-    bot.command('CAP END')
+    bot.direct('CAP END')
     bot.events.authed.set()
 
 
 def cb_h904(evt):
     assert evt
     bot = Bus.byorig(evt.orig)
-    bot.command('CAP END')
+    bot.direct('CAP END')
     bot.events.authed.set()
 
 
@@ -612,9 +612,17 @@ def cb_log(evt):
     pass
 
 
+def cb_ready(evt):
+    bot = Bus.byorig(evt.orig)
+    if bot:
+        bot.events.ready.set()
+    print(f"ready {evt.orig[1:].split()[0]}")
+
+
 def cb_001(evt):
     bot = Bus.byorig(evt.orig)
     bot.logon()
+
 
 def cb_notice(evt):
     bot = Bus.byorig(evt.orig)
@@ -649,12 +657,13 @@ def cb_quit(evt):
         bot.stop()
 
 
+
 def cfg(event):
     config = Config()
     last(config)
     if not event.sets:
         event.reply(
-                    printable(
+                    prt(
                         config,
                         keys(config),
                         skip='control,password,realname,sleep,username'
@@ -671,14 +680,14 @@ def dlt(event):
         event.reply('dlt <username>')
         return
     selector = {'user': event.args[0]}
-    nr = 0
+    nrs = 0
     for obj in find('user', selector):
-        nr += 1
+        nrs += 1
         obj.__deleted__ = True
         write(obj)
         event.reply('ok')
         break
-    if not nr:
+    if not nrs:
         event.reply("no users")
 
 

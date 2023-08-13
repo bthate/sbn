@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212,W0718,E0402
-# flake8: noqa
+# pylint: disable=C0112,C0115,C0116,W0718,E0402
 
 
 "threads"
@@ -15,7 +14,14 @@ import time
 from .errored import Errors
 from .utility import name
 
-      
+
+def __dir__():
+    return (
+            'Thread',
+            'launch'
+           )
+
+
 class Thread(threading.Thread):
 
     ""

@@ -1,10 +1,19 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212,W0718,E0402
-# flake8: noqa
+# pylint: disable=C0115,C0116,E0402
 
 
 "reactor"
+
+
+from .errored import Errors
+from .utility import name
+
+
+def __dir__():
+    return (
+            'Bus',
+           )
 
 
 class Bus:
@@ -13,6 +22,7 @@ class Bus:
 
     @staticmethod
     def add(obj) -> None:
+        Errors.debug(f"bus add {name(obj)}")
         Bus.objs.append(obj)
 
     @staticmethod
@@ -23,7 +33,14 @@ class Bus:
     @staticmethod
     def byorig(orig):
         for obj in Bus.objs:
-            if repr(obj) == orig:
+            if object.__repr__(obj) == orig:
+                return obj
+        return None
+
+    @staticmethod
+    def bytype(typ):
+        for obj in Bus.objs:
+            if typ in object.__repr__(obj):
                 return obj
         return None
 
@@ -48,3 +65,9 @@ class Bus:
         for txt in event.result:
             Bus.say(event.orig, txt, event.channel)
 
+    @staticmethod
+    def wait():
+        bot = Bus.bytype("IRC")
+        if bot:
+            Errors.debug(f"waiting on {bot.cfg.server}")
+            bot.wait()

@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212,W0718,E0402
-# flake8: noqa
+# pylint: disable=C0115,C0116,R0902,E0402
 
 
 "happens"
@@ -11,6 +10,12 @@ import threading
 
 
 from .objects import Default
+
+
+def __dir__():
+    return (
+            'Event',
+           )
 
 
 class Event(Default):

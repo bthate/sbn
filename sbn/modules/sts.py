@@ -1,13 +1,18 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0401,W0622
-# flake8: noqa
+# pylint: disable=C0116,W0105,E0402
 
 
 "status of bots"
 
 
 from ..listens import Bus
+
+
+def __dir__():
+    return (
+            "sts",
+           )
 
 
 def sts(event):

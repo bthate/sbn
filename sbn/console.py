@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212,W0718,E0402
-# flake8: noqa
+# pylint: disable=C0115,C0116,R1710,E0402
 
 
 "console"
@@ -17,12 +16,19 @@ from .listens import Bus
 from .reactor import Reactor
 
 
+def __dir__():
+    return (
+            'CLI',
+            'Console'
+           )
+
+
 class CLI(Reactor):
 
     def __init__(self):
         Reactor.__init__(self)
+        self.register("command", Commands.handle)
         Bus.add(self)
-        self.register("event", Commands.handle)
 
     def announce(self, txt):
         pass
@@ -35,26 +41,28 @@ class Console(CLI):
 
     prompting = threading.Event()
 
+    def announce(self, txt):
+        self.raw(txt)
+
     def handle(self, evt):
         Commands.handle(evt)
         evt.wait()
 
     def prompt(self):
         self.prompting.set()
-        x = input("> ")
+        inp = input("> ")
         self.prompting.clear()
-        return x
-        
+        return inp
+
     def poll(self):
         try:
             return self.event(self.prompt())
         except EOFError:
             _thread.interrupt_main()
 
-
-def cprint(txt):
-    if Console.prompting.is_set():
-        txt = "\n" + txt
-    print(txt)
-    Console.prompting.clear()
-    sys.stdout.flush()
+    def raw(self, txt):
+        if Console.prompting.is_set():
+            txt = "\n" + txt
+        print(txt)
+        Console.prompting.clear()
+        sys.stdout.flush()

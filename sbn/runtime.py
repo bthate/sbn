@@ -1,31 +1,57 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R
+# pylint: disable=C0116,E0402
 
 
 "runtime"
 
 
 import os
-import sys
+import time
 
 
+from .command import Commands
 from .errored import Errors
 from .objects import Default
+from .storage import Storage
 from .threads import launch
-from .utility import spl
+from .utility import listmods
+
+
+def __dir__():
+    return (
+            "Cfg",
+            'scan'
+           )
+
+
+STARTTIME = time.time()
 
 
 Cfg = Default()
 Cfg.name = __file__.split(os.sep)[-2]
-Cfg.version = "250"
 
 
-def init(pkg, mods):
-    res = []
-    for modname in spl(mods):
-        mod = getattr(pkg, modname, None)
-        if mod and "init" in dir(mod):
-            Errors.debug("init %s" % modname)
-            res.append(launch(mod.init))
-    return res
+def scan(pkg, modstr, initer=False, doall=False, wait=False) -> None:
+    path = pkg.__path__[0]
+    inited = []
+    scanned = []
+    threads = []
+    for modname in listmods(path):
+        if not doall and modname not in modstr:
+            continue
+        module = getattr(pkg, modname, None)
+        if not module:
+            continue
+        scanned.append(modname)
+        Commands.scan(module)
+        Storage.scan(module)
+        if initer and "init" in dir(module):
+            inited.append(modname)
+            threads.append(launch(module.init, name=f"init {modname}"))
+    if wait:
+        for thread in threads:
+            thread.join()
+    Errors.debug(f"scanned {','.join(scanned)}")
+    Errors.debug(f"init {','.join(inited)}")
+    return threads

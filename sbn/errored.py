@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212,W0718,E0402
-# flake8: noqa
+# pylint: disable=C0115,C0116,E0402
 
 
 "reactor"
@@ -11,7 +10,13 @@ import io
 import traceback
 
 
-from .utility import skip
+from .utility import doskip
+
+
+def __dir__():
+    return (
+            'Errors',
+           )
 
 
 class Errors:
@@ -22,7 +27,7 @@ class Errors:
 
     @staticmethod
     def debug(txt) -> None:
-        if Errors.verbose and not skip(txt, Errors.skip):
+        if Errors.verbose and not doskip(txt, Errors.skip):
             Errors.raw(txt)
 
     @staticmethod

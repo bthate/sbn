@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R
+# pylint: disable=C0115,C0116,W0105,E0402,R0903
 
 
 "shopping list"
@@ -9,9 +9,16 @@
 import time
 
 
-from ..objects import Object, Persist
-from ..objects import find, fntime, write
-from ..utility import laps
+from ..objects import Object
+from ..storage import find, write
+from ..utility import fntime, laps
+
+
+def __dir__():
+    return (
+            "got",
+            "sop"
+           )
 
 
 class Shop(Object):
@@ -20,25 +27,19 @@ class Shop(Object):
         super().__init__()
         self.txt = ''
 
-    def size(self):
-        return len(self.__dict__)
-
-    def length(self):
-        return len(self.__dict__)
-
 
 def got(event):
     if not event.args:
         event.reply("got <txt>")
         return
     selector = {'txt': event.args[0]}
-    nr = 0
+    nrs = 0
     for obj in find('shop', selector):
-        nr += 1
+        nrs += 1
         obj.__deleted__ = True
         write(obj)
         event.reply('ok')
-    if not nr:
+    if not nrs:
         event.reply("no shops")
 
 

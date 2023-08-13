@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R
+# pylint: disable=C0116,E0402
 
 
 "errors"
@@ -11,6 +11,12 @@ import traceback
 
 
 from ..errored import Errors
+
+
+def __dir__():
+    return (
+            "err",
+           )
 
 
 def err(event):

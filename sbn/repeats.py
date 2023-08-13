@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212,W0718,E0402
-# flake8: noqa
+# pylint: disable=C0115,C0116,E0402
 
 
 "repeater"
@@ -13,6 +12,13 @@ import time
 
 from .objects import Object
 from .threads import launch
+
+
+def __dir__():
+    return (
+            'Timer',
+            'Repeater'
+           )
 
 
 class Timer:

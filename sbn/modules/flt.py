@@ -1,13 +1,18 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0401,W0622
-# flake8: noqa
+# pylint: disable=C0116,E0402
 
 
 "list of bots"
 
 
 from ..listens import Bus
+
+
+def __dir__():
+    return (
+            "flt",
+           )
 
 
 def flt(event):
@@ -17,4 +22,7 @@ def flt(event):
         return
     except (KeyError, TypeError, IndexError, ValueError):
         pass
-    event.reply(' | '.join([repr(obj).split()[0].split(".")[-1] for obj in Bus.objs]))
+    event.reply(
+                ' | '.join([repr(obj).split()[0].split(".")[-1]
+                            for obj in Bus.objs])
+               )

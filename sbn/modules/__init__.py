@@ -1,29 +1,23 @@
 # This file is placed in the Public Domain.
 #
-# flake8: noqa=F401
+# pylint: disable=C,I,R
+# flake8: noqa
 
 
 "modules"
 
 
-from . import bsc, dbg, err, flt, irc, log, mdl, mod, req, rss, shp, sts, tdo, thr
+from . import bsc, err, flt, irc, log, mdl, mod, rss, sts, thr
 
 
 def __dir__():
     return (
             'bsc',
-            'dbg',
             'err',
             'flt',
             'irc',
             'log',
             'mdl',
-            'req',
             'rss',
-            'shp',
-            'tdo',
-            'thr'
+            'thr',
            )
-
-
-__all__ = __dir__()

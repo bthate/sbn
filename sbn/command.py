@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0212,W0718,E0402
-# flake8: noqa
+# pylint: disable=C0115,C0116,W0718,E0402
 
 
 "commands"
@@ -12,13 +11,19 @@ import inspect
 
 from .listens import Bus
 from .errored import Errors
-from .utility import mods, parse
+from .objects import Object
+from .objfunc import parse
 
 
-class Commands:
+def __dir__():
+    return (
+            'Commands',
+           )
+
+
+class Commands(Object):
 
     cmds = {}
-    errors = []
 
     @staticmethod
     def add(func):
@@ -52,18 +57,3 @@ class Commands:
                 continue
             if 'event' in cmd.__code__.co_varnames:
                 Commands.add(cmd)
-
-
-def scan(pkg, modstr, init=None, doall=False) -> None:
-    path = pkg.__path__[0]
-    threads = []
-    for modname in mods(path):
-        if not doall and modname not in modstr:
-            continue
-        module = getattr(pkg, modname, None)
-        if not module:
-            continue
-        Commands.scan(module)
-        if init and "init" in dir(module):
-            threads.append(launch(module.start, name=modname))
-    return threads

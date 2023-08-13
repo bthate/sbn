@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R,W0401,W0105
-# flake8: noqa=E272
+# pylint: disable=C0115,C0116,W0105,E0402
 
 
 "rich site syndicte"
@@ -21,16 +20,29 @@ from urllib.request import Request, urlopen
 
 
 from ..listens import Bus
-from ..command import Commands
-from ..objects import Default, Object, Persist
-from ..objects import find, fntime, laps, last, printable, spl, write, update
+from ..objects import Default, Object, update
+from ..objfunc import prt
 from ..runtime import Cfg
 from ..repeats import Repeater
+from ..storage import find, last, write
 from ..threads import launch
+from ..utility import fntime, laps, spl
+
+
+def __dir__():
+    return (
+            "Fetcher",
+            "Parser",
+            "Rss",
+            "Seen",
+            "dpl",
+            "nme",
+            "rem",
+            "rss"
+           )
 
 
 def init():
-    time.sleep(5.0)
     fetcher = Fetcher()
     fetcher.start()
     return fetcher
@@ -275,7 +287,7 @@ def rss(event):
         for feed in find('rss'):
             nrs += 1
             elp = laps(time.time()-fntime(feed.__oid__))
-            txt = printable(feed)
+            txt = prt(feed)
             event.reply(f'{nrs} {txt} {elp}')
         if not nrs:
             event.reply('no rss feed found.')

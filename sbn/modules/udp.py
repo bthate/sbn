@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R
-# flake8: noqa=E501
+# pylint: disable=C0115,C0116,W0105,E0402
 
 
 "udp to irc relay"
@@ -10,13 +9,23 @@
 import select
 import socket
 import sys
+import threading
 import time
 
 
-from ..command import Commands
+from ..default import Default
 from ..listens import Bus
-from ..objects import Default, Object, Persist, last
+from ..objects import Object
+from ..storage import last
 from ..threads import launch
+
+
+def __dir__():
+    return (
+            'Cfg',
+            'UDP',
+            'udp'
+           )
 
 
 def init():
@@ -51,6 +60,7 @@ class UDP(Object):
         self._starttime = time.time()
         self.cfg = Cfg()
         self.cfg.addr = ""
+        self.ready = threading.Event()
 
     def output(self, txt, addr=None):
         if addr:
@@ -62,6 +72,7 @@ class UDP(Object):
             self._sock.bind((self.cfg.host, self.cfg.port))
         except socket.gaierror:
             return
+        self.ready.set()
         while not self.stopped:
             (txt, addr) = self._sock.recvfrom(64000)
             if self.stopped:
@@ -74,7 +85,10 @@ class UDP(Object):
     def exit(self):
         self.stopped = True
         self._sock.settimeout(0.01)
-        self._sock.sendto(bytes("exit", "utf-8"), (self.cfg.host, self.cfg.port))
+        self._sock.sendto(
+                          bytes("exit", "utf-8"),
+                          (self.cfg.host, self.cfg.port)
+                         )
 
     def start(self):
         last(self.cfg)
@@ -92,6 +106,7 @@ def udp(event):
     if len(sys.argv) > 2:
         txt = " ".join(sys.argv[2:])
         toudp(cfg.host, cfg.port, txt)
+        event.reply(f"{len(txt)} characters sent")
         return
     if not select.select(
                          [sys.stdin, ],
