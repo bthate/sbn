@@ -19,5 +19,5 @@ def __dir__():
             'log',
             'mdl',
             'rss',
-            'thr',
+            'thr'
            )

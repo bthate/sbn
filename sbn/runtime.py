@@ -34,6 +34,7 @@ Cfg.name = __file__.split(os.sep)[-2]
 
 def scan(pkg, modstr, initer=False, doall=False, wait=False) -> None:
     path = pkg.__path__[0]
+    print(path)
     inited = []
     scanned = []
     threads = []

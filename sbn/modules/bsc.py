@@ -11,7 +11,7 @@ from ..command import Commands
 
 def __dir__():
     return (
-            "cmd"
+            "cmd",
            )
 
 
