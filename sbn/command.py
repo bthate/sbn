@@ -31,11 +31,9 @@ class Commands(Object):
 
     @staticmethod
     def handle(evt):
-        print(Commands.cmds)
         if "txt" in dir(evt):
             parse(evt, evt.txt)
             func = Commands.cmds.get(evt.cmd, None)
-            print(func)
             if func:
                 try:
                     func(evt)

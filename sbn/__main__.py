@@ -86,7 +86,6 @@ def main():
         wait(Errors.wait)
     else:
         cli = CLI()
-        print(Cfg.mod)
         scan(modules, Cfg.mod, False, True)
         evt = Event()
         evt.orig = object.__repr__(cli)
