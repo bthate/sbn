@@ -29,7 +29,7 @@ from sbn.threads import Thread, launch
 from sbn import modules
 
 
-Cfg.mod = "err,mod,sts,thr,bsc"
+Cfg.mod = "err,mdl,mod,sts,thr,bsc"
 Cfg.name = __file__.split(os.sep)[-1]
 
 
