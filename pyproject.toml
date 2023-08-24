@@ -36,9 +36,7 @@ packages = [
             "sbn.modules"
            ]
 zip-safe = true
-
-[project.scripts]
-sbn = "sbn.__main__:wrapped"
+script-files = ["bin/sbn"]
 
 
 [tool.setuptools.data-files]
