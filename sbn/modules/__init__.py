@@ -7,19 +7,18 @@
 "modules"
 
 
-from . import bsc, err, flt, irc, log, mdl, mod, rss, sts, thr, udp
+import os
 
+
+path = os.path.dirname(__file__)
 
 def __dir__():
-    return (
-            'bsc',
-            'csl',
-            'err',
-            'flt',
-            'irc',
-            'log',
-            'mdl',
-            'rss',
-            'thr',
-            'udp'
-           )
+    return sorted(
+                  [x[:-3] for x in os.listdir(path)
+                          if not x.startswith("__")]
+                 ) 
+
+__all__ = __dir__()
+
+
+from . import *
