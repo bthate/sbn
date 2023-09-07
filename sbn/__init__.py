@@ -4,81 +4,87 @@
 # flake8: ignore=F401
 
 
-"""runtime
+"""OTP-CR-117/19
 
 
 NAME
 
-    OPR - Object Programming Runtime
-
-
-DESCRIPTION
-
-
-    OPR is a python3 runtime is intended to be programmable  in a
-    static, only code, no popen, no user imports and no reading
-    modules from a directory, way.
-
-    OPR provides some functionality, it can connect to IRC, fetch
-    and display RSS feeds, take todo notes, keep a shopping list and
-    log text.
+    SBN - Skull, Bones and Number (OTP-CR-117/19)
 
 
 SYNOPSIS
 
 
-    opr <cmd> [key=val]
-    opr <cmd> [key==val]
-    opr [-c] [-d] [-v]
+    sbn <cmd> [key=val] 
+    sbn <cmd> [key==val]
+    sbn [-c] [-d] [-v]
+
+
+DESCRIPTION
+
+
+    SBN is a python3 IRC bot is intended to be programmable  in a
+    static, only code, no popen, no user imports and no reading modules from
+    a directory, way. It can show genocide and suicide stats of king netherlands
+    his genocide into a IRC channel, display rss feeds and log simple text
+    messages.
+
+    SBN contains correspondence <writings> with the International Criminal Court, 
+    asking for arrest of the king of the  netherlands, for the genocide he is
+    committing with his new treatement laws. Current status is "no basis to
+    proceed" judgement of the prosecutor which requires a basis to prosecute
+    <reconsider> to have the king actually arrested.
 
 
 INSTALL
 
 
-    $ pipx install opr
+    $ pipx install sbn
+
 
 USAGE
 
+    use the following alias for easier typing
 
-    for ease of use, use an alias
+    $ alias sbn="python3 -m sbn"
 
-        $ alias opr="python3 -m opr"
 
     list of commands
 
-        $ opr cmd
-        cmd,err,flt,sts,thr,upt
+    $ sbn cmd
+    cmd,err,flt,sts,thr,upt
+
 
     start a console
 
-        $ opr -c
-        >
+    $ sbn -c
+    >
 
     start additional modules
 
-        $ opr mod=<mod1,mod2> -c
-        >
+    $ sbn mod=<mod1,mod2> -c
+    >
 
     list of modules
 
-        $ opr mod
-        cmd,err,flt,fnd,irc,log,mdl,mod,
-        req, rss,slg,sts,tdo,thr,upt,ver
+    $ sbn mod
+    cmd,err,flt,fnd,irc,log,mdl,mod,
+    req, rss,slg,sts,tdo,thr,upt,ver
 
     to start irc, add mod=irc when
     starting
 
-        $ opr mod=irc -c
+    $ sbn mod=irc -c
 
     to start rss, also add mod=rss
     when starting
 
-        $ opr mod=irc,rss -c
+    $ sbn mod=irc,rss -c
 
     start as daemon
 
-        $ opr  mod=irc,rss -d
-        $
+    $ sbn  mod=irc,rss -d
+    $ 
 
 
 CONFIGURATION
@@ -86,21 +92,21 @@ CONFIGURATION
 
     irc
 
-        $ opr cfg server=<server>
-        $ opr cfg channel=<channel>
-        $ opr cfg nick=<nick>
+    $ sbn cfg server=<server>
+    $ sbn cfg channel=<channel>
+    $ sbn cfg nick=<nick>
 
     sasl
 
-        $ opr pwd <nsvnick> <nspass>
-        $ opr cfg password=<frompwd>
+    $ sbn pwd <nsvnick> <nspass>
+    $ sbn cfg password=<frompwd>
 
     rss
 
-        $ opr rss <url>
-        $ opr dpl <url> <item1,item2>
-        $ opr rem <url>
-        $ opr nme <url< <name>
+    $ sbn rss <url>
+    $ sbn dpl <url> <item1,item2>
+    $ sbn rem <url>
+    $ sbn nme <url< <name>
 
 
 COMMANDS
@@ -127,7 +133,7 @@ COMMANDS
 SYSTEMD
 
     [Unit]
-    Description=Object Programming Runtime
+    Description=Skull, Bones and Number (OTP-CR-117/19)
     Requires=network.target
     After=network.target
 
@@ -136,9 +142,9 @@ SYSTEMD
     Type=fork
     User=bart
     Group=bart
-    PIDFile=opr.pid
-    WorkingDirectory=/home/bart/.opr
-    ExecStart=/home/bart/.local/pipx/venvs/opr/bin/opr mod=irc,rss,mdl -d
+    PIDFile=sbn.pid
+    WorkingDirectory=/home/bart/.sbn
+    ExecStart=/home/bart/.local/pipx/venvs/sbn/bin/python3 -m sbn  mod=irc,rss,mdl -d
     RemainAfterExit=yes
 
     [Install]
@@ -147,19 +153,18 @@ SYSTEMD
 
 FILES
 
-    ~/.local/bin/opr
-    ~/.local/pipx/venvs/opr/
+    ~/.local/pipx/venvs/sbn/
 
 
 COPYRIGHT
 
-    OPR is placed in the Public Domain.
+    SBN is placed in the Public Domain.
 
 
 """
 
 
-__author__ = "bthate@dds.nl"
+__author__ = "skullbonesandnumber@gmail.com"
 
 
 from . import brokers, clients, objects,  reactor, storage, threads
@@ -203,5 +208,3 @@ def __dir__():
             'write'
            )
 
-
-__all__ = __dir__()
