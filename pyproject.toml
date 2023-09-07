@@ -31,7 +31,7 @@ classifiers=[
 dev = []
 
 
-project.scripts]
+[project.scripts]
 sbn = "sbn.__main__:wrapped"
 
 
