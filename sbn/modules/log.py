@@ -10,14 +10,14 @@ import time
 
 
 from ..objects import Object
-from ..storage import find, fntime, write
+from ..storage import find, fntime, sync
 from ..threads import laps
 
 
 def __dir__():
     return (
             "Log",
-            "log" 
+            "log"
            )
 
 
@@ -40,5 +40,5 @@ def log(event):
         return
     obj = Log()
     obj.txt = event.rest
-    write(obj)
+    sync(obj)
     event.reply('ok')

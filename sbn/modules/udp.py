@@ -13,8 +13,8 @@ import threading
 import time
 
 
+from ..brokers import Broker
 from ..objects import Default, Object
-from ..reactor import Broker
 from ..threads import launch
 
 

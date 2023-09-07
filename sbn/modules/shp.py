@@ -10,7 +10,7 @@ import time
 
 
 from ..objects import Object
-from ..storage import find, fntime, write
+from ..storage import find, fntime, sync
 from ..threads import laps
 
 
@@ -37,7 +37,7 @@ def got(event):
     for obj in find('shop', selector):
         nrs += 1
         obj.__deleted__ = True
-        write(obj)
+        sync(obj)
         event.reply('ok')
     if not nrs:
         event.reply("no shops")
@@ -55,5 +55,5 @@ def shp(event):
         return
     obj = Shop()
     obj.txt = event.rest
-    write(obj)
+    sync(obj)
     event.reply('ok')

@@ -10,7 +10,7 @@ import time
 
 
 from ..objects import Object
-from ..storage import find, fntime, write
+from ..storage import find, fntime, sync
 from ..threads import laps
 
 
@@ -38,7 +38,7 @@ def dne(event):
     for obj in find('todo', selector):
         nmr += 1
         obj.__deleted__ = True
-        write(obj)
+        sync(obj)
         event.reply('ok')
         break
     if not nmr:
@@ -57,5 +57,5 @@ def tdo(event):
         return
     obj = Todo()
     obj.txt = event.rest
-    write(obj)
+    sync(obj)
     event.reply('ok')

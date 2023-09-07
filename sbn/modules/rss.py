@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C0115,C0116,W0105,E0402
+# pylint: disable=C0115,C0116,W0105,E0402,C0411
 
 
 "rich site syndicte"
@@ -19,10 +19,9 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
-from ..objects import Default, Object
-from ..methods import prt, update, spl
-from ..reactor import Broker, Cfg
-from ..storage import find, fntime, last, write
+from ..brokers import Broker
+from ..objects import Default, Object, spl, update
+from ..storage import find, fntime, last, prt, sync
 from ..threads import Repeater, laps, launch
 
 
@@ -38,6 +37,7 @@ def __dir__():
             "rss"
            )
 
+DEBUG = False
 
 def init():
     fetcher = Fetcher()
@@ -134,10 +134,10 @@ class Fetcher(Object):
                     Fetcher.seen.urls.append(uurl)
                 counter += 1
                 if self.dosave:
-                    write(fed)
+                    sync(fed)
                 objs.append(fed)
         if objs:
-            write(Fetcher.seen)
+            sync(Fetcher.seen)
         txt = ''
         feedname = getattr(feed, 'name', None)
         if feedname:
@@ -191,7 +191,7 @@ class Parser(Object):
 
 
 def getfeed(url, item):
-    if Cfg.debug:
+    if DEBUG:
         return [Object(), Object()]
     try:
         result = geturl(url)
@@ -251,7 +251,7 @@ def dpl(event):
     for feed in find('rss', {'rss': event.args[0]}):
         if feed:
             update(feed, setter)
-            write(feed)
+            sync(feed)
     event.reply('ok')
 
 
@@ -263,7 +263,7 @@ def nme(event):
     for feed in find('rss', selector):
         if feed:
             feed.name = event.args[1]
-            write(feed)
+            sync(feed)
     event.reply('ok')
 
 
@@ -275,7 +275,7 @@ def rem(event):
     for feed in find('rss', selector):
         if feed:
             feed.__deleted__ = True
-            write(feed)
+            sync(feed)
     event.reply('ok')
 
 
@@ -300,5 +300,5 @@ def rss(event):
             return
     feed = Rss()
     feed.rss = event.args[0]
-    write(feed)
+    sync(feed)
     event.reply('ok')

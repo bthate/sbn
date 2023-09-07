@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,I,R
+# pylint: disable=W0406,C0413
 # flake8: noqa
 
 
@@ -8,17 +8,32 @@
 
 
 import os
+import sys
 
 
-path = os.path.dirname(__file__)
+sys.path.insert(0, os.path.dirname(__file__))
+
+
+from . import bsc, dbg, err, flt, irc, log, mdl, mod, req, rss
+from . import shp, sts, tdo, thr, udp
+
 
 def __dir__():
-    return sorted(
-                  [x[:-3] for x in os.listdir(path)
-                          if not x.startswith("__")]
-                 ) 
+    return (
+            'bsc',
+            'dbg',
+            'err',
+            'flt',
+            'irc',
+            'log',
+            'mod',
+            'rss',
+            'shp',
+            'sts',
+            'tdo',
+            'thr', 
+            'udp'
+           )
+
 
 __all__ = __dir__()
-
-
-from . import *

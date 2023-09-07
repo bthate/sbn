@@ -6,7 +6,7 @@
 "basic commands"
 
 
-from ..reactor import Client
+from ..clients import Client
 
 
 def __dir__():

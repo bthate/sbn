@@ -6,7 +6,7 @@
 "status of bots"
 
 
-from ..reactor import Broker
+from ..brokers import Broker
 
 
 def __dir__():

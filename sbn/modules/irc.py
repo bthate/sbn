@@ -8,20 +8,19 @@
 
 import base64
 import os
-import queue
 import random
 import socket
 import ssl
 import time
-import textwrap
 import threading
 import _thread
 
 
-from ..methods import edit, keys, prt
-from ..objects import Default, Object
-from ..reactor import Broker, Client, Event, command
-from ..storage import find, fntime, last, write
+from ..brokers import Broker
+from ..clients import Client, Event, command
+from ..objects import Default, Object, keys
+from ..outputs import Output
+from ..storage import edit, find, fntime, last, prt, sync
 from ..threads import laps, launch
 
 
@@ -96,87 +95,11 @@ class Config(Default):
         return len(Config)
 
 
-class TextWrap(textwrap.TextWrapper):
-
-    def __init__(self):
-        super().__init__()
-        self.break_long_words = False
-        self.drop_whitespace = True
-        self.fix_sentence_endings = True
-        self.replace_whitespace = True
-        self.tabsize = 4
-        self.width = 450
-
-
-class Output:
-
-
-    def __init__(self):
-        self.cache = Object()
-        self.oqueue = queue.Queue()
-        self.dostop = threading.Event()
-
-    def dosay(self, channel, txt):
-        raise NotImplementedError
-
-    def extend(self, channel, txtlist):
-        if channel not in self.cache:
-            setattr(self.cache, channel, [])
-        cache = getattr(self.cache, channel, None)
-        cache.extend(txtlist)
-
-    def gettxt(self, channel):
-        txt = None
-        try:
-            cache = getattr(self.cache, channel, None)
-            txt = cache.pop(0)
-        except (KeyError, IndexError):
-            pass
-        return txt
-
-    def oput(self, channel, txt):
-        if channel is None or txt is None:
-            return
-        if channel not in self.cache:
-            setattr(self.cache, channel, [])
-        self.oqueue.put_nowait((channel, txt))
-
-    def out(self):
-        while not self.dostop.is_set():
-            (channel, txt) = self.oqueue.get()
-            if channel is None and txt is None:
-                break
-            if self.dostop.is_set():
-                break
-            wrapper = TextWrap()
-            try:
-                txtlist = wrapper.wrap(txt)
-            except AttributeError:
-                continue
-            if len(txtlist) > 3:
-                self.extend(channel, txtlist)
-                length = len(txtlist)
-                self.dosay(
-                           channel,
-                           f"use !mre to show more (+{length})"
-                          )
-                continue
-            _nr = -1
-            for txt in txtlist:
-                _nr += 1
-                self.dosay(channel, txt)
-
-    def size(self, chan):
-        if chan in self.cache:
-            return len(getattr(self.cache, chan, []))
-        return 0
-
-
 class IRC(Client, Output):
 
     def __init__(self):
-        Client.__init__(self)
         Output.__init__(self)
+        Client.__init__(self)
         self.buffer = []
         self.cfg = Config()
         self.events = Default()
@@ -231,7 +154,8 @@ class IRC(Client, Output):
             self.cfg.sasl = True
             self.cfg.port = "6697"
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLS)
-            ctx.check_hostname = False
+            ctx.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
+            ctx.minimum_version = ssl.TLSVersion.TLSv1_2
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock = ctx.wrap_socket(sock)
             self.sock.connect((server, port))
@@ -250,9 +174,7 @@ class IRC(Client, Output):
 
     def direct(self, txt):
         with saylock:
-            time.sleep(5.0)
-            Client.debug(txt)
-            self.sock.send(bytes(txt.rstrip()+'\r\n', 'utf-8'))
+            self.raw(txt)
 
     def disconnect(self):
         try:
@@ -335,7 +257,7 @@ class IRC(Client, Output):
 
     def logon(self, server, nck):
         self.events.connected.wait()
-        self.events.authed.wait()
+        #self.events.authed.wait()
         nck = self.cfg.username
         self.direct(f'NICK {nck}')
         self.direct(f'USER {nck} {server} {server} {nck}')
@@ -419,7 +341,9 @@ class IRC(Client, Output):
                 Client.errors.append(ex)
                 self.stop()
                 Client.debug("handler stopped")
-                return self.event(str(ex))
+                evt = self.event(str(ex))
+                Client.debug(str(evt))
+                return evt
         try:
             txt = self.buffer.pop(0)
         except IndexError:
@@ -429,10 +353,8 @@ class IRC(Client, Output):
     def raw(self, txt):
         txt = txt.rstrip()
         Client.debug(txt)
-        if not txt.endswith('\r\n'):
-            txt += '\r\n'
-        txt = txt[:512]
-        txt += '\n'
+        txt = txt[:500]
+        txt += '\r\n'
         txt = bytes(txt, 'utf-8')
         if self.sock:
             try:
@@ -500,72 +422,12 @@ class IRC(Client, Output):
         self.dostop.set()
         self.disconnect()
 
-
     def wait(self):
         self.events.ready.wait()
 
 
-class User(Object):
-
-    def __init__(self):
-        Object.__init__(self)
-        self.user = ''
-        self.perms = []
-
-
-class Users(Object):
-
-    @staticmethod
-    def allowed(origin, perm):
-        perm = perm.upper()
-        user = Users.get_user(origin)
-        val = False
-        if user and perm in user.perms:
-            val = True
-        return val
-
-    @staticmethod
-    def delete(origin, perm):
-        res = False
-        for user in Users.get_users(origin):
-            try:
-                user.perms.remove(perm)
-                write(user)
-                res = True
-            except ValueError:
-                pass
-        return res
-
-    @staticmethod
-    def get_users(origin=''):
-        selector = {'user': origin}
-        return find('user', selector)
-
-    @staticmethod
-    def get_user(origin):
-        users = list(Users.get_users(origin))
-        res = None
-        if len(users) > 0:
-            res = users[-1]
-        return res
-
-    @staticmethod
-    def perm(origin, permission):
-        user = Users.get_user(origin)
-        if not user:
-            raise NoUser(origin)
-        if permission.upper() not in user.perms:
-            user.perms.append(permission.upper())
-            write(user)
-        return user
-
-
-"callbacks"
-
-
 def cb_auth(evt):
     bot = Broker.byorig(evt.orig)
-    assert bot.cfg.password
     bot.command(f'AUTHENTICATE {bot.cfg.password}')
 
 
@@ -589,14 +451,12 @@ def cb_error(evt):
 
 
 def cb_h903(evt):
-    assert evt
     bot = Broker.byorig(evt.orig)
     bot.direct('CAP END')
     bot.events.authed.set()
 
 
 def cb_h904(evt):
-    assert evt
     bot = Broker.byorig(evt.orig)
     bot.direct('CAP END')
     bot.events.authed.set()
@@ -655,6 +515,64 @@ def cb_quit(evt):
         bot.stop()
 
 
+"users"
+
+
+class User(Object):
+
+    def __init__(self):
+        Object.__init__(self)
+        self.user = ''
+        self.perms = []
+
+
+class Users(Object):
+
+    @staticmethod
+    def allowed(origin, perm):
+        perm = perm.upper()
+        user = Users.get_user(origin)
+        val = False
+        if user and perm in user.perms:
+            val = True
+        return val
+
+    @staticmethod
+    def delete(origin, perm):
+        res = False
+        for user in Users.get_users(origin):
+            try:
+                user.perms.remove(perm)
+                sync(user)
+                res = True
+            except ValueError:
+                pass
+        return res
+
+    @staticmethod
+    def get_users(origin=''):
+        selector = {'user': origin}
+        return find('user', selector)
+
+    @staticmethod
+    def get_user(origin):
+        users = list(Users.get_users(origin))
+        res = None
+        if users:
+            res = users[-1]
+        return res
+
+    @staticmethod
+    def perm(origin, permission):
+        user = Users.get_user(origin)
+        if not user:
+            raise NoUser(origin)
+        if permission.upper() not in user.perms:
+            user.perms.append(permission.upper())
+            sync(user)
+        return user
+
+
 "commands"
 
 
@@ -671,7 +589,7 @@ def cfg(event):
                    )
     else:
         edit(config, event.sets)
-        write(config)
+        sync(config)
         event.reply('ok')
 
 
@@ -684,7 +602,7 @@ def dlt(event):
     for obj in find('user', selector):
         nrs += 1
         obj.__deleted__ = True
-        write(obj)
+        sync(obj)
         event.reply('ok')
         break
     if not nrs:
@@ -704,7 +622,7 @@ def met(event):
     user = User()
     user.user = event.rest
     user.perms = ['USER']
-    write(user)
+    sync(user)
     event.reply('ok')
 
 

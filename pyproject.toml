@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "30"
+version = "40"
 authors = [
     {name = "Bart Thate", email = "skullbonesandnumber@gmail.com" },
 ]
@@ -30,17 +30,21 @@ classifiers=[
 [project.optional-dependencies]
 dev = []
 
+
+project.scripts]
+sbn = "sbn.__main__:wrapped"
+
+
 [tool.setuptools]
 packages = [
             "sbn",
             "sbn.modules"
            ]
 zip-safe = true
-script-files = ["bin/sbn"]
 
 
 [tool.setuptools.data-files]
-"share/doc/genocide" = [
+"share/doc/sbn" = [
           "docs/about.rst",
           "docs/conf.py",
           "docs/ECHAhaldol.png",
@@ -70,11 +74,11 @@ script-files = ["bin/sbn"]
           "docs/wallpaper.png",
          ]
 
-"share/doc/genocide/_static" = [
+"share/doc/sbn/_static" = [
                   "docs/_static/sbn.css",
                  ]
 
-"share/doc/genocide/pdf" =  [
+"share/doc/sbn/pdf" =  [
                "docs/pdf/bevestigd.pdf",
                "docs/pdf/EM_T04_OTP-CR-117_19.pdf",
                "docs/pdf/EM_T07_OTP-CR-117_19_001.pdf",
@@ -82,7 +86,7 @@ script-files = ["bin/sbn"]
                "docs/pdf/Rome-Statute.pdf",
               ]
 
-"share/doc/genocide/_templates" = [
+"share/doc/sbn/_templates" = [
                      "docs/_templates/base.rst",
                      "docs/_templates/class.rst",
                      "docs/_templates/mine.rst",

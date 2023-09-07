@@ -10,8 +10,7 @@ import threading
 import time
 
 
-from ..objects import Object
-from ..methods import update
+from ..objects import Object, update
 from ..threads import laps
 
 
@@ -32,7 +31,7 @@ def thr(event):
         obj = Object()
         update(obj, vars(thread))
         if getattr(obj, 'sleep', None):
-            uptime = obj.sleep - int(time.time() - obj.state.latest)
+            uptime = obj.sleep - int(time.time() - obj.state["latest"])
         elif getattr(obj, 'starttime', None):
             uptime = int(time.time() - obj.starttime)
         else:
