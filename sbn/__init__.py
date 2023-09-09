@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C0116,W0611,W0401,W0614,E0402,E0611,E0603
-# flake8: ignore=F401
+# ruff: noqa: F401,F403
 
 
 """OTP-CR-117/19

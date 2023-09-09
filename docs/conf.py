@@ -3,7 +3,8 @@
 #
 # pylint: disable=C,I,R
 # pylama: disable=E231
-# flake8: noqa=E402,E501
+# ruff: noqa: E402, E501
+
 
 "Skull, Bones and Number (OTP-CR-117/19)"
 

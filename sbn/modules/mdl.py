@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,I,R,W0613,E1101,E0402,W0401,W0105
-# flake8: noqa=E501
+# ruff: noqa: E501,
 
 
 "genocide model of the netherlands"

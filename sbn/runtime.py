@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C0115,C0116,E0402,W0212,R1710,W0611,E0611,R0903,W0105,C0103
+# ruff: noqa: F401
 
 
 "binary"
