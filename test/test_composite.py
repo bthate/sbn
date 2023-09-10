@@ -10,7 +10,8 @@
 import unittest
 
 
-from sbn.objects import Object, read, write
+from sbn.objects import Object
+from sbn.storage import fetch, sync
 
 
 class TestComposite(unittest.TestCase):
@@ -25,8 +26,8 @@ class TestComposite(unittest.TestCase):
         obj = Object()
         obj.obj = Object()
         obj.obj.a = "test"
-        pth = write(obj)
+        pth = sync(obj)
         ooo = Object()
-        read(ooo, pth)
+        fetch(ooo, pth)
         #self.assertEqual(ooo.obj.a, "test")
         self.assertTrue(ooo.obj)
