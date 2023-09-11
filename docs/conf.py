@@ -2,18 +2,14 @@
 # -*- coding: utf-8 -*-
 #
 # pylint: disable=C,I,R
-# pylama: disable=E231
 # ruff: noqa: E402, E501
 
 
 "Skull, Bones and Number (OTP-CR-117/19)"
 
 
-__author__ = "Bart Thate <skullbonesandnumber@gmail.com>"
-
-
 NAME = "sbn"
-VERSION = "140"
+VERSION = "41"
 
 
 import os
@@ -68,7 +64,7 @@ html_title = "Skull, Bones and Numner (OTP-CR-117/19)"
 html_style = 'sbn.css'
 html_static_path = ["_static"]
 html_css_files = ["sbn.css",]
-html_short_title = "GENOCIDE %s" % VERSION
+html_short_title = "%s %s" % (NAME, VERSION)
 html_sidebars = {
     '**': [
         'about.html',
