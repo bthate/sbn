@@ -6,16 +6,13 @@
 "output cache"
 
 
-from .objects import Object
-
-
 class Cache:
 
 
     def __init__(self):
-        self.cache = Object()
+        self.cache = {}
 
     def size(self, chan):
         if chan in self.cache:
-            return len(getattr(self.cache, chan, []))
+            return len(self.cache.get(chan, []))
         return 0

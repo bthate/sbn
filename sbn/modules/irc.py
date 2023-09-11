@@ -111,14 +111,16 @@ class Output(Cache):
     def extend(self, channel, txtlist):
         if channel not in self.cache:
             setattr(self.cache, channel, [])
-        cache = getattr(self.cache, channel, None)
-        cache.extend(txtlist)
+        cache = self.cache.get(channel, None)
+        if cache:
+            cache.extend(txtlist)
 
     def gettxt(self, channel):
         txt = None
         try:
-            cache = getattr(self.cache, channel, None)
-            txt = cache.pop(0)
+            cache = self.cache.get(channel, None)
+            if cache:
+                txt = cache.pop(0)
         except (KeyError, IndexError):
             pass
         return txt
@@ -127,7 +129,7 @@ class Output(Cache):
         if channel is None or txt is None:
             return
         if channel not in self.cache:
-            setattr(self.cache, channel, [])
+            self.cache[channel] = []
         self.oqueue.put_nowait((channel, txt))
 
     def out(self):
