@@ -49,7 +49,7 @@ def tdo(event):
     if not event.rest:
         nmr = 0
         for obj in find('todo'):
-            lap = laps(time.time()-fntime(obj.__oid__))
+            lap = laps(time.time()-fntime(obj.__fnm__))
             event.reply(f'{nmr} {obj.txt} {lap}')
             nmr += 1
         if not nmr:

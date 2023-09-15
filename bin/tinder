@@ -20,19 +20,15 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from opr.listens import Bus
-from opr.command import Commands
-from opr.errored import Errors
-from opr.objects import Object
-from opr.objfunc import parse
-from opr.reactor import Reactor
-from opr.runtime import Cfg, scan
-from opr.storage import Storage
-from opr.threads import launch
-from opr.utility import laps
+from sbn.brokers import Broker
+from sbn.clients import Client, command, mods, parse
+from sbn.objects import Object
+from sbn.runtime import Cfg, scan, wrap
+from sbn.storage import Storage
+from sbn.threads import laps, launch
 
 
-from opr import modules
+from sbn import modules
 
 
 DATE = time.ctime(time.time()).replace("  ", " ")
@@ -40,6 +36,7 @@ STARTTIME = time.time()
 
 
 Cfg.debug = True
+Cfg.mod = ",".join(mods(modules.__path__[0]))
 Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
@@ -86,12 +83,11 @@ param.tdo = ["test4", ""]
 param.thr = [""]
 
 
-class CLI(Reactor):
+class CLI(Client):
 
     def __init__(self):
-        Reactor.__init__(self)
-        Bus.add(self)
-        self.register("event", Commands.handle)
+        Client.__init__(self)
+        Broker.add(self)
 
     def raw(self, txt):
         with outlock:
@@ -116,53 +112,26 @@ def consume(evts):
 
 
 def payload(clt) -> None:
-    cmds = list(Commands.cmds.keys())
+    cmds = list(Client.cmds.keys())
     random.shuffle(cmds)
     with paylock:
         nmr = 0
         for cmnd in cmds:
             for ex in getattr(param, cmnd, [""]):
                 evt = clt.event(cmnd + " " + ex)
-                clt.handle(evt)
+                command(evt)
                 events.append(evt)
                 nmr += 1
         return nmr
 
 
-def waiter() -> None:
-    got = []
-    for ex in Errors.errors:
-        if not Cfg.silent:
-            traceback.print_exception(type(ex), ex, ex.__traceback__)
-        got.append(ex)
-    for exc in got:
-        Errors.errors.remove(exc)
-
-
-def wrap(func) -> None:
-    old = termios.tcgetattr(sys.stdin.fileno())
-    try:
-        func()
-    except (EOFError, KeyboardInterrupt):
-        print("")
-        sys.stdout.flush()
-    finally:
-        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
-    waiter()
-
-
-def wrapped():
-    wrap(main)
-
 def main() -> None:
-    print(f"{Cfg.name.upper()}\n\nstarted {DATE}")
-    if os.path.exists(Cfg.workdir):
-        shutil.rmtree(Cfg.workdir)
+    if os.path.exists(Storage.workdir):
+        shutil.rmtree(Storage.workdir)
     parse(Cfg, " ".join(sys.argv[1:]))
-    scan(modules, {}, False, True)
+    scan(modules, Cfg.mod, False, True)
     if "v" in Cfg.opts:
-        Errors.verbose = True
-        Errors.raw = print
+        Client.output = print
     nrs = Cfg.index or 1
     cli = CLI()
     #launch(cli.loop)
@@ -180,4 +149,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    wrapped()
+    wrap(main)

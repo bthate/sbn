@@ -12,7 +12,7 @@ import sys
 import time
 
 
-from .objects import Object, keys, kind, read, search, update, write
+from .objects import Object, ident, keys, kind, read, search, update, write
 
 
 def __dir__():
@@ -73,6 +73,13 @@ class Storage:
 "utility"
 
 
+def doskip(txt, skipping) -> bool:
+    for skp in spl(skipping):
+        if skp in txt:
+            return True
+    return False
+
+
 def files() -> []:
     return os.listdir(Storage.store())
 
@@ -91,6 +98,7 @@ def find(mtc, selector=None) -> []:
             continue
         if selector and not search(obj, selector):
             continue
+        obj.__fnm__ = fnm
         yield obj
 
 
@@ -181,13 +189,13 @@ def last(obj, selector=None) -> None:
         selector = {}
     result = sorted(
                     find(kind(obj), selector),
-                    key=lambda x: fntime(x.__oid__)
+                    key=lambda x: fntime(x.__fnm__)
                    )
     if result:
         inp = result[-1]
         update(obj, inp)
-        obj.__oid__ = inp.__oid__
-    return obj.__oid__
+        obj.__fnm__ = inp.__fnm__
+    return obj.__fnm__
 
 
 def prt(obj, args="", skip="", plain=False):
@@ -220,7 +228,10 @@ def prt(obj, args="", skip="", plain=False):
     return txt.strip()
 
 
-def sync(obj):
-    pth = Storage.store(obj.__oid__)
-    return write(obj, pth)
-
+def sync(obj, pth=None):
+    if "__fnm__" in obj:
+        pth = obj.__fnm__
+    if not pth:
+        pth = ident(obj)
+    pth = Storage.path(pth)
+    write(obj, pth)

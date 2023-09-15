@@ -284,7 +284,7 @@ def rss(event):
         nrs = 0
         for feed in find('rss'):
             nrs += 1
-            elp = laps(time.time()-fntime(feed.__oid__))
+            elp = laps(time.time()-fntime(feed.__fnm__))
             txt = prt(feed)
             event.reply(f'{nrs} {txt} {elp}')
         if not nrs:
