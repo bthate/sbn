@@ -138,6 +138,33 @@ COMMANDS
     tpc - genocide stats into topic
 
 
+SYSTEMD
+
+
+::
+
+    using the pipx installation, replace "<user>" with the user running pipx
+
+    [Unit]
+    Description=Skull, Bones and Number (OTP-CR-117/19)
+    Requires=network.target
+    After=network.target
+
+    [Service]
+    DynamicUser=True
+    Type=fork
+    User=<user>
+    Group=<user>
+    PIDFile=sbn.pid
+    WorkingDirectory=/home/<user>/.sbn
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/python3 -m sbn  mod=irc,rss,mdl -d
+    RemainAfterExit=yes
+
+    [Install]
+    WantedBy=multi-user.target
+
+
+
 FILES
 
 ::
