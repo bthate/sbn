@@ -10,6 +10,7 @@ import datetime
 import json
 import os
 import pathlib
+import time
 import uuid
 import _thread
 
@@ -19,22 +20,19 @@ from json import JSONDecoder, JSONEncoder
 
 def __dir__():
     return (
-            'Default',
             'Object',
             'construct',
-            'dumps',
+            'edit',
             'ident',
             'items',
             'keys',
             'kind',
-            'loads',
+            'prt',
             'read',
             'search',
             'update',
             'values',
-            'write',
-            'doskip',
-            'spl'
+            'write'
            )
 
 
@@ -46,18 +44,25 @@ hooklock = _thread.allocate_lock()
 jsonlock = _thread.allocate_lock()
 
 
+def cdir(pth) -> None:
+    if not pth.endswith(os.sep):
+        pth = os.path.dirname(pth)
+    pth = pathlib.Path(pth)
+    os.makedirs(pth, exist_ok=True)
+
+
 class Object:
 
-    __slots__ = ("__dict__", "__oid__")
-
-    def __init__(self):
-        self.__oid__ = ident(self)
+    __default__= ""
 
     def __contains__(self, key):
         return key in self.__dict__
 
     def __delitem__(self, key):
         return self.__dict__.__delitem__(key)
+
+    def __getattr__(self, key):
+        return self.__dict__.get(key, Object.__default__)
 
     def __getitem__(self, key):
         return self.__dict__.__getitem__(key)
@@ -75,24 +80,11 @@ class Object:
         return str(self.__dict__)
 
 
-class Default(Object):
-
-    __default__ = ""
-
-    def __getattr__(self, key):
-        if key in self:
-            return self[key]
-        return Default.__default__
-
-
-"methods"
-
-
-def cls(obj):
+def cls(obj) -> str:
     return kind(obj).split(".")[-1]
 
 
-def construct(obj, *args, **kwargs):
+def construct(obj, *args, **kwargs) -> None:
     if args:
         val = args[0]
         if isinstance(val, list):
@@ -105,6 +97,28 @@ def construct(obj, *args, **kwargs):
             update(obj, vars(val))
     if kwargs:
         update(obj, kwargs)
+
+
+def edit(obj, setter, skip=False) -> None:
+    for key, val in items(setter):
+        if skip and val == "":
+            continue
+        try:
+            obj[key] = int(val)
+            continue
+        except ValueError:
+            pass
+        try:
+            obj[key] = float(val)
+            continue
+        except ValueError:
+            pass
+        if val in ["True", "true"]:
+            obj[key] = True
+        elif val in ["False", "false"]:
+            obj[key] = False
+        else:
+            obj[key] = val
 
 
 def ident(obj) -> str:
@@ -134,6 +148,30 @@ def kind(obj) -> str:
     return kin
 
 
+def prt(obj, args="") -> str:
+    if args:
+        keyz = args.split(",")
+    else:
+        keyz = keys(obj)
+    txt = ""
+    for key in sorted(keyz):
+        try:
+            value = obj[key]
+        except KeyError:
+            continue
+        if isinstance(value, str) and len(value.split()) >= 2:
+            txt += f'{key}="{value}" '
+        else:
+            txt += f'{key}={value} '
+    return txt.strip()
+
+
+def read(obj, pth) -> str:
+    with disklock:
+        with open(pth, 'r', encoding='utf-8') as ofile:
+            update(obj, load(ofile))
+
+
 def search(obj, selector) -> bool:
     res = False
     for key, value in items(selector):
@@ -158,7 +196,11 @@ def values(obj) -> []:
     return obj.__dict__.values()
 
 
-"decoder"
+def write(obj, pth) -> str:
+    with disklock:
+        cdir(pth)
+        with open(pth, 'w', encoding='utf-8') as ofile:
+            dump(obj, ofile)
 
 
 class ObjectDecoder(JSONDecoder):
@@ -180,26 +222,23 @@ class ObjectDecoder(JSONDecoder):
         return JSONDecoder.raw_decode(self, s, idx)
 
 
-def hook(objdict) -> type:
+def hook(objdict) -> Object:
     with hooklock:
         obj = Object()
         construct(obj, objdict)
         return obj
 
 
-def load(fpt, *args, **kw):
+def load(fpt, *args, **kw) -> Object:
     kw["cls"] = ObjectDecoder
     kw["object_hook"] = hook
     return json.load(fpt, *args, **kw)
 
 
-def loads(string, *args, **kw):
+def loads(string, *args, **kw) -> Object:
     kw["cls"] = ObjectDecoder
     kw["object_hook"] = hook
     return json.loads(string, *args, **kw)
-
-
-"encoder"
 
 
 class ObjectEncoder(JSONEncoder):
@@ -253,57 +292,3 @@ def dump(*args, **kw) -> None:
 def dumps(*args, **kw) -> str:
     kw["cls"] = ObjectEncoder
     return json.dumps(*args, **kw)
-
-
-"utility"
-
-
-def cdir(pth) -> None:
-    if not pth.endswith(os.sep):
-        pth = os.path.dirname(pth)
-    pth = pathlib.Path(pth)
-    os.makedirs(pth, exist_ok=True)
-
-
-def doskip(txt, skipping) -> bool:
-    for skp in spl(skipping):
-        if skp in txt:
-            return True
-    return False
-
-
-def spl(txt) -> []:
-    try:
-        res = txt.split(',')
-    except (TypeError, ValueError):
-        res = txt
-    return [x for x in res if x]
-
-
-def strip(path) -> str:
-    return os.sep.join(path.split(os.sep)[-4:])
-
-
-"storage"
-
-
-def read(obj, pth) -> str:
-    with disklock:
-        with open(pth, 'r', encoding='utf-8') as ofile:
-            data = load(ofile)
-            update(obj, data)
-        obj.__oid__ = strip(pth)
-        return obj.__oid__
-
-
-def write(obj, pth=None) -> str:
-    with disklock:
-        if not pth:
-            try:
-                pth = obj.__oid__
-            except (AttributeError, TypeError):
-                pth = ident(obj)
-        cdir(pth)
-        with open(pth, 'w', encoding='utf-8') as ofile:
-            dump(obj, ofile)
-        return os.sep.join(pth.split(os.sep)[-4:])

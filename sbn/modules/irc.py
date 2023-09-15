@@ -21,7 +21,7 @@ import _thread
 from ..brokers import Broker
 from ..caching import Cache
 from ..clients import Client, Event, command
-from ..objects import Default, Object, keys
+from ..objects import Object, keys
 from ..storage import edit, find, fntime, last, prt, sync
 from ..threads import laps, launch
 
@@ -63,7 +63,9 @@ class NoUser(Exception):
     pass
 
 
-class Config(Default):
+class Config(Object):
+
+    __default__ = ""
 
     channel = f'#{NAME}'
     control = '!'
@@ -82,7 +84,7 @@ class Config(Default):
     verbose = False
 
     def __init__(self):
-        Default.__init__(self)
+        Object.__init__(self)
         self.channel = Config.channel
         self.nick = Config.nick
         self.port = Config.port

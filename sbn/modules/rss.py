@@ -20,8 +20,8 @@ from urllib.request import Request, urlopen
 
 
 from ..brokers import Broker
-from ..objects import Default, Object, spl, update
-from ..storage import find, fntime, last, prt, sync
+from ..objects import Object, update
+from ..storage import find, fntime, last, prt, sync, spl
 from ..threads import Repeater, laps, launch
 
 
@@ -48,7 +48,7 @@ def init():
 fetchlock = _thread.allocate_lock()
 
 
-class Feed(Default):
+class Feed(Object):
 
     def len(self):
         return len(self.__dict__)
@@ -57,7 +57,7 @@ class Feed(Default):
         return len(self.__dict__)
 
 
-class Rss(Default):
+class Rss(Object):
 
     def __init__(self):
         super().__init__()
@@ -72,7 +72,7 @@ class Rss(Default):
         return len(self.__dict__)
 
 
-class Seen(Default):
+class Seen(Object):
 
     def __init__(self):
         super().__init__()

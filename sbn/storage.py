@@ -12,8 +12,7 @@ import sys
 import time
 
 
-from .objects import Object, keys, kind, read, search, strip, update, write
-from .objects import doskip
+from .objects import Object, keys, kind, read, search, update, write
 
 
 def __dir__():
@@ -22,7 +21,6 @@ def __dir__():
             'edit',
             'fetch',
             'find',
-            'fntime',
             'last',
             'prt',
             'sync'
@@ -130,6 +128,18 @@ def fntime(daystr) -> float:
     return timed
 
 
+def spl(txt) -> []:
+    try:
+        res = txt.split(',')
+    except (TypeError, ValueError):
+        res = txt
+    return [x for x in res if x]
+
+
+def strip(path) -> str:
+    return os.sep.join(path.split(os.sep)[-4:])
+
+
 "methods"
 
 
@@ -213,3 +223,4 @@ def prt(obj, args="", skip="", plain=False):
 def sync(obj):
     pth = Storage.store(obj.__oid__)
     return write(obj, pth)
+

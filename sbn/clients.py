@@ -14,7 +14,7 @@ import threading
 
 
 from .brokers import Broker
-from .objects import Default
+from .objects import Object
 from .reactor import Reactor
 
 
@@ -31,10 +31,10 @@ def __dir__():
 __all__ = __dir__()
 
 
-class Event(Default):
+class Event(Object):
 
     def __init__(self):
-        Default.__init__(self)
+        Object.__init__(self)
         self._ready = threading.Event()
         self._thr = None
         self.result = []
