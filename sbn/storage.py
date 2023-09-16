@@ -12,7 +12,7 @@ import sys
 import time
 
 
-from .objects import Object, ident, keys, kind, read, search, update, write
+from .objects import Object, keys, kind, read, search, update, write
 
 
 def __dir__():
@@ -182,6 +182,14 @@ def edit(obj, setter, skip=False):
 def fetch(obj, pth):
     path = Storage.store(pth)
     return read(obj, path)
+
+
+def ident(obj) -> str:
+    return os.path.join(
+                        kind(obj),
+                        str(uuid.uuid4().hex),
+                        os.path.join(*str(datetime.datetime.now()).split())
+                       )
 
 
 def last(obj, selector=None) -> None:
