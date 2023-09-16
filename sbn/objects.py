@@ -53,16 +53,11 @@ def cdir(pth) -> None:
 
 class Object:
 
-    __default__= ""
-
     def __contains__(self, key):
         return key in self.__dict__
 
     def __delitem__(self, key):
         return self.__dict__.__delitem__(key)
-
-    def __getattr__(self, key):
-        return self.__dict__.get(key, Object.__default__)
 
     def __getitem__(self, key):
         return self.__dict__.__getitem__(key)

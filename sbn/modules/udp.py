@@ -14,7 +14,8 @@ import time
 
 
 from ..brokers import Broker
-from ..objects import Default, Object
+from ..default import Default
+from ..objects import Object
 from ..threads import launch
 
 

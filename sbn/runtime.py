@@ -21,14 +21,14 @@ from sbn import modules
 
 
 from .clients import Client, Event, command, mods, parse
+from .default import Default
 from .objects import Object
 from .reactor import Reactor
 from .storage import Storage, spl
 from .threads import Thread, launch
 
 
-Cfg = Object()
-Cfg.__default__ = ""
+Cfg = Default()
 Cfg.mod = "bsc,err,flt,mod,sts,thr"
 Cfg.name = __file__.split(os.sep)[-2]
 

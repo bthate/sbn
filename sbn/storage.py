@@ -194,8 +194,8 @@ def last(obj, selector=None) -> None:
     if result:
         inp = result[-1]
         update(obj, inp)
-        obj.__fnm__ = inp.__fnm__
-    return obj.__fnm__
+        if "__fnm__" in inp:
+            obj.__fnm__ = inp.__fnm__
 
 
 def prt(obj, args="", skip="", plain=False):
