@@ -16,13 +16,9 @@ def __dir__():
     return (
             'Object',
             'construct',
-            'edit',
-            'format',
             'items',
             'keys',
-            'kind',
             'read',
-            'search',
             'update',
             'values',
             'write'
@@ -54,10 +50,6 @@ class Object:
         return self.__dict__.__setitem__(key, value)
 
 
-def cls(obj) -> str:
-    return kind(obj).split(".")[-1]
-
-
 def construct(obj, *args, **kwargs) -> None:
     if args:
         val = args[0]
@@ -73,46 +65,6 @@ def construct(obj, *args, **kwargs) -> None:
         update(obj, kwargs)
 
 
-def edit(obj, setter, skip=False) -> None:
-    for key, val in items(setter):
-        if skip and val == "":
-            continue
-        try:
-            obj[key] = int(val)
-            continue
-        except ValueError:
-            pass
-        try:
-            obj[key] = float(val)
-            continue
-        except ValueError:
-            pass
-        if val in ["True", "true"]:
-            obj[key] = True
-        elif val in ["False", "false"]:
-            obj[key] = False
-        else:
-            obj[key] = val
-
-
-def format(obj, args="") -> str:
-    if args:
-        keyz = args.split(",")
-    else:
-        keyz = keys(obj)
-    txt = ""
-    for key in sorted(keyz):
-        try:
-            value = obj[key]
-        except KeyError:
-            continue
-        if isinstance(value, str) and len(value.split()) >= 2:
-            txt += f'{key}="{value}" '
-        else:
-            txt += f'{key}={value} '
-    return txt.strip()
-
-
 def items(obj) -> []:
     if isinstance(obj, type({})):
         return obj.items()
@@ -125,29 +77,9 @@ def keys(obj) -> []:
     return obj.__dict__.keys()
 
 
-def kind(obj) -> str:
-    kin = str(type(obj)).split()[-1][1:-2]
-    if kin == "type":
-        kin = obj.__name__
-    return kin
-
-
 def read(obj, pth) -> None:
     with open(pth, 'r', encoding='utf-8') as ofile:
         update(obj, load(ofile))
-
-
-def search(obj, selector) -> bool:
-    res = False
-    for key, value in items(selector):
-        try:
-            val = obj[key]
-            if str(value) in str(val):
-                res = True
-                break
-        except KeyError:
-            continue
-    return res
 
 
 def update(obj, data, empty=True) -> None:

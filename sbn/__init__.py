@@ -12,6 +12,7 @@ from . import brokers, clients, objects,  reactor, storage, threads
 
 from .brokers import *
 from .clients import *
+from .default import *
 from .objects import *
 from .reactor import *
 from .storage import *
@@ -22,6 +23,7 @@ def __dir__():
     return (
             'Broker',
             'Client',
+            'Default',
             'Event',
             'Object',
             'Reactor',
@@ -32,13 +34,13 @@ def __dir__():
             'edit',
             'fetch',
             'find',
+            'format',
             'ident',
             'items',
             'keys',
             'kind',
             'last',
             'parse',
-            'prt',
             'read',
             'search',
             'sync',

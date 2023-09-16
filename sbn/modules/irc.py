@@ -23,7 +23,8 @@ from ..caching import Cache
 from ..clients import Client, Event, command
 from ..default import Default
 from ..objects import Object, keys
-from ..storage import edit, find, fntime, last, prt, sync
+from ..storage import edit, find, fntime, last, sync
+from ..storage import format as fmt
 from ..threads import laps, launch
 
 

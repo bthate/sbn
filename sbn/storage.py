@@ -15,7 +15,7 @@ import time
 import uuid
 
 
-from .objects import Object, keys, kind, read, search, update, write
+from .objects import Object, keys, read, update, write
 
 
 def __dir__():
@@ -24,8 +24,8 @@ def __dir__():
             'edit',
             'fetch',
             'find',
+            'format',
             'last',
-            'prt',
             'sync'
            )
 
@@ -204,7 +204,7 @@ def fetch(obj, pth):
 
 def ident(obj) -> str:
     return os.path.join(
-                        kind(obj),
+                        fqn(obj),
                         str(uuid.uuid4().hex),
                         os.path.join(*str(datetime.datetime.now()).split())
                        )
@@ -214,7 +214,7 @@ def last(obj, selector=None) -> None:
     if selector is None:
         selector = {}
     result = sorted(
-                    find(kind(obj), selector),
+                    find(fqn(obj), selector),
                     key=lambda x: fntime(x.__fnm__)
                    )
     if result:

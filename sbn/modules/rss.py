@@ -21,7 +21,8 @@ from urllib.request import Request, urlopen
 
 from ..brokers import Broker
 from ..objects import Object, update
-from ..storage import find, fntime, last, prt, sync, spl
+from ..storage import find, fntime, last, sync, spl
+from ..storage import format as fmt
 from ..threads import Repeater, laps, launch
 
 
@@ -285,7 +286,7 @@ def rss(event):
         for feed in find('rss'):
             nrs += 1
             elp = laps(time.time()-fntime(feed.__fnm__))
-            txt = prt(feed)
+            txt = fmt(feed)
             event.reply(f'{nrs} {txt} {elp}')
         if not nrs:
             event.reply('no rss feed found.')
