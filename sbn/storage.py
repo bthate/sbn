@@ -147,6 +147,13 @@ def fntime(daystr) -> float:
     return timed
 
 
+def fqn(obj) -> str:
+    kin = str(type(obj)).split()[-1][1:-2]
+    if kin == "type":
+        kin = obj.__name__
+    return kin
+
+
 def spl(txt) -> []:
     try:
         res = txt.split(',')
@@ -217,34 +224,35 @@ def last(obj, selector=None) -> None:
             obj.__fnm__ = inp.__fnm__
 
 
-def prt(obj, args="", skip="", plain=False):
-    res = []
-    keyz = []
-    if "," in args:
+def format(obj, args="") -> str:
+    if args:
         keyz = args.split(",")
-    if not keyz:
-        keyz = obj.__dict__.keys()
+    else:
+        keyz = keys(obj)
+    txt = ""
     for key in sorted(keyz):
-        if key.startswith("_"):
+        try:
+            value = obj[key]
+        except KeyError:
             continue
-        if skip and doskip(key, skip):
-            continue
-        value = getattr(obj, key, None)
-        if not value:
-            continue
-        if " object at " in str(value):
-            continue
-        txt = ""
-        if plain:
-            value = str(value)
-            txt = f'{value}'
-        elif isinstance(value, str) and len(value.split()) >= 2:
-            txt = f'{key}="{value}"'
+        if isinstance(value, str) and len(value.split()) >= 2:
+            txt += f'{key}="{value}" '
         else:
-            txt = f'{key}={value}'
-        res.append(txt)
-    txt = " ".join(res)
+            txt += f'{key}={value} '
     return txt.strip()
+
+
+def search(obj, selector) -> bool:
+    res = False
+    for key, value in items(selector):
+        try:
+            val = obj[key]
+            if str(value) in str(val):
+                res = True
+                break
+        except KeyError:
+            continue
+    return res
 
 
 def sync(obj, pth=None):
