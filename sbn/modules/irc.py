@@ -167,14 +167,14 @@ class IRC(Client, Output):
         Client.__init__(self)
         self.buffer = []
         self.cfg = Config()
-        self.events = Default()
+        self.events = Object()
         self.events.authed = threading.Event()
         self.events.connected = threading.Event()
         self.events.joined = threading.Event()
         self.events.ready = threading.Event()
         self.channels = []
         self.sock = None
-        self.state = Default()
+        self.state = Object()
         self.state.keeprunning = False
         self.state.nrconnect = 0
         self.state.nrsend = 0
