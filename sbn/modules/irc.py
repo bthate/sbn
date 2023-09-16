@@ -663,9 +663,9 @@ def cfg(event):
     last(config)
     if not event.sets:
         event.reply(
-                    prt(
+                    fmt(
                         config,
-                        keys(config),
+                        ",".join(keys(config)),
                         skip='control,password,realname,sleep,username'
                        )
                    )

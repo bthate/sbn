@@ -15,7 +15,7 @@ import time
 import uuid
 
 
-from .objects import Object, keys, read, update, write
+from .objects import Object, items, keys, read, update, write
 
 
 def __dir__():
@@ -224,13 +224,15 @@ def last(obj, selector=None) -> None:
             obj.__fnm__ = inp.__fnm__
 
 
-def format(obj, args="") -> str:
+def format(obj, args="", skip="") -> str:
     if args:
         keyz = args.split(",")
     else:
         keyz = keys(obj)
     txt = ""
     for key in sorted(keyz):
+        if key in spl(skip):
+            continue
         try:
             value = obj[key]
         except KeyError:
