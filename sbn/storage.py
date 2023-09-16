@@ -6,10 +6,13 @@
 "persistence"
 
 
+import datetime
 import inspect
 import os
+import pathlib
 import sys
 import time
+import uuid
 
 
 from .objects import Object, keys, kind, read, search, update, write
@@ -54,6 +57,7 @@ class Storage:
 
     @staticmethod
     def path(pth):
+        cdir(pth)
         return os.path.join(Storage.store(), pth)
 
     @staticmethod
@@ -71,6 +75,13 @@ class Storage:
 
 
 "utility"
+
+
+def cdir(pth) -> None:
+    if not pth.endswith(os.sep):
+        pth = os.path.dirname(pth)
+    pth = pathlib.Path(pth)
+    os.makedirs(pth, exist_ok=True)
 
 
 def doskip(txt, skipping) -> bool:
@@ -242,4 +253,5 @@ def sync(obj, pth=None):
     if not pth:
         pth = ident(obj)
     pth = Storage.path(pth)
+    cdir(pth)
     write(obj, pth)
