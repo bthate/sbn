@@ -252,6 +252,6 @@ def sync(obj, pth=None):
         pth = obj.__fnm__
     if not pth:
         pth = ident(obj)
-    pth = Storage.path(pth)
+    pth = Storage.store(pth)
     cdir(pth)
     write(obj, pth)
