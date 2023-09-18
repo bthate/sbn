@@ -7,12 +7,13 @@
 "package content"
 
 
-from . import brokers, clients, objects,  reactor, storage, threads
+from . import brokers, clients, finding, objects, reactor, storage, threads
 
 
 from .brokers import *
 from .clients import *
 from .default import *
+from .methods import *
 from .objects import *
 from .reactor import *
 from .storage import *
@@ -48,4 +49,3 @@ def __dir__():
             'values',
             'write'
            )
-

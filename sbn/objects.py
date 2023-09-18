@@ -17,6 +17,7 @@ def __dir__():
             'Object',
             'construct',
             'edit',
+            'format',
             'fqn',
             'items',
             'keys',

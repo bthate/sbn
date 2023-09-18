@@ -20,12 +20,14 @@ import _thread
 from sbn import modules
 
 
-from .clients import Client, Event, command, mods, parse
+from .clients import Client, Event, command
 from .default import Default
+from .methods import parse
 from .objects import Object
 from .reactor import Reactor
 from .storage import Storage
 from .threads import Thread, launch
+from .utility import mods, spl
 
 
 Cfg = Default()
@@ -101,7 +103,7 @@ def scan(pkg, modnames=[], initer=False, wait=False) -> []:
     threads = []
     if not modnames:
         modnames = mods(pkg.__path__[0])
-    for modname in modnames:
+    for modname in spl(modnames):
         module = getattr(pkg, modname, None)
         if not module:
             continue
@@ -133,7 +135,7 @@ def wrap(func) -> None:
         sys.stdout.flush()
     finally:
         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
-    for exc in Reactor.errors + Thread.errors:
+    for exc in Client.errors + Reactor.errors + Thread.errors:
         traceback.print_exception(
                                   type(exc),
                                   exc,

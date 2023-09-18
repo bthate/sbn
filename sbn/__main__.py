@@ -6,9 +6,5 @@
 from .runtime import wrap, main
 
 
-def wrapped():
-    wrap(main)
-
-
 if __name__ == "__main__":
-    wrapped()
+    wrap(main)

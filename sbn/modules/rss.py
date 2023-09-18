@@ -20,8 +20,8 @@ from urllib.request import Request, urlopen
 
 
 from ..brokers import Broker
+from ..methods import fmt
 from ..objects import Object, update
-from ..objects import format as fmt
 from ..storage import find, fntime, last, sync
 from ..threads import Repeater, laps, launch
 
