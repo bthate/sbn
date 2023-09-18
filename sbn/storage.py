@@ -260,8 +260,10 @@ def search(obj, selector) -> bool:
 def sync(obj, pth=None):
     if "__fnm__" in obj:
         pth = obj.__fnm__
+        del obj.__fnm__
     if not pth:
         pth = ident(obj)
     pth = Storage.store(pth)
     cdir(pth)
     write(obj, pth)
+    obj.__fnm__ = pth
