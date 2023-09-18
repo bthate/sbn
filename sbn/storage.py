@@ -15,7 +15,7 @@ import time
 import uuid
 
 
-from .objects import Object, items, keys, read, search, update, write
+from .objects import Object, fqn, items, keys, read, search, update, write
 
 
 def __dir__():
@@ -138,6 +138,28 @@ def fetch(obj, pth):
     return read(obj, path)
 
 
+def ident(obj) -> str:
+    return os.path.join(
+                        fqn(obj),
+                        str(uuid.uuid4().hex),
+                        os.path.join(*str(datetime.datetime.now()).split())
+                       )
+
+
+def last(obj, selector=None) -> None:
+    if selector is None:
+        selector = {}
+    result = sorted(
+                    find(fqn(obj), selector),
+                    key=lambda x: fntime(x.__fnm__)
+                   )
+    if result:
+        inp = result[-1]
+        update(obj, inp)
+        if "__fnm__" in inp:
+            obj.__fnm__ = inp.__fnm__
+
+
 def sync(obj, pth=None):
     if "__fnm__" in obj:
         pth = obj.__fnm__
@@ -148,3 +170,5 @@ def sync(obj, pth=None):
     cdir(pth)
     write(obj, pth)
     obj.__fnm__ = pth
+
+

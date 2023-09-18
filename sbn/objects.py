@@ -16,6 +16,8 @@ def __dir__():
     return (
             'Object',
             'construct',
+            'edit',
+            'fqn',
             'items',
             'keys',
             'read',
@@ -66,6 +68,28 @@ def construct(obj, *args, **kwargs) -> None:
         update(obj, kwargs)
 
 
+def edit(obj, setter, skip=False):
+    for key, val in items(setter):
+        if skip and val == "":
+            continue
+        try:
+            obj[key] = int(val)
+            continue
+        except ValueError:
+            pass
+        try:
+            obj[key] = float(val)
+            continue
+        except ValueError:
+            pass
+        if val in ["True", "true"]:
+            obj[key] = True
+        elif val in ["False", "false"]:
+            obj[key] = False
+        else:
+            obj[key] = val
+
+
 def items(obj) -> []:
     if isinstance(obj, type({})):
         return obj.items()
@@ -76,6 +100,31 @@ def keys(obj) -> []:
     if isinstance(obj, type({})):
         return obj.keys()
     return obj.__dict__.keys()
+
+
+def format(obj, args=[], skip=[]) -> str:
+    if not args:
+        args = keys(obj)
+    txt = ""
+    for key in sorted(args):
+        if key in skip:
+            continue
+        try:
+            value = obj[key]
+        except KeyError:
+            continue
+        if isinstance(value, str) and len(value.split()) >= 2:
+            txt += f'{key}="{value}" '
+        else:
+            txt += f'{key}={value} '
+    return txt.strip()
+
+
+def fqn(obj) -> str:
+    kin = str(type(obj)).split()[-1][1:-2]
+    if kin == "type":
+        kin = obj.__name__
+    return kin
 
 
 def read(obj, pth) -> None:
