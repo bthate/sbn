@@ -24,7 +24,6 @@ from ..objects import Object, update
 from ..objects import format as fmt
 from ..storage import find, fntime, last, sync
 from ..threads import Repeater, laps, launch
-from ..utility import spl
 
 
 def __dir__():
@@ -106,7 +105,7 @@ class Fetcher(Object):
             displaylist = obj.display_list or 'title,link'
         except AttributeError:
             displaylist = 'title,link,author'
-        for key in spl(displaylist):
+        for key in displaylist.split(","):
             if not key:
                 continue
             data = getattr(obj, key, None)
@@ -188,7 +187,7 @@ class Parser(Object):
         for line in txt.split('<item>'):
             line = line.strip()
             obj = Object()
-            for itm in spl(item):
+            for itm in item.split(","):
                 setattr(obj, itm, Parser.getitem(line, itm))
             res.append(obj)
         return res

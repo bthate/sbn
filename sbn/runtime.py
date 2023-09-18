@@ -93,23 +93,15 @@ def daemon():
         os.dup2(ses.fileno(), sys.stderr.fileno())
 
 
-def spl(txt) -> []:
-    try:
-        res = txt.split(',')
-    except (TypeError, ValueError):
-        res = txt
-    return [x for x in res if x]
-
-
-def scan(pkg, modstr="", initer=False, wait=False) -> []:
+def scan(pkg, modnames=[], initer=False, wait=False) -> []:
     if not pkg:
         return []
     inited = []
     scanned = []
     threads = []
-    if modstr == "":
-        modstr = mods(pkg.__path__[0])
-    for modname in spl(modstr):
+    if not modnames:
+        modnames = mods(pkg.__path__[0])
+    for modname in modnames:
         module = getattr(pkg, modname, None)
         if not module:
             continue

@@ -129,7 +129,7 @@ def main() -> None:
     if os.path.exists(Storage.workdir):
         shutil.rmtree(Storage.workdir)
     parse(Cfg, " ".join(sys.argv[1:]))
-    scan(modules, Cfg.mod, False, True)
+    scan(modules, Cfg.mod.split(","), False, True)
     if "v" in Cfg.opts:
         Client.output = print
     nrs = Cfg.index or 1

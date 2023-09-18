@@ -26,7 +26,6 @@ from ..objects import Object, edit, keys
 from ..objects import format as fmt
 from ..storage import find, fntime, last, sync
 from ..threads import laps, launch
-from ..utility import spl
 
 
 def __dir__():
