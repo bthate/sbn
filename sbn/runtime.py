@@ -24,7 +24,7 @@ from .clients import Client, Event, command, mods, parse
 from .default import Default
 from .objects import Object
 from .reactor import Reactor
-from .storage import Storage, spl
+from .storage import Storage
 from .threads import Thread, launch
 
 
@@ -91,6 +91,14 @@ def daemon():
         os.dup2(sos.fileno(), sys.stdout.fileno())
     with open('/dev/null', 'a+', encoding="utf-8") as ses:
         os.dup2(ses.fileno(), sys.stderr.fileno())
+
+
+def spl(txt) -> []:
+    try:
+        res = txt.split(',')
+    except (TypeError, ValueError):
+        res = txt
+    return [x for x in res if x]
 
 
 def scan(pkg, modstr="", initer=False, wait=False) -> []:

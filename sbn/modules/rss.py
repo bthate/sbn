@@ -20,10 +20,12 @@ from urllib.request import Request, urlopen
 
 
 from ..brokers import Broker
+from ..methods import last
+from ..methods import format as fmt
 from ..objects import Object, update
-from ..storage import find, fntime, last, sync, spl
-from ..storage import format as fmt
+from ..storage import find, fntime, sync
 from ..threads import Repeater, laps, launch
+from ..utility import spl
 
 
 def __dir__():
@@ -38,7 +40,9 @@ def __dir__():
             "rss"
            )
 
+
 DEBUG = False
+
 
 def init():
     fetcher = Fetcher()
@@ -242,6 +246,9 @@ def unescape(text):
 
 def useragent(txt):
     return 'Mozilla/5.0 (X11; Linux x86_64) ' + txt
+
+
+"commands"
 
 
 def dpl(event):

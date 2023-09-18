@@ -15,17 +15,15 @@ import time
 import uuid
 
 
-from .objects import Object, items, keys, read, update, write
+from .objects import Object, items, keys, read, search, update, write
 
 
 def __dir__():
     return (
             'Storage',
-            'edit',
             'fetch',
             'find',
-            'format',
-            'last',
+            'fntime',
             'sync'
            )
 
@@ -84,26 +82,11 @@ def cdir(pth) -> None:
     os.makedirs(pth, exist_ok=True)
 
 
-def doskip(txt, skipping) -> bool:
-    for skp in spl(skipping):
-        if skp in txt:
-            return True
-    return False
-
-
-def files() -> []:
-    return os.listdir(Storage.store())
-
-
 def find(mtc, selector=None) -> []:
     if selector is None:
         selector = {}
     for fnm in reversed(sorted(fns(mtc), key=fntime)):
-        clzname = fnclass(fnm)
-        clz = sys.modules.get(clzname, None)
-        if not clz:
-            clz = Object
-        obj = clz()
+        obj = Object()
         fetch(obj, fnm)
         if '__deleted__' in obj:
             continue
@@ -128,10 +111,6 @@ def fns(mtc) -> []:
                         yield strip(os.path.join(ddd, fls[-1]))
 
 
-def fnclass(fnm):
-    return fnm.split(os.sep)[-4]
-
-
 def fntime(daystr) -> float:
     daystr = daystr.replace('_', ':')
     datestr = ' '.join(daystr.split(os.sep)[-2:])
@@ -147,21 +126,6 @@ def fntime(daystr) -> float:
     return timed
 
 
-def fqn(obj) -> str:
-    kin = str(type(obj)).split()[-1][1:-2]
-    if kin == "type":
-        kin = obj.__name__
-    return kin
-
-
-def spl(txt) -> []:
-    try:
-        res = txt.split(',')
-    except (TypeError, ValueError):
-        res = txt
-    return [x for x in res if x]
-
-
 def strip(path) -> str:
     return os.sep.join(path.split(os.sep)[-4:])
 
@@ -169,92 +133,9 @@ def strip(path) -> str:
 "methods"
 
 
-def edit(obj, setter, skip=False):
-    try:
-        setter = vars(setter)
-    except (TypeError, ValueError):
-        pass
-    if not setter:
-        setter = {}
-    for key, val in setter.items():
-        if skip and val == "":
-            continue
-        try:
-            setattr(obj, key, int(val))
-            continue
-        except ValueError:
-            pass
-        try:
-            setattr(obj, key, float(val))
-            continue
-        except ValueError:
-            pass
-        if val in ["True", "true"]:
-            setattr(obj, key, True)
-        elif val in ["False", "false"]:
-            setattr(obj, key, False)
-        else:
-            setattr(obj, key, val)
-
-
 def fetch(obj, pth):
     path = Storage.store(pth)
     return read(obj, path)
-
-
-def ident(obj) -> str:
-    return os.path.join(
-                        fqn(obj),
-                        str(uuid.uuid4().hex),
-                        os.path.join(*str(datetime.datetime.now()).split())
-                       )
-
-
-def last(obj, selector=None) -> None:
-    if selector is None:
-        selector = {}
-    result = sorted(
-                    find(fqn(obj), selector),
-                    key=lambda x: fntime(x.__fnm__)
-                   )
-    if result:
-        inp = result[-1]
-        update(obj, inp)
-        if "__fnm__" in inp:
-            obj.__fnm__ = inp.__fnm__
-
-
-def format(obj, args="", skip="") -> str:
-    if args:
-        keyz = args.split(",")
-    else:
-        keyz = keys(obj)
-    txt = ""
-    for key in sorted(keyz):
-        if key in spl(skip):
-            continue
-        try:
-            value = obj[key]
-        except KeyError:
-            continue
-        if isinstance(value, str) and len(value.split()) >= 2:
-            txt += f'{key}="{value}" '
-        else:
-            txt += f'{key}={value} '
-    return txt.strip()
-
-
-def search(obj, selector) -> bool:
-    res = False
-    for key, value in items(selector):
-        try:
-            val = obj[key]
-            if str(value) in str(val):
-                res = True
-                break
-        except KeyError:
-            continue
-    return res
 
 
 def sync(obj, pth=None):

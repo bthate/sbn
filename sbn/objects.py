@@ -19,6 +19,7 @@ def __dir__():
             'items',
             'keys',
             'read',
+            'search',
             'update',
             'values',
             'write'
@@ -80,6 +81,19 @@ def keys(obj) -> []:
 def read(obj, pth) -> None:
     with open(pth, 'r', encoding='utf-8') as ofile:
         update(obj, load(ofile))
+
+
+def search(obj, selector) -> bool:
+    res = False
+    for key, value in items(selector):
+        try:
+            val = obj[key]
+        except KeyError:
+            continue
+        if str(value) in str(val):
+            res = True
+            break
+    return res
 
 
 def update(obj, data, empty=True) -> None:
