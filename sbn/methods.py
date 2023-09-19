@@ -11,19 +11,14 @@ import uuid
 
 
 from .brokers import Broker
-from .finding import fntime
 from .objects import fqn, keys, read
 from .storage import Storage
+from .utility import fntime
 
 
 def __dir__():
     return (
-            'command',
             'fetch',
-            'fmt',
-            'fqn',
-            'ident',
-            'last',
             'parse',
             'search',
             'sync'
@@ -53,35 +48,6 @@ def fmt(obj, args=[], skip=[]) -> str:
         else:
             txt += f'{key}={value} '
     return txt.strip()
-
-
-def fqn(obj) -> str:
-    kin = str(type(obj)).split()[-1][1:-2]
-    if kin == "type":
-        kin = obj.__name__
-    return kin
-
-
-def ident(obj) -> str:
-    return os.path.join(
-                        fqn(obj),
-                        str(uuid.uuid4().hex),
-                        os.path.join(*str(datetime.datetime.now()).split())
-                       )
-
-
-def last(obj, selector=None) -> None:
-    if selector is None:
-        selector = {}
-    result = sorted(
-                    find(fqn(obj), selector),
-                    key=lambda x: fntime(x.__fnm__)
-                   )
-    if result:
-        inp = result[-1]
-        update(obj, inp)
-        if "__fnm__" in inp:
-            obj.__fnm__ = inp.__fnm__
 
 
 def parse(obj, txt=None) -> None:

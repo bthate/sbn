@@ -6,8 +6,12 @@
 "locate"
 
 
-from .objects import Object, search
-from .storage import Storage
+from .objects import Object, fqn, search, update
+from .storage import Storage, fetch, fns
+from .utility import fntime
+
+
+"utility"
 
 
 def find(mtc, selector=None) -> []:
@@ -24,36 +28,18 @@ def find(mtc, selector=None) -> []:
         yield obj
 
 
-def fns(mtc) -> []:
-    dname = ''
-    clz = Storage.long(mtc)
-    if clz:
-        path = Storage.path(clz)
-        for rootdir, dirs, _files in os.walk(path, topdown=False):
-            if dirs:
-                dname = sorted(dirs)[-1]
-                if dname.count('-') == 2:
-                    ddd = os.path.join(rootdir, dname)
-                    fls = sorted(os.listdir(ddd))
-                    if fls:
-                        yield strip(os.path.join(ddd, fls[-1]))
+"methods"
 
 
-def fntime(daystr) -> float:
-    daystr = daystr.replace('_', ':')
-    datestr = ' '.join(daystr.split(os.sep)[-2:])
-    if '.' in datestr:
-        datestr, rest = datestr.rsplit('.', 1)
-    else:
-        rest = ''
-    timed = time.mktime(time.strptime(datestr, '%Y-%m-%d %H:%M:%S'))
-    if rest:
-        timed += float('.' + rest)
-    else:
-        timed = 0
-    return timed
-
-
-def strip(path) -> str:
-    return os.sep.join(path.split(os.sep)[-4:])
-
+def last(obj, selector=None) -> None:
+    if selector is None:
+        selector = {}
+    result = sorted(
+                    find(fqn(obj), selector),
+                    key=lambda x: fntime(x.__fnm__)
+                   )
+    if result:
+        inp = result[-1]
+        update(obj, inp)
+        if "__fnm__" in inp:
+            obj.__fnm__ = inp.__fnm__

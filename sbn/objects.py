@@ -17,7 +17,7 @@ def __dir__():
             'Object',
             'construct',
             'edit',
-            'format',
+            'fmt',
             'fqn',
             'items',
             'keys',
@@ -103,7 +103,7 @@ def keys(obj) -> []:
     return obj.__dict__.keys()
 
 
-def format(obj, args=[], skip=[]) -> str:
+def fmt(obj, args=[], skip=[]) -> str:
     if not args:
         args = keys(obj)
     txt = ""

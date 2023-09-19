@@ -15,7 +15,7 @@ class Default(Object):
 
     def __init__(self):
         Object.__init__(self)
-        self.__default__ = ""
+        self.__default__ = Default.__default__
 
     def __getattr__(self, key):
         return self.__dict__.get(key, self.__default__)

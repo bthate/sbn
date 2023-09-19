@@ -9,9 +9,11 @@
 import time
 
 
+from ..finding import find
 from ..objects import Object
-from ..storage import find, fntime, sync
+from ..storage import sync
 from ..threads import laps
+from ..utility import fntime
 
 
 def __dir__():
