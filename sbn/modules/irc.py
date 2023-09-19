@@ -663,8 +663,8 @@ def cfg(event):
         event.reply(
                     fmt(
                         config,
-                        ",".join(keys(config)),
-                        skip='control,password,realname,sleep,username'
+                        keys(config),
+                        skip='control,password,realname,sleep,username'.split(",")
                        )
                    )
     else:
