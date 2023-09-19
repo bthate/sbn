@@ -127,14 +127,18 @@ def wrap(func) -> None:
     if "d" in Cfg.opts:
         Client.debug("terminal disabled")
         return
-    old = termios.tcgetattr(sys.stdin.fileno())
+    try:
+        old = termios.tcgetattr(sys.stdin.fileno())
+    except termios.error:
+        old = None
     try:
         func()
     except (EOFError, KeyboardInterrupt):
         print("")
         sys.stdout.flush()
     finally:
-        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
+        if old:
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
     for exc in Client.errors + Reactor.errors + Thread.errors:
         traceback.print_exception(
                                   type(exc),

@@ -7,4 +7,4 @@ from .runtime import wrap, main
 
 
 if __name__ == "__main__":
-    wrap(main)
+    main()
