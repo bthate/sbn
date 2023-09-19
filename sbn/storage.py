@@ -12,8 +12,7 @@ import os
 import uuid
 
 
-from .finding import find
-from .objects import Object, fqn, keys, read, write
+from .objects import Object, fqn, keys, read, search, update, write
 from .utility import cdir, fntime, strip
 
 
@@ -74,6 +73,20 @@ class Storage:
 "utility"
 
 
+def find(mtc, selector=None) -> []:
+    if selector is None:
+        selector = {}
+    for fnm in reversed(sorted(fns(mtc), key=fntime)):
+        obj = Object()
+        fetch(obj, fnm)
+        if '__deleted__' in obj:
+            continue
+        if selector and not search(obj, selector):
+            continue
+        obj.__fnm__ = fnm
+        yield obj
+
+
 def fns(mtc) -> []:
     dname = ''
     clz = Storage.long(mtc)
@@ -92,6 +105,11 @@ def fns(mtc) -> []:
 "methods"
 
 
+def fetch(obj, pth):
+    path = Storage.store(pth)
+    return read(obj, path)
+
+
 def ident(obj) -> str:
     return os.path.join(
                         fqn(obj),
@@ -100,9 +118,18 @@ def ident(obj) -> str:
                        )
 
 
-def fetch(obj, pth):
-    path = Storage.store(pth)
-    return read(obj, path)
+def last(obj, selector=None) -> None:
+    if selector is None:
+        selector = {}
+    result = sorted(
+                    find(fqn(obj), selector),
+                    key=lambda x: fntime(x.__fnm__)
+                   )
+    if result:
+        inp = result[-1]
+        update(obj, inp)
+        if "__fnm__" in inp:
+            obj.__fnm__ = inp.__fnm__
 
 
 def sync(obj, pth=None):
