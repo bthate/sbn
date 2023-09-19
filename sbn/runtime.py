@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C0115,C0116,E0402,W0212,R1710,W0611,E0611,R0903,W0105,C0103
+# pylint: disable=E0401,W0102
 # ruff: noqa: F401
 
 
@@ -22,7 +23,7 @@ from sbn import modules
 
 from .clients import Client, Event, command
 from .default import Default
-from .methods import parse
+from .parsing import parse
 from .objects import Object
 from .reactor import Reactor
 from .storage import Storage
@@ -127,10 +128,11 @@ def wrap(func) -> None:
     if "d" in Cfg.opts:
         Client.debug("terminal disabled")
         return
+    old = None
     try:
         old = termios.tcgetattr(sys.stdin.fileno())
     except termios.error:
-        old = None
+        pass
     try:
         func()
     except (EOFError, KeyboardInterrupt):

@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-#
+# pylint: disable=C0116
 
 
 "utilities"
@@ -19,7 +19,7 @@ def __dir__():
             'skip',
             'spl',
             'strip'
-           ) 
+           )
 
 
 def cdir(pth) -> None:

@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-#
+# pylint: disable=C0115,E0402.R0903
 
 
 "configurations"
@@ -11,7 +11,7 @@ from .objects import Object
 
 class Default(Object):
 
-    __default__ = "" 
+    __default__ = ""
 
     def __init__(self):
         Object.__init__(self)

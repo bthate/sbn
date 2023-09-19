@@ -8,16 +8,16 @@
 
 
 import inspect
-import os
 import time
 import threading
 
 
 from .brokers import Broker
 from .default import Default
-from .methods import parse
+from .parsing import parse
 from .objects import Object
 from .reactor import Reactor
+from .utility import mods
 
 
 def __dir__():
@@ -107,22 +107,6 @@ class Client(Reactor):
     def wait(self):
         while not self._stopped.is_set():
             time.sleep(1.0)
-
-
-"utility"
-
-
-def mods(path):
-    res = []
-    for fnm in os.listdir(path):
-        if fnm.endswith("~"):
-            continue
-        if not fnm.endswith(".py"):
-            continue
-        if fnm in ["__main__.py", "__init__.py"]:
-            continue
-        res.append(fnm[:-3])
-    return sorted(res)
 
 
 "methods"

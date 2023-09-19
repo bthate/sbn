@@ -26,7 +26,7 @@ from ..finding import find, last
 from ..objects import Object, edit, fmt, keys
 from ..storage import sync
 from ..threads import laps, launch
-
+from ..utility import fntime
 
 def __dir__():
     return (
@@ -102,7 +102,6 @@ class Config(Object):
 
 
 class Output(Cache):
-
 
     def __init__(self):
         Cache.__init__(self)

@@ -7,7 +7,7 @@
 
 
 from .objects import Object, fqn, search, update
-from .storage import Storage, fetch, fns
+from .storage import fetch, fns
 from .utility import fntime
 
 
