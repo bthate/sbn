@@ -25,15 +25,15 @@ from .thread  import launch
 from .utils   import mods, pidfile, spl
 
 
-PIDFILE = store("zelf.pid")
+PIDFILE = store("sbn.pid")
 TIME = time.ctime(time.time()).replace("  ", " ")
 
 
 Cfg = Default()
 Cfg.mod = "bsc,err,flt,mod,sts,thr"
-Cfg.name = "zelf"
-Cfg.slogan = "the self"
-Cfg.version = "102"
+Cfg.name = "sbn"
+Cfg.slogan = "Skull, Bones and Number (OTP-CR-117/19)"
+Cfg.version = "50"
 Cfg.description = f"{Cfg.name.upper()} {Cfg.version} {Cfg.mod.upper()} {Cfg.slogan}"
 
 

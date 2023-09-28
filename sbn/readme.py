@@ -2,96 +2,107 @@
 #
 #
 
-"""the self
-
-
-    ZELF is a python3 IRC bot is intended to be programmable in a
-    static, only code, no popen, no user imports and no reading
-    modules from a directory, way. 
-
-    ZELF provides some functionality, it can connect to IRC, fetch
-    and display RSS feeds, take todo notes, keep a shopping list and
-    log text.
+"""SBN - Skull, Bones and Number (OTP-CR-117/19)
 
 
 SYNOPSIS
 
 
-    zelf <cmd> [key=val] 
-    zelf <cmd> [key==val]
-    zelf [-c] [-d] [-v]
+    sbn <cmd> [key=val] 
+    sbn <cmd> [key==val]
+    sbn [-c] [-d] [-v] [-a]
+
+
+DESCRIPTION
+
+
+    SBN is a python3 IRC bot is intended to be programmable  in a
+    static, only code, no popen, no user imports and no reading modules from
+    a directory, way. It can show genocide and suicide stats of king netherlands
+    his genocide into a IRC channel, display rss feeds and log simple text
+    messages.
+
+    SBN contains correspondence <writings> with the International Criminal Court, 
+    asking for arrest of the king of the  netherlands, for the genocide he is
+    committing with his new treatement laws. Current status is "no basis to
+    proceed" judgement of the prosecutor which requires a basis to prosecute
+    <reconsider> to have the king actually arrested.
 
 
 INSTALL
 
 
-    $ pipx install zelf
+    $ pipx install sbn
 
 
 USAGE
 
+    use the following alias for easier typing
 
-    for ease of use, use an alias
+    $ alias sbn="python3 -m sbn"
 
-    $ alias opr="python3 -m zelf"
 
     list of commands
 
-    $ zelf cmd
+    $ sbn cmd
     cmd,err,flt,sts,thr,upt
+
 
     start a console
 
-    $ zelf -c
+    $ sbn -c
     >
 
     start additional modules
 
-    $ zelf mod=<mod1,mod2> -c
+    $ sbn mod=<mod1,mod2> -c
     >
 
     list of modules
 
-    $ zelf mod
-    bsc,err,flt,irc,log,mod,rss,shp,
-    sts,tdo,thr,udp
+    $ sbn mod
+    cmd,err,flt,fnd,irc,log,mdl,mod,
+    req,rss,slg,sts,tdo,thr,upt,ver
 
     to start irc, add mod=irc when
     starting
 
-    $ zelf -c mod=irc
+    $ sbn mod=irc -c
 
     to start rss, also add mod=rss
     when starting
 
-    $ zelf -c mod=irc,rs
+    $ sbn mod=irc,rss -c
 
     start as daemon
 
-    $ zelf -d mod=irc,rss
+    $ sbn  mod=irc,rss -d
     $ 
+
+    you can add the -a option to have all modules
+    loaded.
 
 
 CONFIGURATION
 
 
-    irc
+ irc
 
-    $ zelf cfg server=<server>
-    $ zelf cfg channel=<channel>
-    $ zelf cfg nick=<nick>
+    $ sbn cfg server=<server>
+    $ sbn cfg channel=<channel>
+    $ sbn cfg nick=<nick>
 
-    sasl
+ sasl
 
-    $ zelf pwd <nsvnick> <nspass>
-    $ zelf cfg password=<frompwd>
+    $ sbn pwd <nsvnick> <nspass>
+    $ sbn cfg password=<frompwd>
 
-    rss
+ rss
 
-    $ zelf rss <url>
-    $ zelf dpl <url> <item1,item2>
-    $ zelf rem <url>
-    $ zelf nme <url< <name>
+    $ sbn rss <url>
+    $ sbn dpl <url> <item1,item2>
+    $ sbn rem <url>
+    $ sbn nme <url< <name>
 
 
 COMMANDS
@@ -101,43 +112,54 @@ COMMANDS
     cfg - irc configuration
     dlt - remove a user
     dpl - sets display items
+    ftc - runs a fetching batch
+    fnd - find objects 
     flt - instances registered
     log - log some text
-    met - add user
+    mdl - genocide model
+    met - add a user
     mre - displays cached output
+    nck - changes nick on irc
+    now - genocide stats
     pwd - sasl nickserv name/pass
     rem - removes a rss feed
+    req - reconsider
     rss - add a feed
+    slg - slogan
     thr - show the running threads
+    tpc - genocide stats into topic
 
 
 SYSTEMD
 
 
+    using the pipx installation, replace "<user>" with the user running pipx
+
     [Unit]
-    Description=ZELF - the self
+    Description=Skull, Bones and Number (OTP-CR-117/19)
     Requires=network.target
     After=network.target
 
     [Service]
     DynamicUser=True
-    Type=forking
-    User=bart
-    Group=bart
-    PIDFile=/home/bart/.zelf/zelf.pid
-    WorkingDirectory=/home/bart/.zelf
-    ExecStart=/home/bart/.local/pipx/venvs/zelf/bin/zelf -d mod=irc,rss
+    Type=fork
+    User=<user>
+    Group=<user>
+    PIDFile=sbn.pid
+    WorkingDirectory=/home/<user>/.sbn
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/python3 -m sbn  mod=irc,rss,mdl -d
     RemainAfterExit=yes
 
     [Install]
     WantedBy=multi-user.target
 
 
+
 FILES
 
 
-    ~/.local/bin/zelf
-    ~/.local/pipx/venvs/zelf/
+    ~/.local/bin/sbn
+    ~/.local/pipx/venvs/sbn/
 
 
 AUTHOR
@@ -149,6 +171,6 @@ AUTHOR
 COPYRIGHT
 
 
-    ZELF is placed in the Public Domain.
+    SBN is placed in the Public Domain.
 
 """

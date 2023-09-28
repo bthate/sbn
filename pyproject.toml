@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "41"
+version = "50"
 authors = [
     {name = "Bart Thate", email = "skullbonesandnumber@gmail.com" },
 ]
@@ -32,7 +32,7 @@ dev = []
 
 
 [project.scripts]
-sbn = "sbn.__main__:wrapped"
+sbn = "sbn.run:wrapped"
 
 
 [tool.setuptools]
