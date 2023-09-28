@@ -10,77 +10,72 @@
 import queue
 import ssl
 import threading
+import _thread
 
 
-from .threads import launch
+from .error  import Errors
+from .object import Object
+from .thread import launch
 
 
-def __dir__():
-    return (
-            'Reactor',
-            'dispatch',
-           )
+execlock = _thread.allocate_lock()
 
 
-class Reactor:
-
-    errors = []
-    output = print
+class Reactor(Object):
 
     def __init__(self):
-        self._cbs = {}
-        self._queue = queue.Queue()
-        self._stopped = threading.Event()
-
-    @staticmethod
-    def callback(func, obj) -> None:
-        try:
-            func(obj)
-        except Exception as exc:
-            excp = exc.with_traceback(exc.__traceback__)
-            Reactor.errors.append(excp)
-            try:
-                obj.ready()
-            except AttributeError:
-                pass
+        self.cbs = {}
+        self.queue = queue.Queue()
+        self.stopped = threading.Event()
 
     def handle(self, obj):
-        func = self._cbs.get(obj.type, None)
+        func = self.cbs.get(obj.type, None)
         if func:
             obj._thr = launch(
-                              Reactor.callback,
+                              callback,
                               func,
                               obj,
-                              name=obj.cmd or obj.type
-                             )
+                              name=obj.type,
+                              daemon=False
+                            )
         return obj
 
     def loop(self) -> None:
-        while not self._stopped.is_set():
+        while not self.stopped.is_set():
             try:
                 obj = self.poll()
                 if obj is None:
-                    self._stopped.set()
+                    self.stop()
                     continue
                 self.handle(obj)
             except (ssl.SSLError, EOFError) as ex:
                 exc = ex.with_traceback(ex.__traceback__)
-                Reactor.errors.append(exc)
+                Errors.errors.append(exc)
                 self.stop()
                 self.start()
 
     def poll(self):
-        return self._queue.get()
+        return self.queue.get()
 
     def put(self, obj) -> None:
-        self._queue.put_nowait(obj)
+        self.queue.put_nowait(obj)
 
     def register(self, typ, func) -> None:
-        self._cbs[typ] = func
+        self.cbs[typ] = func
 
     def start(self):
         launch(self.loop)
 
     def stop(self):
-        self._stopped.set()
+        self.stopped.set()
         self.put(None)
+
+
+def callback(func, evt) -> None:
+    with execlock:
+        try:
+            func(evt)
+        except Exception as exc:
+            excp = exc.with_traceback(exc.__traceback__)
+            Errors.errors.append(excp)
+            evt.ready()

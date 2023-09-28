@@ -9,17 +9,9 @@
 import time
 
 
-from ..objects import Object
-from ..storage import find, sync
-from ..threads import laps
-from ..utility import fntime
-
-
-def __dir__():
-    return (
-            "Log",
-            "log"
-           )
+from ..object import Object
+from ..store  import find, sync
+from ..utils  import fntime, laps
 
 
 class Log(Object):

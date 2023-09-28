@@ -1,85 +1,68 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C0115,C0116,E0402,W0212,R1710,W0611,E0611,R0903,W0105,C0103
-# pylint: disable=E0401,W0102
-# ruff: noqa: F401
+# pylint: disable=E0611,E0402,C0301,C0413,C0115,C0116,W0212,R1710,R0903,C0411
+# pylint: disable=W0125
 
 
-"binary"
+"runtime"
 
 
 import os
-import readline
 import sys
 import termios
 import time
-import threading
 import traceback
 import _thread
 
 
-from sbn import modules
-
-
-from .clients import Client, Event, command
+from .client  import Client
+from .command import Commands, command
 from .default import Default
-from .parsing import parse
-from .objects import Object
-from .reactor import Reactor
-from .storage import Storage
-from .threads import Thread, launch
-from .utility import mods, spl
+from .error   import Errors, debug
+from .parse   import parse
+from .store   import Storage, store
+from .thread  import launch
+from .utils   import mods, pidfile, spl
+
+
+PIDFILE = store("zelf.pid")
+TIME = time.ctime(time.time()).replace("  ", " ")
 
 
 Cfg = Default()
 Cfg.mod = "bsc,err,flt,mod,sts,thr"
-Cfg.name = __file__.split(os.sep)[-2]
+Cfg.name = "zelf"
+Cfg.slogan = "the self"
+Cfg.version = "102"
+Cfg.description = f"{Cfg.name.upper()} {Cfg.version} {Cfg.mod.upper()} {Cfg.slogan}"
+
+
+from . import modules
 
 
 class CLI(Client):
 
+    output = print
+
     def raw(self, txt):
-        print(txt)
+        if CLI.output:
+            CLI.output(txt)
 
 
-class Console(Client):
-
-    prompting = threading.Event()
+class Console(CLI):
 
     def announce(self, txt):
         pass
 
-    def handle(self, obj):
-        command(obj)
-        obj.wait()
+    def handle(self, evt):
+        command(evt)
+        evt.wait()
 
     def prompt(self):
-        Console.prompting.set()
-        inp = input("> ")
-        Console.prompting.clear()
-        return inp
+        return input("> ")
 
     def poll(self):
-        try:
-            return self.event(self.prompt())
-        except EOFError:
-            _thread.interrupt_main()
-
-    def raw(self, txt):
-        if Console.prompting.is_set():
-            txt = "\n" + txt
-        print(txt)
-        Console.prompting.clear()
-        sys.stdout.flush()
-
-
-"utility"
-
-
-def cprint(txt):
-    if "v" in Cfg.opts:
-        print(txt)
-        sys.stdout.flush()
+        return self.event(self.prompt())
 
 
 def daemon():
@@ -96,20 +79,18 @@ def daemon():
         os.dup2(ses.fileno(), sys.stderr.fileno())
 
 
-def scan(pkg, modnames=[], initer=False, wait=False) -> []:
+def scan(pkg, modnames="", initer=False, dowait=False) -> []:
     if not pkg:
         return []
     inited = []
     scanned = []
     threads = []
-    if not modnames:
-        modnames = mods(pkg.__path__[0])
     for modname in spl(modnames):
         module = getattr(pkg, modname, None)
         if not module:
             continue
         scanned.append(modname)
-        Client.scan(module)
+        Commands.scan(module)
         Storage.scan(module)
         if initer:
             try:
@@ -118,7 +99,7 @@ def scan(pkg, modnames=[], initer=False, wait=False) -> []:
                 continue
             inited.append(modname)
             threads.append(launch(module.init, name=f"init {modname}"))
-    if wait:
+    if dowait:
         for thread in threads:
             thread.join()
     return inited
@@ -126,7 +107,7 @@ def scan(pkg, modnames=[], initer=False, wait=False) -> []:
 
 def wrap(func) -> None:
     if "d" in Cfg.opts:
-        Client.debug("terminal disabled")
+        debug("terminal disabled!")
         return
     old = None
     try:
@@ -136,46 +117,49 @@ def wrap(func) -> None:
     try:
         func()
     except (EOFError, KeyboardInterrupt):
-        print("")
-        sys.stdout.flush()
+        pass
     finally:
         if old:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
-    for exc in Client.errors + Reactor.errors + Thread.errors:
+    for exc in Errors.errors:
         traceback.print_exception(
                                   type(exc),
                                   exc,
                                   exc.__traceback__
                                  )
 
-"runtime"
-
 
 def main():
     parse(Cfg, " ".join(sys.argv[1:]))
-    if "a" in Cfg.opts:
-        Cfg.mod = ",".join(mods(modules.__path__[0]))
-    if "v" in Cfg.opts:
-        tme = time.ctime(time.time()).replace("  ", " ")
-        Client.output = print
-        Client.debug(f"{Cfg.name.upper()} started {tme} {Cfg.opts.upper()}")
     if "d" in Cfg.opts:
-        Client.output = None
         daemon()
+        pidfile(PIDFILE)
         scan(modules, Cfg.mod, True)
         while 1:
             time.sleep(1.0)
         return
-    csl = Console()
+    if "a" in Cfg.opts:
+        Cfg.mod = ",".join(mods(modules.__path__[0]))
+    if "v" in Cfg.opts:
+        Errors.output = print
+        Cfg.description = f"{Cfg.name.upper()} {Cfg.version} {Cfg.mod.upper()} {Cfg.opts.upper()}"
+        debug(Cfg.description)
     if "c" in Cfg.opts:
         scan(modules, Cfg.mod, True, True)
+        csl = Console()
         csl.start()
-        csl.wait()
+        csl.forever()
     else:
         scan(modules, Cfg.mod)
         cli = CLI()
-        evt = Event()
-        evt.orig = object.__repr__(cli)
-        evt.txt = Cfg.otxt
+        evt = cli.event(Cfg.otxt)
         command(evt)
         evt.wait()
+
+
+def wrapped():
+    wrap(main)
+
+
+if __name__ == "__main__":
+    wrapped()

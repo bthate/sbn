@@ -6,13 +6,7 @@
 "list of bots"
 
 
-from ..brokers import Broker
-
-
-def __dir__():
-    return (
-            "flt",
-           )
+from ..broker import Broker
 
 
 def flt(event):
@@ -23,6 +17,6 @@ def flt(event):
     except (KeyError, TypeError, IndexError, ValueError):
         pass
     event.reply(
-                ' | '.join([repr(obj).split()[0].split(".")[-1]
+                ' | '.join([object.__repr__(obj).split()[0].split(".")[-1]
                             for obj in Broker.objs])
                )

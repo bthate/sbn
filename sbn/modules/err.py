@@ -10,21 +10,14 @@ import io
 import traceback
 
 
-from ..reactor import Reactor
-from ..threads import Thread
-
-
-def __dir__():
-    return (
-            "err",
-           )
+from ..error import Errors
 
 
 def err(event):
-    if not Reactor.errors and not Thread.errors:
+    if not Errors.errors:
         event.reply("no errors")
         return
-    for exc in Reactor.errors + Thread.errors:
+    for exc in Errors.errors:
         stream = io.StringIO(
                              traceback.print_exception(
                                                        type(exc),

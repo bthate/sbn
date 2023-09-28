@@ -6,14 +6,8 @@
 "basic commands"
 
 
-from ..clients import Client
-
-
-def __dir__():
-    return (
-            "cmd",
-           )
+from ..command import Commands
 
 
 def cmd(event):
-    event.reply(",".join(sorted(Client.cmds)))
+    event.reply(",".join(sorted(Commands.cmds)))

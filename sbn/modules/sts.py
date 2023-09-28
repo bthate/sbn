@@ -6,13 +6,7 @@
 "status of bots"
 
 
-from ..brokers import Broker
-
-
-def __dir__():
-    return (
-            "sts",
-           )
+from ..broker import Broker
 
 
 def sts(event):

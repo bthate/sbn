@@ -1,27 +1,23 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C0112,C0115,C0116,W0105,R0903,E0402,C0209,W0102
+# pylint: disable=C0115,C0116,W0212,E0402,W0201,W0613,E1120,R0902,W0105,W0612
+# pylint: disable=W0718
 
 
 "parsers"
 
 
-def __dir__():
-    return (
-            'parse',
-           )
-
-
 def parse(obj, txt=None) -> None:
     args = []
-    obj.args = []
+    obj.args = obj.args or []
     obj.cmd = obj.cmd or ""
     obj.gets = obj.gets or {}
-    obj.hasmods = False
+    obj.hasmods = obj.hasmod or False
     obj.mod = obj.mod or ""
     obj.opts = obj.opts or ""
+    obj.result = obj.reult or []
     obj.sets = obj.sets or {}
-    obj.otxt = txt or ""
+    obj.otxt = txt or obj.txt or ""
     _nr = -1
     for spli in obj.otxt.split():
         if spli.startswith("-"):

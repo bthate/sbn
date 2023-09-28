@@ -7,32 +7,21 @@
 
 
 import json
+import _thread
 
 
 from json import JSONDecoder, JSONEncoder
 
 
-def __dir__():
-    return (
-            'Object',
-            'construct',
-            'edit',
-            'fmt',
-            'fqn',
-            'items',
-            'keys',
-            'read',
-            'search',
-            'update',
-            'values',
-            'write'
-           )
-
-
-__all__ = __dir__()
+lock = _thread.allocate_lock()
 
 
 class Object:
+
+    __slots__ = ('__dict__', '__fnm__')
+
+    def __init__(self):
+        self.__fnm__ = None
 
     def __delitem__(self, key):
         return self.__dict__.__delitem__(key)
@@ -47,7 +36,6 @@ class Object:
         return len(self.__dict__)
 
     def __repr__(self):
-        ""
         return dumps(self)
 
     def __setitem__(self, key, value):
@@ -69,28 +57,6 @@ def construct(obj, *args, **kwargs) -> None:
         update(obj, kwargs)
 
 
-def edit(obj, setter, skip=False):
-    for key, val in items(setter):
-        if skip and val == "":
-            continue
-        try:
-            obj[key] = int(val)
-            continue
-        except ValueError:
-            pass
-        try:
-            obj[key] = float(val)
-            continue
-        except ValueError:
-            pass
-        if val in ["True", "true"]:
-            obj[key] = True
-        elif val in ["False", "false"]:
-            obj[key] = False
-        else:
-            obj[key] = val
-
-
 def items(obj) -> []:
     if isinstance(obj, type({})):
         return obj.items()
@@ -101,49 +67,6 @@ def keys(obj) -> []:
     if isinstance(obj, type({})):
         return obj.keys()
     return obj.__dict__.keys()
-
-
-def fmt(obj, args=[], skip=[]) -> str:
-    if not args:
-        args = keys(obj)
-    txt = ""
-    for key in sorted(args):
-        if key in skip:
-            continue
-        try:
-            value = obj[key]
-        except KeyError:
-            continue
-        if isinstance(value, str) and len(value.split()) >= 2:
-            txt += f'{key}="{value}" '
-        else:
-            txt += f'{key}={value} '
-    return txt.strip()
-
-
-def fqn(obj) -> str:
-    kin = str(type(obj)).split()[-1][1:-2]
-    if kin == "type":
-        kin = obj.__name__
-    return kin
-
-
-def read(obj, pth) -> None:
-    with open(pth, 'r', encoding='utf-8') as ofile:
-        update(obj, load(ofile))
-
-
-def search(obj, selector) -> bool:
-    res = False
-    for key, value in items(selector):
-        try:
-            val = obj[key]
-        except KeyError:
-            continue
-        if str(value) in str(val):
-            res = True
-            break
-    return res
 
 
 def update(obj, data, empty=True) -> None:
@@ -157,9 +80,7 @@ def values(obj) -> []:
     return obj.__dict__.values()
 
 
-def write(obj, pth) -> None:
-    with open(pth, 'w', encoding='utf-8') as ofile:
-        dump(obj, ofile)
+"decoder"
 
 
 class ObjectDecoder(JSONDecoder):
@@ -190,6 +111,9 @@ def loads(string, *args, **kw) -> Object:
     kw["cls"] = ObjectDecoder
     kw["object_hook"] = hook
     return json.loads(string, *args, **kw)
+
+
+"encoder"
 
 
 class ObjectEncoder(JSONEncoder):
@@ -236,3 +160,18 @@ def dump(*args, **kw) -> None:
 def dumps(*args, **kw) -> str:
     kw["cls"] = ObjectEncoder
     return json.dumps(*args, **kw)
+
+
+"methods"
+
+
+def read(obj, pth) -> None:
+    with lock:
+        with open(pth, 'r', encoding='utf-8') as ofile:
+            update(obj, load(ofile))
+
+
+def write(obj, pth) -> None:
+    with lock:
+        with open(pth, 'w', encoding='utf-8') as ofile:
+            dump(obj, ofile)

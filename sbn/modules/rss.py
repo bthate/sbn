@@ -19,24 +19,13 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 
-from ..brokers import Broker
-from ..objects import Object, fmt, update
-from ..storage import find, last, sync
-from ..threads import Repeater, laps, launch
-from ..utility import fntime
-
-
-def __dir__():
-    return (
-            "Fetcher",
-            "Parser",
-            "Rss",
-            "Seen",
-            "dpl",
-            "nme",
-            "rem",
-            "rss"
-           )
+from ..broker import Broker
+from ..method import fmt
+from ..object import Object, update
+from ..repeat import Repeater
+from ..store  import find, last, sync
+from ..thread import launch
+from ..utils  import fntime, laps
 
 
 DEBUG = False
@@ -63,7 +52,7 @@ class Feed(Object):
 class Rss(Object):
 
     def __init__(self):
-        super().__init__()
+        Object.__init__(self)
         self.display_list = 'title,link,author'
         self.name = ''
         self.rss = ''
@@ -121,7 +110,7 @@ class Fetcher(Object):
     def fetch(self, feed):
         with fetchlock:
             counter = 0
-            objs = []
+            res = []
             for obj in reversed(list(getfeed(feed.rss, feed.display_list))):
                 fed = Feed()
                 update(fed, obj)
@@ -138,14 +127,14 @@ class Fetcher(Object):
                 counter += 1
                 if self.dosave:
                     sync(fed)
-                objs.append(fed)
-        if objs:
+                res.append(fed)
+        if res:
             sync(Fetcher.seen)
         txt = ''
         feedname = getattr(feed, 'name', None)
         if feedname:
             txt = f'[{feedname}] '
-        for obj in objs:
+        for obj in res:
             txt2 = txt + self.display(obj)
             for bot in Broker.objs:
                 bot.announce(txt2.rstrip())

@@ -9,17 +9,9 @@
 import time
 
 
-from ..objects import Object
-from ..storage import find, sync
-from ..threads import laps
-from ..utility import fntime
-
-
-def __dir__():
-    return (
-            "got",
-            "sop"
-           )
+from ..object import Object
+from ..store  import find, sync
+from ..utils  import fntime, laps
 
 
 class Shop(Object):
@@ -39,9 +31,9 @@ def got(event):
         nrs += 1
         obj.__deleted__ = True
         sync(obj)
-        event.reply('ok')
+        event.reply( 'ok')
     if not nrs:
-        event.reply("no shops")
+        event.reply( "no shops")
 
 
 def shp(event):

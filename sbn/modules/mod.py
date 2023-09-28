@@ -9,12 +9,6 @@
 import os
 
 
-def __dir__():
-    return (
-            "mod",
-           )
-
-
 def mod(event):
     path = os.path.join(os.sep, *__file__.split(os.sep)[:-1])
     modlist = [

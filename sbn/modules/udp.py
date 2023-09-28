@@ -13,18 +13,9 @@ import threading
 import time
 
 
-from ..brokers import Broker
-from ..default import Default
-from ..objects import Object
-from ..threads import launch
-
-
-def __dir__():
-    return (
-            'Cfg',
-            'UDP',
-            'udp'
-           )
+from ..broker import Broker
+from ..object import Object
+from ..thread import launch
 
 
 def init():
@@ -33,7 +24,7 @@ def init():
     return udpd
 
 
-class Cfg(Default):
+class Cfg(Object):
 
     addr = ""
     host = "localhost"

@@ -1,12 +1,12 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C0115,E0402
+# pylint: disable=E0402
 
 
 "main"
 
 
-from .runtime import wrap, main
+from .run import main, wrap
 
 
 if __name__ == "__main__":
