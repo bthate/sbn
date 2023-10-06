@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "50"
+version = "60"
 authors = [
     {name = "Bart Thate", email = "skullbonesandnumber@gmail.com" },
 ]
@@ -31,16 +31,13 @@ classifiers=[
 dev = []
 
 
-[project.scripts]
-sbn = "sbn.run:wrapped"
-
-
 [tool.setuptools]
 packages = [
             "sbn",
             "sbn.modules"
            ]
 zip-safe = true
+script-files = ["bin/sbn"]
 
 
 [tool.setuptools.data-files]
