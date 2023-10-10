@@ -5,12 +5,14 @@
 
 """NAME
 
+::
 
     SBN - Skull, Bones and Number (OTP-CR-117/19)
 
 
 SYNOPSIS
 
+::
 
     sbn <cmd> [key=val] 
     sbn <cmd> [key==val]
@@ -18,6 +20,8 @@ SYNOPSIS
 
 
 DESCRIPTION
+
+::
 
 
     SBN is a python3 IRC bot is intended to be programmable  in a
@@ -36,30 +40,36 @@ DESCRIPTION
 INSTALL
 
 
+::
+
     $ pipx install sbn
 
 
 USAGE
+
+::
 
     use the following alias for easier typing
 
     $ alias sbn="python3 -m sbn"
 
 
-    list of commands
+    without any argument the bot does nothing
+
+    $ sbn
+    $
+
+    giving an argument makes the bot check for a command
+
+    see list of commands
 
     $ sbn cmd
-    cmd,err,flt,sts,thr,upt
-
+    cfg,cmd,dlt,dne,dpl,log,man,met,mod,mre,nme,now,pwd
+    rem,req,rss,sts,tdo,thr
 
     start a console
 
     $ sbn -c
-    >
-
-    start additional modules
-
-    $ sbn mod=<mod1,mod2> -c
     >
 
     list of modules
@@ -68,24 +78,16 @@ USAGE
     cmd,err,flt,fnd,irc,log,mdl,mod,
     req, rss,slg,sts,tdo,thr,upt,ver
 
-    to start irc, add mod=irc when
-    starting
-
-    $ sbn mod=irc -c
-
-    to start rss, also add mod=rss
-    when starting
-
-    $ sbn mod=irc,rss -c
-
     start as daemon
 
-    $ sbn  mod=irc,rss -d
+    $ sbn -d
     $ 
 
 
 CONFIGURATION
 
+
+::
 
  irc
 
@@ -108,6 +110,8 @@ CONFIGURATION
 
 COMMANDS
 
+
+::
 
     cmd - commands
     cfg - irc configuration
@@ -133,6 +137,9 @@ COMMANDS
 
 SYSTEMD
 
+
+::
+
     using the pipx installation, replace "<user>" with the user running pipx
 
     [Unit]
@@ -147,14 +154,17 @@ SYSTEMD
     Group=<user>
     PIDFile=sbn.pid
     WorkingDirectory=/home/<user>/.sbn
-    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/python3 -m sbn  mod=irc,rss,mdl -d
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/python3 -m sbn -d
     RemainAfterExit=yes
 
     [Install]
     WantedBy=multi-user.target
 
 
+
 FILES
+
+::
 
     ~/.local/bin/sbn
     ~/.local/pipx/venvs/sbn/
@@ -163,11 +173,14 @@ FILES
 AUTHOR
 
 
+::
+
     Bart Thate <bthate@dds.nl>
 
 
 COPYRIGHT
 
+::
 
     SBN is Public Domain.
 
