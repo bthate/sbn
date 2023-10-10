@@ -13,7 +13,7 @@ import time
 
 from ..handler import Broker, Event
 from ..objects import Object, construct, keys
-from ..threads import Repeater, Timer, launch
+from ..threads import Repeater, launch
 from ..utility import laps
 
 
