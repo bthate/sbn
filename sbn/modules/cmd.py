@@ -6,7 +6,7 @@
 "list of commands"
 
 
-from ..runtime import Handler
+from ..handler import Handler
 
 
 def cmd(event):

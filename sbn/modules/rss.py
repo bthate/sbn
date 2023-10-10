@@ -11,6 +11,7 @@ import re
 import threading
 import time
 import urllib
+import urllib.request
 import _thread
 
 
@@ -20,7 +21,7 @@ from urllib.parse import quote_plus, urlencode
 
 from ..methods import fmt
 from ..objects import Default, Object, update
-from ..runtime import Broker
+from ..handler import BroadCast
 from ..storage import Storage, find, fntime, last, sync
 from ..threads import Repeater, launch
 from ..utility import laps
@@ -133,8 +134,7 @@ class Fetcher(Object):
             txt = f'[{feedname}] '
         for obj in res:
             txt2 = txt + self.display(obj)
-            for bot in Broker.objs:
-                bot.announce(txt2.rstrip())
+            BroadCast.announce(txt2.rstrip())
         return counter
 
     def run(self):
@@ -210,7 +210,7 @@ def gettinyurl(url):
 
 
 def geturl(url):
-    if not url.startswith("http://") or not url.startswith("https://"):
+    if not url.startswith("http://") and not url.startswith("https://"):
         return ""
     url = urllib.parse.urlunparse(urllib.parse.urlparse(url))
     req = urllib.request.Request(url)

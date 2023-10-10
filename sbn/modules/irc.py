@@ -18,7 +18,8 @@ import time
 import _thread
 
 
-from ..runtime import Broker, Cfg, Client, Errors, Event, command, output
+from ..handler import Broker, Cfg, Client, Errors, Event
+from ..handler import command, output
 from ..methods import edit, fmt, parse
 from ..objects import Default, Object, keys
 from ..storage import find, fntime, last, sync
@@ -108,7 +109,7 @@ class Censor(Object):
         return False
 
 
-Censor.words = ["PING", "POMG", "PRIVMSG"]
+Censor.words = ["PING", "PONG", "PRIVMSG"]
 
 
 class TextWrap(textwrap.TextWrapper):

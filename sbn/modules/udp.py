@@ -13,7 +13,7 @@ import threading
 import time
 
 
-from ..runtime import Broker
+from ..handler import Broker
 from ..objects import Object
 from ..threads import launch
 
