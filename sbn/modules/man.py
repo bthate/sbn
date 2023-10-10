@@ -6,95 +6,104 @@
 """NAME
 
 
-    LIBBOT - library to program bots
-
-
-DESCRIPTION
-
-
-    LIBBOT is a python3 IRC bot intended to be programmable in a
-    static, only code, no popen, no user imports and no reading
-    modules from a directory, way. 
-
-    LIBBOT provides a demo bot, it can connect to IRC, fetch and
-    display RSS feeds, take todo notes, keep a shopping list
-    and log text.
+    SBN - Skull, Bones and Number (OTP-CR-117/19)
 
 
 SYNOPSIS
 
 
-    bot <cmd> [key=val] 
-    bot <cmd> [key==val]
-    bot [-c] [-d] [-v] [-i]
+    sbn <cmd> [key=val] 
+    sbn <cmd> [key==val]
+    sbn [-c] [-d] [-v]
+
+
+DESCRIPTION
+
+
+    SBN is a python3 IRC bot is intended to be programmable  in a
+    static, only code, no popen, no user imports and no reading modules from
+    a directory, way. It can show genocide and suicide stats of king netherlands
+    his genocide into a IRC channel, display rss feeds and log simple text
+    messages.
+
+    SBN contains correspondence <writings> with the International Criminal Court, 
+    asking for arrest of the king of the  netherlands, for the genocide he is
+    committing with his new treatement laws. Current status is "no basis to
+    proceed" judgement of the prosecutor which requires a basis to prosecute
+    <reconsider> to have the king actually arrested.
 
 
 INSTALL
 
 
-    $ pipx install bot
+    $ pipx install sbn
 
 
 USAGE
 
+    use the following alias for easier typing
+
+    $ alias sbn="python3 -m sbn"
+
 
     list of commands
 
-    $ bot cmd
+    $ sbn cmd
     cmd,err,flt,sts,thr,upt
+
 
     start a console
 
-    $ bot -c
+    $ sbn -c
     >
 
     start additional modules
 
-    $ bot -c mod=<mod1,mod2>
+    $ sbn mod=<mod1,mod2> -c
     >
 
     list of modules
 
-    $ bot mod
-    bsc,err,flt,irc,log,man,mod,rss,shp,
-    sts,tdo,thr,udp
+    $ sbn mod
+    cmd,err,flt,fnd,irc,log,mdl,mod,
+    req, rss,slg,sts,tdo,thr,upt,ver
 
     to start irc, add mod=irc when
     starting
 
-    $ bot -ci mod=irc
+    $ sbn mod=irc -c
 
     to start rss, also add mod=rss
     when starting
 
-    $ bot -ci mod=irc,rss
+    $ sbn mod=irc,rss -c
 
     start as daemon
 
-    $ bot -d mod=irc,rss
+    $ sbn  mod=irc,rss -d
     $ 
 
 
 CONFIGURATION
 
 
-    irc
+ irc
 
-    $ bot cfg server=<server>
-    $ bot cfg channel=<channel>
-    $ bot cfg nick=<nick>
+    $ sbn cfg server=<server>
+    $ sbn cfg channel=<channel>
+    $ sbn cfg nick=<nick>
 
-    sasl
+ sasl
 
-    $ bot pwd <nsvnick> <nspass>
-    $ bot cfg password=<frompwd>
+    $ sbn pwd <nsvnick> <nspass>
+    $ sbn cfg password=<frompwd>
 
-    rss
+ rss
 
-    $ bot rss <url>
-    $ bot dpl <url> <item1,item2>
-    $ bot rem <url>
-    $ bot nme <url< <name>
+    $ sbn rss <url>
+    $ sbn dpl <url> <item1,item2>
+    $ sbn rem <url>
+    $ sbn nme <url< <name>
 
 
 COMMANDS
@@ -108,34 +117,37 @@ COMMANDS
     fnd - find objects 
     flt - instances registered
     log - log some text
+    mdl - genocide model
     met - add a user
     mre - displays cached output
     nck - changes nick on irc
+    now - genocide stats
     pwd - sasl nickserv name/pass
     rem - removes a rss feed
+    req - reconsider
     rss - add a feed
     slg - slogan
     thr - show the running threads
+    tpc - genocide stats into topic
 
 
 SYSTEMD
 
-
-    replace <user> with the username giving the pipx command.
+    using the pipx installation, replace "<user>" with the user running pipx
 
     [Unit]
-    Description=the complete
+    Description=Skull, Bones and Number (OTP-CR-117/19)
     Requires=network.target
     After=network.target
 
     [Service]
     DynamicUser=True
-    Type=forking
+    Type=fork
     User=<user>
-    Group=<uer>
-    PIDFile=bot.pid
-    WorkingDirectory=/home/<user>/.bot
-    ExecStart=/home/<user>/.local/pipx/venvs/libbot/bin/bot -d mod=irc,rss
+    Group=<user>
+    PIDFile=sbn.pid
+    WorkingDirectory=/home/<user>/.sbn
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/python3 -m sbn  mod=irc,rss,mdl -d
     RemainAfterExit=yes
 
     [Install]
@@ -144,21 +156,20 @@ SYSTEMD
 
 FILES
 
-
-    ~/.local/bin/bot
-    ~/.local/pipx/venvs/bot/
+    ~/.local/bin/sbn
+    ~/.local/pipx/venvs/sbn/
 
 
 AUTHOR
 
 
-    botlib <botlib@proton.me>
+    Bart Thate <bthate@dds.nl>
 
 
 COPYRIGHT
 
 
-    BOT is placed in the Public Domain.
+    SBN is Public Domain.
 
 
 """

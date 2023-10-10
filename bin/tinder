@@ -23,16 +23,16 @@ import _thread
 WORKDIR = os.path.expanduser("~")
 
 
+from sbn.handler import Cfg, Broker, Client, Handler, command, output, scan
 from sbn.methods import parse
 from sbn.objects import Default, Object, keys
-from sbn.runtime import Cfg, Broker, Client, Handler, command, output, scan
 from sbn.storage import Storage
 from sbn.threads import launch
 from sbn.utility import laps, mods, spl
 
 
 import sbn.modules as modules
-import sbn.runtime
+import sbn.handler
 
 
 DATE = time.ctime(time.time()).replace("  ", " ")
@@ -55,7 +55,7 @@ paylock = _thread.allocate_lock()
 outlock = _thread.allocate_lock()
 
 
-sbn.runtime.output = print
+sbn.handler.output = print
 
 
 errors = []
