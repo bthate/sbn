@@ -20,6 +20,7 @@
     :template: base.rst
 
 
+    sbn.defines
     sbn.handler
     sbn.methods
     sbn.objects
