@@ -25,7 +25,10 @@ from . import handler
 from . import modules
 
 
-Storage.workdir = os.path.expanduser("~/.bot")
+NAME = __file__.split(os.sep)[-2]
+
+
+Storage.workdir = os.path.expanduser(f"~/.{NAME}")
 
 
 def cprint(txt):
