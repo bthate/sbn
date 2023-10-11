@@ -89,18 +89,18 @@ CONFIGURATION
 
 ::
 
- irc
+    irc
 
     $ sbn cfg server=<server>
     $ sbn cfg channel=<channel>
     $ sbn cfg nick=<nick>
 
- sasl
+    sasl
 
     $ sbn pwd <nsvnick> <nspass>
     $ sbn cfg password=<frompwd>
 
- rss
+    rss
 
     $ sbn rss <url>
     $ sbn dpl <url> <item1,item2>
@@ -109,7 +109,6 @@ CONFIGURATION
 
 
 COMMANDS
-
 
 ::
 
