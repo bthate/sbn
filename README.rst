@@ -137,6 +137,7 @@ SYSTEMD
 
     using the pipx installation, replace "<user>" with the user running pipx
 
+
     [Unit]
     Description=Skull, Bones and Number (OTP-CR-117/19)
     Requires=network.target
@@ -144,17 +145,14 @@ SYSTEMD
 
     [Service]
     DynamicUser=True
-    Type=fork
+    Type=simple
     User=<user>
     Group=<user>
-    PIDFile=sbn.pid
     WorkingDirectory=/home/<user>/.sbn
-    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/python3 -m sbn -d
-    RemainAfterExit=yes
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/python3 -m sbn -s
 
     [Install]
     WantedBy=multi-user.target
-
 
 
 FILES

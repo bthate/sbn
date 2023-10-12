@@ -70,12 +70,11 @@ class Console(CLI):
 def daemon():
     pid = os.fork()
     if pid != 0:
-        time.sleep(1.0)
         os._exit(0)
     os.setsid()
-    #pid2 = os.fork()
-    #if pid2 != 0:
-    #    os._exit(0)
+    pid2 = os.fork()
+    if pid2 != 0:
+        os._exit(0)
     with open('/dev/null', 'r', encoding="utf-8") as sis:
         os.dup2(sis.fileno(), sys.stdin.fileno())
     with open('/dev/null', 'a+', encoding="utf-8") as sos:
@@ -112,9 +111,10 @@ def main():
     Cfg.mod = ",".join(modules.__dir__())
     if "d" in Cfg.opts:
         daemon()
-        cli = CLI()
+    if "d" in Cfg.opts or "s" in Cfg.opts:
         scan(modules, Cfg.mod, True)
-        cli.forever()
+        while 1:
+            time.sleep(1.0)
     elif "c" in Cfg.opts:
         if 'v' in Cfg.opts:
             dtime = time.ctime(time.time()).replace("  ", " ")
