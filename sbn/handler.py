@@ -43,6 +43,15 @@ def cprint(txt):
     sys.stdout.flush()
 
 
+def debug(txt):
+    if output is None:
+        return
+    if Censor.skip(txt):
+        return
+    if "v" in Cfg.opts:
+        output(txt)
+
+
 output = cprint
 
 
@@ -82,6 +91,18 @@ class BroadCast:
         if not bot:
             return
         bot.dosay(channel, txt)
+
+
+class Censor(Object):
+
+    words = []
+
+    @staticmethod
+    def skip(txt) -> bool:
+        for skp in Censor.words:
+            if skp in str(txt):
+                return True
+        return False
 
 
 class Errors:

@@ -6,8 +6,12 @@
 "utilities"
 
 
+import getpass
 import os
 import pathlib
+import pwd
+import sys
+import termios
 
 
 def cdir(pth) -> None:
@@ -15,6 +19,29 @@ def cdir(pth) -> None:
         pth = os.path.dirname(pth)
     pth = pathlib.Path(pth)
     os.makedirs(pth, exist_ok=True)
+
+
+def daemon():
+    pid = os.fork()
+    if pid != 0:
+        os._exit(0)
+    os.setsid()
+    pid2 = os.fork()
+    if pid2 != 0:
+        os._exit(0)
+    with open('/dev/null', 'r', encoding="utf-8") as sis:
+        os.dup2(sis.fileno(), sys.stdin.fileno())
+    with open('/dev/null', 'a+', encoding="utf-8") as sos:
+        os.dup2(sos.fileno(), sys.stdout.fileno())
+    with open('/dev/null', 'a+', encoding="utf-8") as ses:
+        os.dup2(ses.fileno(), sys.stderr.fileno())
+    os.umask(0)
+    os.chdir("/")
+    if os.path.exists(PIDFILE):
+        os.unlink(PIDFILE)
+    with open(PIDFILE, "w") as fd:
+        fd.write(str(os.getpid()))
+
 
 
 def laps(seconds, short=True) -> str:
@@ -67,6 +94,19 @@ def mods(path):
             continue
         res.append(fnm[:-3])
     return sorted(res)
+
+
+def privileges(username):
+    if os.getuid() != 0:
+        return
+    try:
+        pwnam = pwd.getpwnam(username)
+    except KeyError:
+        debug("no %s user found.")
+        return
+    os.setgroups([])
+    os.setgid(pwnam.pw_gid)
+    os.setuid(pwnam.pw_uid)
 
 
 def spl(txt) -> []:
