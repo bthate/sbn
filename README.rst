@@ -135,7 +135,7 @@ SYSTEMD
 
 ::
 
-    using the pipx installation, replace "<user>" with the user running pipx
+    replace "<user>" with the user running pipx
 
 
     [Unit]
@@ -144,7 +144,6 @@ SYSTEMD
     After=network.target
 
     [Service]
-    DynamicUser=True
     Type=simple
     User=<user>
     Group=<user>

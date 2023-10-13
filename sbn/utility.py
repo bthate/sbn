@@ -26,9 +26,9 @@ def daemon():
     if pid != 0:
         os._exit(0)
     os.setsid()
-    pid2 = os.fork()
-    if pid2 != 0:
-        os._exit(0)
+    #pid2 = os.fork()
+    #if pid2 != 0:
+    #    os._exit(0)
     with open('/dev/null', 'r', encoding="utf-8") as sis:
         os.dup2(sis.fileno(), sys.stdin.fileno())
     with open('/dev/null', 'a+', encoding="utf-8") as sos:
@@ -97,16 +97,12 @@ def mods(path):
 
 
 def privileges(username):
-    if os.getuid() != 0:
-        return
-    try:
-        pwnam = pwd.getpwnam(username)
-    except KeyError:
-        debug("no %s user found.")
-        return
-    os.setgroups([])
+    #if os.getuid() != 0:
+    #    return
+    pwnam = pwd.getpwnam(username)
     os.setgid(pwnam.pw_gid)
     os.setuid(pwnam.pw_uid)
+    #os.setgroups([])
 
 
 def spl(txt) -> []:
