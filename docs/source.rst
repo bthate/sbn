@@ -19,16 +19,17 @@
     :toctree: 
     :template: base.rst
 
-
-    sbn.defines
-    sbn.handler
-    sbn.methods
-    sbn.objects
-    sbn.threads
-    sbn.__main__
-    sbn.modules 
-    sbn.storage
-    sbn.utility
+    sbn.broker		list of bots
+    sbn.define		definitions
+    sbn.errors		exceptions
+    sbn.events          event
+    sbn.handle          commands
+    sbn.locate          find objects
+    sbn.object          clean namespace
+    sbn.parser          parse cli
+    sbn.reacts          reactor
+    sbn.thread          threads
+    sbn.timers          repeater
 
 
 **MODULES**
@@ -44,14 +45,11 @@
     :template: base.rst
 
     sbn.modules.cmd 	list of commands
+    sbn.modules.err     show errors
     sbn.modules.log	log text
-    sbn.modules.mdl	genocide model
-    sbn.modules.mod	list modules
-    sbn.modules.man	manual
+    sbn.modules.irc     internet realy chat
+    sbn.modules.log     log text
     sbn.modules.req	request
     sbn.modules.rss	rich site syndicate
-    sbn.modules.shp	shopping list
-    sbn.modules.sts     status
     sbn.modules.tdo	todo list
     sbn.modules.thr	list threads
-    sbn.modules.udp	udp to irc relay
