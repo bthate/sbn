@@ -6,9 +6,8 @@
 "locate"
 
 
-from ..handle import Commands
-from ..locate import Storage, find
-from ..object import fmt
+from ..methods import fmt
+from ..storage import Storage, find
 
 
 def fnd(event):
@@ -25,11 +24,8 @@ def fnd(event):
             if otype == claz.lower():
                 clz = fnm
     nmr = 0
-    for fnm, obj in find(clz, event.gets):
+    for obj in find(clz, event.gets):
         event.reply(f"{nmr} {fmt(obj)}")
         nmr += 1
     if not nmr:
         event.reply("no result")
-
-
-Commands.add(fnd)

@@ -9,10 +9,9 @@
 import time
 
 
-from ..handle import Commands
-from ..object import Object
-from ..locate import Storage, find, fntime, sync
-from ..timers import laps
+from ..objects import Object
+from ..storage import find, fntime, sync
+from ..utility import laps
 
 
 class Log(Object):
@@ -20,9 +19,6 @@ class Log(Object):
     def __init__(self):
         super().__init__()
         self.txt = ''
-
-
-Storage.add(Log)
 
 
 def log(event):
@@ -39,6 +35,3 @@ def log(event):
     obj.txt = event.rest
     sync(obj)
     event.reply('ok')
-
-
-Commands.add(log)

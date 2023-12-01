@@ -9,10 +9,9 @@
 import time
 
 
-from ..handle import Commands
-from ..object import Object
-from ..locate import Storage, find, fntime, sync
-from ..timers import laps
+from ..objects import Object
+from ..storage import find, fntime, sync
+from ..utility import laps
 
 
 class Todo(Object):
@@ -20,9 +19,6 @@ class Todo(Object):
     def __init__(self):
         Object.__init__(self)
         self.txt = ''
-
-
-Storage.add(Todo)
 
 
 def dne(event):
@@ -41,9 +37,6 @@ def dne(event):
         event.reply("nothing todo")
 
 
-Commands.add(dne)
-
-
 def tdo(event):
     if not event.rest:
         nmr = 0
@@ -58,6 +51,3 @@ def tdo(event):
     obj.txt = event.rest
     sync(obj)
     event.reply('ok')
-
-
-Commands.add(tdo)

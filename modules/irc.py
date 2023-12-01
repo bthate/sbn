@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,E1101
+# pylint: disable=C0115,C0116,E0402,E0602,C0411,C0412,C0413,W0404,W0105,R0903
+# pylint: disable=R0915,R0912,E1102
 
 
 "internet relay chat"
@@ -17,23 +18,31 @@ import time
 import _thread
 
 
-from ..broker import Broker
-from ..handle import Commands, command
-from ..locate import Storage, last, sync
-from ..errors import Errors, debug
-from ..events import Event
-from ..object import Default, Object, edit, fmt, keys
-from ..reacts import Reactor
-from ..thread import launch
+from ..handler import Broker, Censor, Cfg, Client, Errors, Event
+from ..handler import command, debug, output
+from ..methods import edit, fmt, parse
+from ..objects import Default, Object, keys
+from ..storage import find, fntime, last, sync
+from ..threads import launch
+from ..utility import laps
 
 
-Errors.filter = ["PING", "PONG", "PRIVMSG"]
+NAME = __file__.split(os.sep)[-3]
 
 
-NAME = "sbn"
+Censor.words = ["PING", "PONG", "PRIVMSG"]
 
 
 saylock = _thread.allocate_lock()
+
+
+def debug(txt):
+    if output is None:
+        return
+    if Censor.skip(txt):
+        return
+    if "v" in Cfg.opts:
+        output(txt)
 
 
 def init():
@@ -43,13 +52,19 @@ def init():
     return irc
 
 
+def stop():
+    for bot in Broker.objs:
+        if "IRC" in str(type(bot)):
+            bot.stop()
+
+
 class Config(Default):
 
     channel = f'#{NAME}'
-    commands = True
     control = '!'
     edited = time.time()
     nick = NAME
+    nocommands = False
     port = 6667
     realname = NAME
     sasl = False
@@ -62,16 +77,18 @@ class Config(Default):
 
     def __init__(self):
         Default.__init__(self)
-        self.channel = self.channel or Config.channel
-        self.commands = self.commands or Config.commands
-        self.nick = self.nick or Config.nick
-        self.port = self.port or Config.port
-        self.realname = self.realname or Config.realname
-        self.server = self.server or Config.server
-        self.username = self.username or Config.username
+        self.channel = Config.channel
+        self.nick = Config.nick
+        self.port = Config.port
+        self.realname = Config.realname
+        self.server = Config.server
+        self.username = Config.username
 
+    def __edited__(self):
+        return Config.edited
 
-Storage.add(Config)
+    def __size__(self):
+        return len(Config)
 
 
 class Cache(Object):
@@ -83,6 +100,8 @@ class Cache(Object):
         if chan in Cache.cache:
             return len(Cache.cache.get(chan, []))
         return 0
+
+
 
 
 class TextWrap(textwrap.TextWrapper):
@@ -107,7 +126,7 @@ class Output(Cache):
         self.dostop = threading.Event()
         self.oqueue = queue.Queue()
 
-    def say(self, channel, txt):
+    def dosay(self, channel, txt):
         raise NotImplementedError
 
     def gettxt(self, channel):
@@ -141,7 +160,7 @@ class Output(Cache):
             if len(txtlist) > 3:
                 Output.extend(channel, txtlist)
                 length = len(txtlist)
-                self.say(
+                self.dosay(
                              channel,
                              f"use !mre to show more (+{length})"
                             )
@@ -149,14 +168,13 @@ class Output(Cache):
             _nr = -1
             for txt in txtlist:
                 _nr += 1
-                self.say(channel, txt)
+                self.dosay(channel, txt)
 
 
-
-class IRC(Reactor, Output):
+class IRC(Client, Output):
 
     def __init__(self):
-        Reactor.__init__(self)
+        Client.__init__(self)
         Output.__init__(self)
         self.buffer = []
         self.cfg = Config()
@@ -207,6 +225,7 @@ class IRC(Reactor, Output):
     def connect(self, server, port=6667):
         self.state.nrconnect += 1
         self.events.connected.clear()
+        debug(f"connecting to {server}:{port}")
         if self.cfg.password:
             debug("using SASL")
             self.cfg.sasl = True
@@ -261,7 +280,7 @@ class IRC(Reactor, Output):
             time.sleep(self.cfg.sleep)
         self.logon(server, nck)
 
-    def say(self, channel, txt):
+    def dosay(self, channel, txt):
         self.events.joined.wait()
         txt = str(txt).replace('\n', '')
         txt = txt.replace('  ', ' ')
@@ -317,6 +336,7 @@ class IRC(Reactor, Output):
     def logon(self, server, nck):
         self.events.connected.wait()
         self.events.authed.wait()
+        nck = self.cfg.username
         self.direct(f'NICK {nck}')
         self.direct(f'USER {nck} {server} {server} {nck}')
 
@@ -441,7 +461,7 @@ class IRC(Reactor, Output):
         self.events.joined.clear()
         self.doconnect(self.cfg.server, self.cfg.nick, int(self.cfg.port))
 
-    def output(self, channel, txt):
+    def say(self, channel, txt):
         self.oput(channel, txt)
 
     def some(self):
@@ -465,7 +485,7 @@ class IRC(Reactor, Output):
         self.events.connected.clear()
         self.events.joined.clear()
         launch(Output.out, self)
-        Reactor.start(self)
+        Client.start(self)
         launch(
                self.doconnect,
                self.cfg.server or "localhost",
@@ -477,7 +497,7 @@ class IRC(Reactor, Output):
 
     def stop(self):
         Broker.remove(self)
-        Reactor.stop(self)
+        Client.stop(self)
         self.dostop.set()
         self.disconnect()
 
@@ -536,6 +556,7 @@ def cb_ready(evt):
     bot = byorig(evt.orig)
     if bot:
         bot.events.ready.set()
+    debug(f"ready {evt.orig[1:].split()[0]}")
 
 
 def cb_001(evt):
@@ -552,7 +573,7 @@ def cb_notice(evt):
 
 def cb_privmsg(evt):
     bot = byorig(evt.orig)
-    if not bot.cfg.commands:
+    if bot.cfg.nocommands:
         return
     if evt.txt:
         if evt.txt[0] in ['!',]:
@@ -563,8 +584,11 @@ def cb_privmsg(evt):
             return
         if evt.txt:
             evt.txt = evt.txt[0].lower() + evt.txt[1:]
+        if bot.cfg.users and not Users.allowed(evt.origin, 'USER'):
+            return
         debug(f"command from {evt.origin}: {evt.txt}")
-        Commands.handle(evt)
+        parse(evt)
+        command(evt)
 
 
 def cb_quit(evt):
@@ -574,9 +598,75 @@ def cb_quit(evt):
         bot.stop()
 
 
+"users"
+
+
+class NoUser(Exception):
+
+    pass
+
+
+class User(Default):
+
+    def __init__(self):
+        Default.__init__(self)
+        self.user = ''
+        self.perms = []
+
+
+class Users:
+
+    @staticmethod
+    def allowed(origin, perm):
+        perm = perm.upper()
+        user = Users.get_user(origin)
+        val = False
+        if user and perm in user.perms:
+            val = True
+        return val
+
+    @staticmethod
+    def delete(origin, perm):
+        res = False
+        for user in Users.get_users(origin):
+            try:
+                user.perms.remove(perm)
+                sync(user)
+                res = True
+            except ValueError:
+                pass
+        return res
+
+    @staticmethod
+    def get_users(origin=''):
+        selector = {'user': origin}
+        return find('user', selector)
+
+    @staticmethod
+    def get_user(origin):
+        users = list(Users.get_users(origin))
+        res = None
+        if users:
+            res = users[-1]
+        return res
+
+    @staticmethod
+    def perm(origin, permission):
+        user = Users.get_user(origin)
+        if not user:
+            raise NoUser(origin)
+        if permission.upper() not in user.perms:
+            user.perms.append(permission.upper())
+            sync(user)
+        return user
+
+
+"commands"
+
+
 def cfg(event):
     config = Config()
-    path = last(config)
+    last(config)
     if not event.sets:
         event.reply(
                     fmt(
@@ -587,11 +677,41 @@ def cfg(event):
                    )
     else:
         edit(config, event.sets)
-        sync(config, path)
+        sync(config)
         event.reply('ok')
 
 
-Commands.add(cfg)
+def dlt(event):
+    if not event.args:
+        event.reply('dlt <username>')
+        return
+    selector = {'user': event.args[0]}
+    nrs = 0
+    for obj in find('user', selector):
+        nrs += 1
+        obj.__deleted__ = True
+        sync(obj)
+        event.reply('ok')
+        break
+    if not nrs:
+        event.reply( "no users")
+
+
+def met(event):
+    if not event.args:
+        nmr = 0
+        for obj in find('user'):
+            lap = laps(time.time() - fntime(obj.__fnm__))
+            event.reply(f'{nmr} {obj.user} {obj.perms} {lap}s')
+            nmr += 1
+        if not nmr:
+            event.reply('no user')
+        return
+    user = User()
+    user.user = event.rest
+    user.perms = ['USER']
+    sync(user)
+    event.reply('ok')
 
 
 def mre(event):
@@ -613,9 +733,6 @@ def mre(event):
     event.reply(f'{size} more in cache')
 
 
-Commands.add(mre)
-
-
 def pwd(event):
     if len(event.args) != 2:
         event.reply('pwd <nick> <password>')
@@ -627,6 +744,3 @@ def pwd(event):
     base = base64.b64encode(enc)
     dcd = base.decode('ascii')
     event.reply(dcd)
-
-
-Commands.add(pwd)

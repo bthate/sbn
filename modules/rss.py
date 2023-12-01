@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0612,W0201
+# pylint: disable=C0115,C0116,W0105,E0402,C0411,R0903
 
 
 "rich site syndicate"
@@ -8,6 +8,7 @@
 
 import html.parser
 import re
+import threading
 import time
 import urllib
 import urllib.request
@@ -18,21 +19,21 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from ..broker import Broker
-from ..handle import Commands
-from ..locate import Storage, find, fntime, last, sync
-from ..object import Default, Object, fmt, update
-from ..timers import Repeater, laps
-from ..thread import launch
+from ..methods import fmt
+from ..objects import Default, Object, update
+from ..handler import BroadCast
+from ..storage import Storage, find, fntime, last, sync
+from ..threads import Repeater, launch
+from ..utility import laps
+
+
+DEBUG = False
 
 
 def init():
     fetcher = Fetcher()
     fetcher.start()
     return fetcher
-
-
-DEBUG = False
 
 
 fetchlock = _thread.allocate_lock()
@@ -43,11 +44,22 @@ class Feed(Default):
     pass
 
 
+Storage.add(Feed)
+
+
 class Rss(Default):
 
     def __init__(self):
         Default.__init__(self)
         self.display_list = 'title,link,author'
+        self.name = ''
+        self.rss = ''
+
+    def len(self):
+        return len(self.__dict__)
+
+    def size(self):
+        return len(self.__dict__)
 
 
 Storage.add(Rss)
@@ -67,7 +79,10 @@ class Fetcher(Object):
 
     dosave = False
     seen = Seen()
-    seenfn = None
+
+    def __init__(self):
+        super().__init__()
+        self.connected = threading.Event()
 
     @staticmethod
     def display(obj):
@@ -112,26 +127,24 @@ class Fetcher(Object):
                     sync(fed)
                 res.append(fed)
         if res:
-            sync(Fetcher.seen, Fetcher.seenfn)
+            sync(Fetcher.seen)
         txt = ''
         feedname = getattr(feed, 'name', None)
         if feedname:
             txt = f'[{feedname}] '
         for obj in res:
             txt2 = txt + self.display(obj)
-            for bot in Broker.objs:
-                if "announce" in dir(bot):
-                    bot.announce(txt2.rstrip())
+            BroadCast.announce(txt2.rstrip())
         return counter
 
     def run(self):
         thrs = []
-        for fnm, feed in find('rss'):
+        for feed in find('rss'):
             thrs.append(launch(self.fetch, feed, name=f"{feed.rss}"))
         return thrs
 
     def start(self, repeat=True):
-        Fetcher.seenfn = last(Fetcher.seen)
+        last(Fetcher.seen)
         if repeat:
             repeater = Repeater(300.0, self.run)
             repeater.start()
@@ -221,34 +234,31 @@ def useragent(txt):
     return 'Mozilla/5.0 (X11; Linux x86_64) ' + txt
 
 
+"commands"
+
+
 def dpl(event):
     if len(event.args) < 2:
         event.reply('dpl <stringinurl> <item1,item2>')
         return
     setter = {'display_list': event.args[1]}
-    for fnm, feed in find('rss', {'rss': event.args[0]}):
+    for feed in find('rss', {'rss': event.args[0]}):
         if feed:
             update(feed, setter)
             sync(feed)
     event.reply('ok')
 
 
-Commands.add(dpl)
-
-
 def nme(event):
     if len(event.args) != 2:
-        event.reply('nme <stringinurl> <name>')
+        event.reply('name <stringinurl> <name>')
         return
     selector = {'rss': event.args[0]}
-    for fnm, feed in find('rss', selector):
+    for feed in find('rss', selector):
         if feed:
             feed.name = event.args[1]
             sync(feed)
     event.reply('ok')
-
-
-Commands.add(nme)
 
 
 def rem(event):
@@ -256,22 +266,19 @@ def rem(event):
         event.reply('rem <stringinurl>')
         return
     selector = {'rss': event.args[0]}
-    for fnm, feed in find('rss', selector):
+    for feed in find('rss', selector):
         if feed:
             feed.__deleted__ = True
             sync(feed)
     event.reply('ok')
 
 
-Commands.add(rem)
-
-
 def rss(event):
     if not event.rest:
         nrs = 0
-        for fnm, feed in find('rss'):
+        for feed in find('rss'):
             nrs += 1
-            elp = laps(time.time()-fntime(fnm))
+            elp = laps(time.time()-fntime(feed.__fnm__))
             txt = fmt(feed)
             event.reply(f'{nrs} {txt} {elp}')
         if not nrs:
@@ -281,7 +288,7 @@ def rss(event):
     if 'http' not in url:
         event.reply('i need an url')
         return
-    for fnm, res in find('rss', {'rss': url}):
+    for res in find('rss', {'rss': url}):
         if res:
             event.reply(f'already got {url}')
             return
@@ -289,6 +296,3 @@ def rss(event):
     feed.rss = event.args[0]
     sync(feed)
     event.reply('ok')
-
-
-Commands.add(rss)

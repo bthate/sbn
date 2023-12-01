@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C0115,C0116,C0413,E0401,R0903
+# pylint: disable=C0115,C0116,C0413,E0401,R0903,E0611,C0412,C0103,W0702,R0402
+# pylint: disable=W0718,W0611,W0613,E0102
 
 
 "created clients"
-
-
-import os, sys ; sys.path.insert(0, os.getcwd())
 
 
 import os
@@ -16,46 +14,35 @@ import shutil
 import sys
 import termios
 import time
-import traceback
 import _thread
 
 
-WORKDIR = os.path.expanduser("~")
+sys.path.insert(0, os.getcwd())
 
 
-from sbn.handler import Cfg, Broker, Client, Handler, command, output, scan
-from sbn.methods import parse
-from sbn.objects import Default, Object, keys
-from sbn.storage import Storage
-from sbn.threads import launch
-from sbn.utility import laps, mods, spl
+from sbn.define import Commands, Default, Errors, Event, Object, Reactor, Storage
+from sbn.define import keys, laps, launch, parse
 
 
-import sbn.modules as modules
-import sbn.handler
+from sbn import modules
 
 
-DATE = time.ctime(time.time()).replace("  ", " ")
 STARTTIME = time.time()
 
 
-
-
+Cfg = Default()
 Cfg.debug = True
-Cfg.mod = ",".join(mods(modules.__path__[0]))
+Cfg.mod =  "cmd,err,fnd,irc,log,req,rss,tdo,thr"
 Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
 
 
-Storage.workdir = ".test"
+Storage.wd = ".test"
 
 
 paylock = _thread.allocate_lock()
 outlock = _thread.allocate_lock()
-
-
-sbn.handler.output = print
 
 
 errors = []
@@ -63,41 +50,31 @@ events = []
 
 
 param = Object()
-param.cfg = ["server=localhost", ""]
+param.cfg = [
+    "server=localhost",
+    "nick=mekker",
+    "port=6697",
+    "commands=true",
+    ""]
 param.cmd = [""]
-param.dlt = ["~bart@127.0.0.1"]
-param.dne = ["test4", ""]
-param.dpl = ["reddit title,summary,link", ""]
-param.err = [""]
-param.flt = ["", "0"]
-param.rem = ["reddit", ""]
-param.fnd = [
-             'log',
-             "cfg",
-             "tdo",
-             "rss",
-             "tdo txt==test",
-             "cfg server==localhost",
-             "rss rss==reddit"
-            ]
-param.log = ["test1", ""]
-param.met = ["~bart@127.0.0.1"]
-param.mod = [""]
-param.nme = ["reddit reddit"]
-param.pwd = ["bla bla"]
-param.rem = ["reddit"]
-param.rss = ["https://www.reddit.com/r/python/.rss"]
-param.shp = ["bread", "butter", "cheese"]
-param.tdo = ["test4", ""]
-param.thr = [""]
+param.dpl = ["hnrss title,summary,link"]
+param.mre = ["2"]
+param.nme = ["hnrss hackernews"]
+param.pwd = ["bart bla"]
+param.rem = ["hnrss"]
+param.rss = ["http://hnrss.org/newest"]
+param.ver = "72"
 
 
-class CLI(Client):
+class CLI(Reactor):
 
-    def dosay(self, channel, txt):
-        with outlock:
-            if txt and "v" in Cfg.opts:
-                print(txt.rstrip())
+    threaded = True
+
+    def say(self, channel, txt):
+        if "v" not in Cfg.opts:
+            return
+        print(txt.encode('utf-8', 'replace').decode())
+        sys.stdout.flush()
 
 
 def consume(evts):
@@ -117,50 +94,48 @@ def consume(evts):
 
 
 def payload(clt) -> None:
-    cmds = list(keys(clt.cmds))
+    cmds = list(keys(Commands.cmds))
     random.shuffle(cmds)
     with paylock:
         nmr = 0
         for cmnd in cmds:
             for ex in getattr(param, cmnd, [""]):
-                evt = clt.event(cmnd + " " + ex)
+                evt = Event()
+                evt.orig = object.__repr__(clt)
+                evt.txt = cmnd + " " + ex
                 parse(evt)
                 if "t" in Cfg.opts:
                     clt.put(evt)
                     events.append(evt)
                 else:
-                    command(evt)
+                    Commands.handle(evt)
                 nmr += 1
         return nmr
 
 
 def wrap(func) -> None:
-    if "d" in Cfg.opts:
-        debug("terminal disabled!")
-        return
-    old = None
+    old2 = None
     try:
-        old = termios.tcgetattr(sys.stdin.fileno())
+        old2 = termios.tcgetattr(sys.stdin.fileno())
     except termios.error:
         pass
     try:
         func()
-    except (EOFError, KeyboardInterrupt):
+    except (KeyboardInterrupt, EOFError):
         print("")
-        sys.stdout.flush()
     finally:
-        if old:
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
+        if old2:
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old2)
 
 
 def main() -> None:
-    if os.path.exists(Storage.workdir):
-        shutil.rmtree(Storage.workdir)
+    if os.path.exists(Storage.wd):
+        shutil.rmtree(Storage.wd)
     parse(Cfg, " ".join(sys.argv[1:]))
-    scan(modules, Cfg.mod)
+    if "v" in Cfg.opts:
+        Errors.output = print
     nrs = Cfg.index or 1
     cli = CLI()
-    cli.start()
     waiters = []
     for _nr in range(nrs):
         waiters.append(launch(payload, cli, name=f"payload {_nr}"))

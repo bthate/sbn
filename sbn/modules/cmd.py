@@ -1,13 +1,16 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C0116,E0402
+# pylint: disable=C0116,E0402,E0401,W0105
 
 
 "list of commands"
 
 
-from ..handler import Handler
+from ..handle import Commands
 
 
 def cmd(event):
-    event.reply(",".join(sorted(Handler.cmds)))
+    event.reply(",".join(sorted(Commands.cmds)))
+
+
+Commands.add(cmd)
