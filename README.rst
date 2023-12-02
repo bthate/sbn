@@ -67,7 +67,15 @@ USAGE
     $ sbn mod
     cmd,err,fnd,irc,log,mod,req,rss,tdo,thr
 
-    start as daemon
+
+    use -v for verbose
+
+
+    $ sbn -cv
+    SBN started CV started Sat Dec 2 17:53:24 2023
+    >
+
+    start daemon
 
     $ sbnd
     $ 
