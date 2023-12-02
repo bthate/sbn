@@ -27,7 +27,7 @@ from sbn.locate import Storage
 
 
 Cfg = Default()
-Cfg.mod  = "cmd,err,irc,mod,rss,thr,ver"
+Cfg.mod  = "cmd,err,thr,ver"
 Cfg.name = "sbn"
 Cfg.version = "72"
 Storage.wd = os.path.expanduser(f"~/.{Cfg.name}")
@@ -57,6 +57,19 @@ class Console(Reactor):
 
 
 csl = Console()
+
+
+def scan(pkg, modstr, initer=False) -> []:
+    threads = []
+    for modname in spl(modstr):
+        module = getattr(pkg, modname, None)
+        if not module:
+            continue
+        Commands.scan(module)
+        Storage.scan(module)
+        if initer and "init" in dir(module):
+            threads.append(launch(module.init, name=f"init {modname}"))
+    return threads
 
 
 def wrap(func) -> None:

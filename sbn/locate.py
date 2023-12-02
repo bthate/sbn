@@ -7,6 +7,7 @@
 
 
 import datetime
+import inspect
 import os
 import time
 
@@ -86,6 +87,15 @@ class Storage(Object):
         pth2 =  os.path.join(Storage.wd, pth)
         cdir(pth2)
         return pth2
+
+    @staticmethod
+    def scan(mod) -> None:
+        for key, clz in inspect.getmembers(mod, inspect.isclass):
+            if key.startswith("cb"):
+                continue
+            if not issubclass(clz, Object):
+                continue
+            Storage.add(clz)
 
     @staticmethod
     def store(pth="") -> str:
