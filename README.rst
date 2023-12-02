@@ -50,27 +50,29 @@ USAGE
     $ sbn
     $
 
-    giving an argument makes the bot check for a command
-
     see list of commands
 
     $ sbn cmd
-    cfg,cmd,dlt,dne,dpl,log,man,met,mod,mre,nme,now,pwd
-    rem,req,rss,sts,tdo,thr
-
-    start a console
-
-    $ sbn -c
-    >
+    cmd,err,mod,req,thr,ver
 
     list of modules
 
     $ sbn mod
     cmd,err,fnd,irc,log,mod,req,rss,tdo,thr
 
+    use mod=<name1,name2> to load additional
+    modules
+
+    $ sbn cfg mod=irc
+
+    start a console
+
+    $ sbn -c mod=irc,rss
+    >
+
     use -v for verbose
 
-    $ sbn -cv
+    $ sbn -cv mod=irc
     SBN started CV started Sat Dec 2 17:53:24 2023
     >
 
