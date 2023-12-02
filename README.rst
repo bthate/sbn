@@ -19,17 +19,19 @@ DESCRIPTION
 ::
 
 
-    SBN is a python3 IRC bot is intended to be programmable  in a
-    static, only code, no popen, no user imports and no reading modules from
-    a directory, way. It can show genocide and suicide stats of king netherlands
-    his genocide into a IRC channel, display rss feeds and log simple text
-    messages.
+   ``SBN`` holds evidence that king netherlands is doing a genocide, a 
+   written :ref:`response <king>` where king netherlands confirmed taking note
+   of “what i have written”, namely :ref:`proof <evidence>` that medicine he
+   uses in treatement laws like zyprexa, haldol, abilify and clozapine are poison
+   that make impotent, is both physical (contracted muscles) and mental (let 
+   people hallucinate) torture and kills members of the victim groups. 
 
-    SBN contains correspondence <writings> with the International Criminal Court, 
-    asking for arrest of the king of the  netherlands, for the genocide he is
-    committing with his new treatement laws. Current status is "no basis to
-    proceed" judgement of the prosecutor which requires a basis to prosecute
-    <reconsider> to have the king actually arrested.
+   ``SBN`` contains `correspondence <writings.html>`_ with the
+   International Criminal Court, asking for arrest of the king of the 
+   netherlands, for the genocide he is committing with his new treatement laws.
+   Current status is "no basis to proceed" judgement of the prosecutor 
+   which requires a :ref:`basis to prosecute <reconsider>` to have the king actually
+   arrested.
 
 
 INSTALL
@@ -65,14 +67,22 @@ USAGE
     list of modules
 
     $ sbn mod
-    cmd,err,flt,fnd,irc,log,mdl,mod,
-    req, rss,slg,sts,tdo,thr,upt,ver
+    cmd,err,fnd,irc,log,mod,req,rss,tdo,thr
 
     start as daemon
 
     $ sbn -d
     $ 
 
+    show request to the prosecutor
+
+    $ sbn req
+    **Information and Evidence Unit**
+    **Office of the Prosecutor**
+    **Post Office Box 19519**
+    **2500 CM The Hague**
+    **The Netherlands**
+    
 
 CONFIGURATION
 

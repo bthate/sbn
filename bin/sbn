@@ -28,7 +28,7 @@ from sbn.thread import launch
 
 
 Cfg = Default()
-Cfg.mod  = "cmd,err,mod,thr,ver"
+Cfg.mod  = "cmd,err,mod,req,thr,ver"
 Cfg.name = "sbn"
 Cfg.version = "72"
 Storage.wd = os.path.expanduser(f"~/.{Cfg.name}")
