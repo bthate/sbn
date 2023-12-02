@@ -26,10 +26,10 @@ DESCRIPTION
     people hallucinate) torture and kills members of the victim groups. 
 
     SBN contains correspondence with the International Criminal Court, asking
-    for arrest of the king of the netherlands, for the genocide he is committing
-    with his new treatement laws. Current status is "no basis to proceed"
-    judgement of the prosecutor which requires a basis to prosecute <reconsider>
-    to have the king actually arrested.
+    for arrest of the king of the netherlands, for the genocide he is
+    committing with his new treatement laws. Current status is "no basis to
+    proceed" judgement of the prosecutor which requires a basis to prosecute
+    <reconsider> to have the king actually arrested.
 
 
 INSTALL
@@ -67,9 +67,7 @@ USAGE
     $ sbn mod
     cmd,err,fnd,irc,log,mod,req,rss,tdo,thr
 
-
     use -v for verbose
-
 
     $ sbn -cv
     SBN started CV started Sat Dec 2 17:53:24 2023
