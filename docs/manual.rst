@@ -23,27 +23,25 @@ SYNOPSIS
 
     sbn <cmd> [key=val] 
     sbn <cmd> [key==val]
-    sbn [-c] [-d] [-v]
-
+    sbn [-c] [-v]
+    sbnd
 
 DESCRIPTION
 
 ::
 
+    SBN holds evidence that king netherlands is doing a genocide, a written
+    response <king> where king netherlands confirmed taking note of 
+    “what i have written”, namely proof <evidence> that medicine he uses in
+    treatement laws like zyprexa, haldol, abilify and clozapine are poison
+    that make impotent, is both physical (contracted muscles) and mental (let 
+    people hallucinate) torture and kills members of the victim groups. 
 
-   ``SBN`` holds evidence that king netherlands is doing a genocide, a 
-   written :ref:`response <king>` where king netherlands confirmed taking note
-   of “what i have written”, namely :ref:`proof <evidence>` that medicine he
-   uses in treatement laws like zyprexa, haldol, abilify and clozapine are poison
-   that make impotent, is both physical (contracted muscles) and mental (let 
-   people hallucinate) torture and kills members of the victim groups. 
-
-   ``SBN`` contains `correspondence <writings.html>`_ with the
-   International Criminal Court, asking for arrest of the king of the 
-   netherlands, for the genocide he is committing with his new treatement laws.
-   Current status is "no basis to proceed" judgement of the prosecutor 
-   which requires a :ref:`basis to prosecute <reconsider>` to have the king actually
-   arrested.
+    SBN contains correspondence with the International Criminal Court, asking
+    for arrest of the king of the netherlands, for the genocide he is committing
+    with his new treatement laws. Current status is "no basis to proceed"
+    judgement of the prosecutor which requires a basis to prosecute <reconsider>
+    to have the king actually arrested.
 
 
 INSTALL
@@ -68,8 +66,7 @@ USAGE
     see list of commands
 
     $ sbn cmd
-    cfg,cmd,dlt,dne,dpl,log,man,met,mod,mre,nme,now,pwd
-    rem,req,rss,sts,tdo,thr
+    cmd,err,mod,req,thr,ver
 
     start a console
 
@@ -83,7 +80,7 @@ USAGE
 
     start as daemon
 
-    $ sbn -d
+    $ sbnd
     $ 
 
     show request to the prosecutor
@@ -129,22 +126,15 @@ COMMANDS
     cfg - irc configuration
     dlt - remove a user
     dpl - sets display items
-    ftc - runs a fetching batch
     fnd - find objects 
-    flt - instances registered
     log - log some text
-    mdl - genocide model
     met - add a user
     mre - displays cached output
-    nck - changes nick on irc
-    now - genocide stats
     pwd - sasl nickserv name/pass
     rem - removes a rss feed
     req - reconsider
     rss - add a feed
-    slg - slogan
     thr - show the running threads
-    tpc - genocide stats into topic
 
 
 SYSTEMD

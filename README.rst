@@ -18,7 +18,6 @@ DESCRIPTION
 
 ::
 
-
     SBN holds evidence that king netherlands is doing a genocide, a written
     response <king> where king netherlands confirmed taking note of 
     “what i have written”, namely proof <evidence> that medicine he uses in
@@ -116,22 +115,15 @@ COMMANDS
     cfg - irc configuration
     dlt - remove a user
     dpl - sets display items
-    ftc - runs a fetching batch
     fnd - find objects 
-    flt - instances registered
     log - log some text
-    mdl - genocide model
     met - add a user
     mre - displays cached output
-    nck - changes nick on irc
-    now - genocide stats
     pwd - sasl nickserv name/pass
     rem - removes a rss feed
     req - reconsider
     rss - add a feed
-    slg - slogan
     thr - show the running threads
-    tpc - genocide stats into topic
 
 
 SYSTEMD
@@ -152,10 +144,25 @@ SYSTEMD
     User=<user>
     Group=<user>
     WorkingDirectory=/home/<user>/.sbn
-    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/python3 -m sbn -s
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
 
     [Install]
     WantedBy=multi-user.target
+
+
+    if you don't have a ~/,sbn directory you need to create it
+
+
+    $ mkdir ~/.sbn
+
+
+    then run this
+
+
+    $ sudo systemctl enable sbn --now
+
+
+    default channel/server is #rssbot on localhost
 
 
 FILES
@@ -175,6 +182,7 @@ AUTHOR
 
 
 COPYRIGHT
+
 
 ::
 
