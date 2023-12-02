@@ -39,6 +39,7 @@ packages = [
 zip-safe = true
 script-files = [
     "bin/sbn",
+    "bin/sbnd"
 ]
 
 [tool.setuptools.data-files]
