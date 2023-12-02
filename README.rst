@@ -161,10 +161,8 @@ SYSTEMD
 
     then run this
 
-
     $ mkdir ~/.sbn
     $ sudo systemctl enable sbn --now
-
 
     default channel/server is #sbn on localhost
 
