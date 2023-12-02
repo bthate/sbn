@@ -79,11 +79,5 @@ p.s.
 """
 
 
-from ..handle import Commands
-
-
 def req(event):
     event.reply(__doc__)
-
-
-Commands.add(req)

@@ -6,7 +6,6 @@
 "locate"
 
 
-from ..handle import Commands
 from ..locate import Storage, find
 from ..object import fmt
 
@@ -30,6 +29,3 @@ def fnd(event):
         nmr += 1
     if not nmr:
         event.reply("no result")
-
-
-Commands.add(fnd)

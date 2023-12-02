@@ -10,7 +10,6 @@ import threading
 import time
 
 
-from ..handle import Commands
 from ..object import Object, update
 from ..timers import laps
 
@@ -40,6 +39,3 @@ def thr(event):
         event.reply(' '.join(res))
     else:
         event.reply('no threads')
-
-
-Commands.add(thr)

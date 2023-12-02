@@ -14,15 +14,13 @@ import _thread
 
 from .broker import Broker
 from .errors import Errors
-from .object import Object, spl
+from .object import Object
 from .thread import launch
 
 
 def __dir__():
     return (
         'Reactor',
-        'forever',
-        'init'
     )
 
 
@@ -73,25 +71,3 @@ class Reactor(Object):
 
     def stop(self) -> None:
         self.stopped.set()
-
-
-def forever():
-    while 1:
-        try:
-            time.sleep(1.0)
-        except:
-            _thread.interrupt_main()
-
-
-def init(pkg, mnames, wait=False) -> []:
-    res = []
-    if not pkg:
-        return res
-    for mname in spl(mnames):
-        module = getattr(pkg, mname, None)
-        if not module:
-            continue
-        if "init" in dir(module):
-            thr = launch(module.init)
-            res.append(thr)
-    return res

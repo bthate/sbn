@@ -19,7 +19,7 @@ import _thread
 
 from ..broker import Broker
 from ..handle import Commands, command
-from ..locate import Storage, last, sync
+from ..locate import last, sync
 from ..errors import Errors, debug
 from ..events import Event
 from ..object import Default, Object, edit, fmt, keys
@@ -69,9 +69,6 @@ class Config(Default):
         self.realname = self.realname or Config.realname
         self.server = self.server or Config.server
         self.username = self.username or Config.username
-
-
-Storage.add(Config)
 
 
 class Cache(Object):
@@ -591,9 +588,6 @@ def cfg(event):
         event.reply('ok')
 
 
-Commands.add(cfg)
-
-
 def mre(event):
     if not event.channel:
         event.reply('channel is not set.')
@@ -613,9 +607,6 @@ def mre(event):
     event.reply(f'{size} more in cache')
 
 
-Commands.add(mre)
-
-
 def pwd(event):
     if len(event.args) != 2:
         event.reply('pwd <nick> <password>')
@@ -627,6 +618,3 @@ def pwd(event):
     base = base64.b64encode(enc)
     dcd = base.decode('ascii')
     event.reply(dcd)
-
-
-Commands.add(pwd)

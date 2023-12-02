@@ -53,7 +53,7 @@ class Commands(Object):
             if key.startswith("cb"):
                 continue
             if 'event' in cmd.__code__.co_varnames:
-                Command.add(cmd)
+                Commands.add(cmd)
 
 
 def command(txt):

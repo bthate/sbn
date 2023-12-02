@@ -19,8 +19,7 @@ from urllib.parse import quote_plus, urlencode
 
 
 from ..broker import Broker
-from ..handle import Commands
-from ..locate import Storage, find, fntime, last, sync
+from ..locate import find, fntime, last, sync
 from ..object import Default, Object, fmt, update
 from ..timers import Repeater, laps
 from ..thread import launch
@@ -50,17 +49,11 @@ class Rss(Default):
         self.display_list = 'title,link,author'
 
 
-Storage.add(Rss)
-
-
 class Seen(Default):
 
     def __init__(self):
         Default.__init__(self)
         self.urls = []
-
-
-Storage.add(Seen)
 
 
 class Fetcher(Object):
@@ -233,9 +226,6 @@ def dpl(event):
     event.reply('ok')
 
 
-Commands.add(dpl)
-
-
 def nme(event):
     if len(event.args) != 2:
         event.reply('nme <stringinurl> <name>')
@@ -248,9 +238,6 @@ def nme(event):
     event.reply('ok')
 
 
-Commands.add(nme)
-
-
 def rem(event):
     if len(event.args) != 1:
         event.reply('rem <stringinurl>')
@@ -261,9 +248,6 @@ def rem(event):
             feed.__deleted__ = True
             sync(feed)
     event.reply('ok')
-
-
-Commands.add(rem)
 
 
 def rss(event):
@@ -289,6 +273,3 @@ def rss(event):
     feed.rss = event.args[0]
     sync(feed)
     event.reply('ok')
-
-
-Commands.add(rss)

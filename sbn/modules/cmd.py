@@ -11,6 +11,3 @@ from ..handle import Commands
 
 def cmd(event):
     event.reply(",".join(sorted(Commands.cmds)))
-
-
-Commands.add(cmd)
