@@ -12,7 +12,7 @@ SYNOPSIS
     sbn <cmd> [key=val] 
     sbn <cmd> [key==val]
     sbn [-c] [-v]
-    sbnd
+
 
 DESCRIPTION
 
