@@ -8,131 +8,122 @@
 
 .. title:: Manual
 
-    
-**NAME**
-
- | ``GENOCIDE`` - Reconsider OTP-CR-117/19
 
 
-**SYNOPSIS**
+NAME
 
- ::
+::
 
-  genocide <cmd> [key=val] 
-  genocide <cmd> [key==val]
-  genocide [-c] [-d] [-v]
+    SBN - Skull, Bones and Number (OTP-CR-117/19)
 
 
-**DESCRIPTION**
+SYNOPSIS
+
+::
+
+    sbn <cmd> [key=val] 
+    sbn <cmd> [key==val]
+    sbn [-c] [-d] [-v]
 
 
- ``GENOCIDE`` is a python3 IRC bot is intended to be programmable  in a
- static, only code, no popen, no user imports and no reading modules from
- a directory, way. It can show genocide and suicide stats of king netherlands
- his genocide into a IRC channel, display rss feeds and log simple text
- messages, source is `here <source.html>`_.
+DESCRIPTION
 
- ``GENOCIDE`` holds evidence that king netherlands is doing a genocide, a 
- written :ref:`response <king>` where king netherlands confirmed taking note
- of “what i have written”, namely :ref:`proof <evidence>` that medicine he
- uses in treatement laws like zyprexa, haldol, abilify and clozapine are poison
- that make impotent, is both physical (contracted muscles) and mental (let 
- people hallucinate) torture and kills members of the victim groups. 
-
- ``GENOCIDE`` contains `correspondence <writings.html>`_ with the
- International Criminal Court, asking for arrest of the king of the 
- netherlands, for the genocide he is committing with his new treatement laws.
- Current status is "no basis to proceed" judgement of the prosecutor 
- which requires a :ref:`basis to prosecute <reconsider>` to have the king actually
- arrested.
+::
 
 
-**INSTALL**
+   ``SBN`` holds evidence that king netherlands is doing a genocide, a 
+   written :ref:`response <king>` where king netherlands confirmed taking note
+   of “what i have written”, namely :ref:`proof <evidence>` that medicine he
+   uses in treatement laws like zyprexa, haldol, abilify and clozapine are poison
+   that make impotent, is both physical (contracted muscles) and mental (let 
+   people hallucinate) torture and kills members of the victim groups. 
 
- with sudo::
-
-  $ python3 -m pip install genocide
-
- as user::
-
-  $ pipx install genocide
-
- or download the tar, see::
-
-  https://pypi.org/project/genocide
-
-**USAGE**
+   ``SBN`` contains `correspondence <writings.html>`_ with the
+   International Criminal Court, asking for arrest of the king of the 
+   netherlands, for the genocide he is committing with his new treatement laws.
+   Current status is "no basis to proceed" judgement of the prosecutor 
+   which requires a :ref:`basis to prosecute <reconsider>` to have the king actually
+   arrested.
 
 
- list of commands::
+INSTALL
 
-    $ genocide cmd
-    cmd,err,flt,sts,thr,upt
 
- start a console::
+::
 
-    $ genocide -c
+    $ pipx install sbn
+
+
+USAGE
+
+::
+
+    without any argument the bot does nothing
+
+    $ sbn
+    $
+
+    giving an argument makes the bot check for a command
+
+    see list of commands
+
+    $ sbn cmd
+    cfg,cmd,dlt,dne,dpl,log,man,met,mod,mre,nme,now,pwd
+    rem,req,rss,sts,tdo,thr
+
+    start a console
+
+    $ sbn -c
     >
 
- start additional modules::
+    list of modules
 
-    $ genocide mod=<mod1,mod2> -c
-    >
+    $ sbn mod
+    cmd,err,fnd,irc,log,mod,req,rss,tdo,thr
 
- list of modules::
+    start as daemon
 
-    $ genocide mod
-    cmd,err,flt,fnd,irc,log,mdl,mod,
-    req, rss,slg,sts,tdo,thr,upt,ver
-
- to start irc, add mod=irc when
- starting::
-
-     $ genocide mod=irc -c
-
- to start rss, also add mod=rss
- when starting::
-
-     $ genocide mod=irc,rss -c
-
- start as daemon::
-
-    $ genocide mod=irc,rss -d
+    $ sbn -d
     $ 
 
+    show request to the prosecutor
 
-**CONFIGURATION**
+    $ sbn req
+    **Information and Evidence Unit**
+    **Office of the Prosecutor**
+    **Post Office Box 19519**
+    **2500 CM The Hague**
+    **The Netherlands**
+    
 
-
- *irc*
-
- ::
-
-    $ genocide cfg server=<server>
-    $ genocide cfg channel=<channel>
-    $ genocide cfg nick=<nick>
-
- *sasl*
-
- ::
-
-    $ genocide pwd <nsvnick> <nspass>
-    $ genocide cfg password=<frompwd>
-
- *rss*
-
- ::
-
-    $ genocide rss <url>
-    $ genocide dpl <url> <item1,item2>
-    $ genocide rem <url>
-    $ genocide nme <url< <name>
+CONFIGURATION
 
 
-**COMMANDS**
+::
+
+    irc
+
+    $ sbn cfg server=<server>
+    $ sbn cfg channel=<channel>
+    $ sbn cfg nick=<nick>
+
+    sasl
+
+    $ sbn pwd <nsvnick> <nspass>
+    $ sbn cfg password=<frompwd>
+
+     rss
+
+    $ sbn rss <url>
+    $ sbn dpl <url> <item1,item2>
+    $ sbn rem <url>
+    $ sbn nme <url< <name>
 
 
- ::
+COMMANDS
+
+
+::
 
     cmd - commands
     cfg - irc configuration
@@ -156,25 +147,48 @@
     tpc - genocide stats into topic
 
 
-**FILES**
-
- ::
-
-    ~/.local/bin/genocide
-    ~/.local/pipx/venvs/genocide/
-    /usr/local/bin/genocide
-    /usr/local/share/doc/genocide
-
-**AUTHOR**
+SYSTEMD
 
 
- ::
- 
+::
+
+    replace "<user>" with the user running pipx
+
+
+    [Unit]
+    Description=Skull, Bones and Number (OTP-CR-117/19)
+    Requires=network.target
+    After=network.target
+
+    [Service]
+    Type=simple
+    User=<user>
+    Group=<user>
+    WorkingDirectory=/home/<user>/.sbn
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
+
+    [Install]
+    WantedBy=multi-user.target
+
+
+FILES
+
+::
+
+    ~/.local/bin/sbn
+    ~/.local/pipx/venvs/sbn/
+
+
+AUTHOR
+
+
+::
+
     Bart Thate <bthate@dds.nl>
 
 
-**COPYRIGHT**
+COPYRIGHT
 
- ::
+::
 
-    GENOCIDE is Public Domain.
+    SBN is Public Domain.
