@@ -183,7 +183,7 @@ SYSTEMD
     $ sudo systemctl enable sbn --now
 
 
-    default channel/server is #rssbot on localhost
+    default channel/server is #sbn on localhost
 
 
 FILES
