@@ -158,7 +158,7 @@ SYSTEMD
     WantedBy=multi-user.target
 
 
-    if you don't have a ~/,sbn directory you need to create it
+    if you don't have a ~/.sbn directory you need to create it
 
 
     $ mkdir ~/.sbn

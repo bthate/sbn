@@ -9,7 +9,6 @@
 .. title:: Manual
 
 
-
 NAME
 
 ::
@@ -24,7 +23,7 @@ SYNOPSIS
     sbn <cmd> [key=val] 
     sbn <cmd> [key==val]
     sbn [-c] [-v]
-    sbnd
+
 
 DESCRIPTION
 
@@ -66,7 +65,8 @@ USAGE
     see list of commands
 
     $ sbn cmd
-    cmd,err,mod,req,thr,ver
+    cfg,cmd,dlt,dne,dpl,log,man,met,mod,mre,nme,now,pwd
+    rem,req,rss,sts,tdo,thr
 
     start a console
 
@@ -78,7 +78,15 @@ USAGE
     $ sbn mod
     cmd,err,fnd,irc,log,mod,req,rss,tdo,thr
 
-    start as daemon
+
+    use -v for verbose
+
+
+    $ sbn -cv
+    SBN started CV started Sat Dec 2 17:53:24 2023
+    >
+
+    start daemon
 
     $ sbnd
     $ 
@@ -86,11 +94,11 @@ USAGE
     show request to the prosecutor
 
     $ sbn req
-    **Information and Evidence Unit**
-    **Office of the Prosecutor**
-    **Post Office Box 19519**
-    **2500 CM The Hague**
-    **The Netherlands**
+    Information and Evidence Unit
+    Office of the Prosecutor
+    Post Office Box 19519
+    2500 CM The Hague
+    The Netherlands
     
 
 CONFIGURATION
@@ -161,6 +169,21 @@ SYSTEMD
     WantedBy=multi-user.target
 
 
+    if you don't have a ~/.sbn directory you need to create it
+
+
+    $ mkdir ~/.sbn
+
+
+    then run this
+
+
+    $ sudo systemctl enable sbn --now
+
+
+    default channel/server is #rssbot on localhost
+
+
 FILES
 
 ::
@@ -178,6 +201,7 @@ AUTHOR
 
 
 COPYRIGHT
+
 
 ::
 
