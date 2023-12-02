@@ -75,11 +75,11 @@ USAGE
     show request to the prosecutor
 
     $ sbn req
-    **Information and Evidence Unit**
-    **Office of the Prosecutor**
-    **Post Office Box 19519**
-    **2500 CM The Hague**
-    **The Netherlands**
+    Information and Evidence Unit
+    Office of the Prosecutor
+    Post Office Box 19519
+    2500 CM The Hague
+    The Netherlands
     
 
 CONFIGURATION
