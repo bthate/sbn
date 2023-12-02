@@ -21,7 +21,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from sbn.define import Commands, Default, Errors, Event, Object, Reactor, Storage
-from sbn.define import keys, laps, launch, parse
+from sbn.define import keys, laps, launch, parse, spl
 
 
 from sbn import modules
@@ -113,6 +113,19 @@ def payload(clt) -> None:
         return nmr
 
 
+def scan(pkg, modstr, initer=False) -> []:
+    threads = []
+    for modname in spl(modstr):
+        module = getattr(pkg, modname, None)
+        if not module:
+            continue
+        Commands.scan(module)
+        Storage.scan(module)
+        if initer and "init" in dir(module):
+            threads.append(launch(module.init, name=f"init {modname}"))
+    return threads
+
+
 def wrap(func) -> None:
     old2 = None
     try:
@@ -132,6 +145,7 @@ def main() -> None:
     if os.path.exists(Storage.wd):
         shutil.rmtree(Storage.wd)
     parse(Cfg, " ".join(sys.argv[1:]))
+    scan(modules, Cfg.mod)
     if "v" in Cfg.opts:
         Errors.output = print
     nrs = Cfg.index or 1

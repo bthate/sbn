@@ -28,6 +28,7 @@ def __dir__():
             'keys',
             'read',
             'search',
+            'spl',
             'update',
             'values',
             'write'
