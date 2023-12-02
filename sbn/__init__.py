@@ -1,15 +1,9 @@
 # This file is placed in the Public Domain.
 #
-#
-
-
-"feeds rss into your channel"
-# This file is placed in the Public Domain.
-#
 # pylint: disable=E0603,E0402,W0401,W0614,W0611,W0622
 
 
-"defines"
+"Skull, Bones and Number (OTP-CR-117/19)"
 
 
 from . import broker, errors, events, handle, object, parser, reacts
