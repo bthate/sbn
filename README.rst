@@ -44,11 +44,6 @@ USAGE
 
 ::
 
-    use the following alias for easier typing
-
-    $ alias sbn="python3 -m sbn"
-
-
     without any argument the bot does nothing
 
     $ sbn
