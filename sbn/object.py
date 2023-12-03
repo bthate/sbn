@@ -12,9 +12,6 @@ import pathlib
 import _thread
 
 
-lock = _thread.allocate_lock()
-
-
 def __dir__():
     return (
             'Default',
@@ -36,6 +33,9 @@ def __dir__():
 
 
 __all__ = __dir__()
+
+
+lock = _thread.allocate_lock()
 
 
 def cdir(pth) -> None:

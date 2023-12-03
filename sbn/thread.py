@@ -3,7 +3,7 @@
 # pylint: disable=C,R,W0718
 
 
-"thread"
+"threads"
 
 
 import queue
@@ -20,15 +20,11 @@ def __dir__():
     return (
         'Thread',
         'launch',
-        'lock',
         'name'
     )
 
 
 __all__ = __dir__()
-
-
-lock = _thread.allocate_lock()
 
 
 class Thread(threading.Thread):

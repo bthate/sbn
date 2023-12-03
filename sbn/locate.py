@@ -3,7 +3,7 @@
 # pylint: disable=C,R,W0105,E0402,W0611
 
 
-"disk"
+"find objects"
 
 
 import datetime
@@ -12,7 +12,7 @@ import os
 import time
 
 
-from .object import Object, Default, cdir, dump, fqn, items, load, update
+from .object import Object, Default, cdir, fqn, items, update
 from .object import read, search, write
 
 

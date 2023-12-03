@@ -9,9 +9,7 @@
 import time
 
 
-from ..object import Object
-from ..locate import find, fntime, sync
-from ..timers import laps
+from sbn import Object, find, fntime, laps, sync
 
 
 class Todo(Object):

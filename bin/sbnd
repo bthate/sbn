@@ -26,7 +26,7 @@ Cfg.mod     = "cmd,err,mod,irc,req,rss,thr"
 Cfg.name    = "sbn"
 Storage.wd  = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Storage.wd, f"{Cfg.name}.pid")
-Cfg.version = "72"
+Cfg.version = "73"
 Cfg.user    = getpass.getuser()
 
 

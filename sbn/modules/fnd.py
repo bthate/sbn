@@ -6,8 +6,7 @@
 "locate"
 
 
-from ..locate import Storage, find
-from ..object import fmt
+from sbn import Storage, find, fmt
 
 
 def fnd(event):

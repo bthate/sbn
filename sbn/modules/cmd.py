@@ -6,7 +6,7 @@
 "list of commands"
 
 
-from ..handle import Commands
+from sbn import Commands
 
 
 def cmd(event):

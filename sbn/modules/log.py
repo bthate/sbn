@@ -9,9 +9,7 @@
 import time
 
 
-from ..object import Object
-from ..locate import Storage, find, fntime, sync
-from ..timers import laps
+from sbn import Object, Storage, find, fntime, laps, sync
 
 
 class Log(Object):
@@ -19,9 +17,6 @@ class Log(Object):
     def __init__(self):
         super().__init__()
         self.txt = ''
-
-
-Storage.add(Log)
 
 
 def log(event):

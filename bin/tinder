@@ -33,7 +33,7 @@ Cfg.mod =  "cmd,err,fnd,irc,log,req,rss,tdo,thr"
 Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
-
+Cfg.version = "73"
 
 Storage.wd = ".test"
 

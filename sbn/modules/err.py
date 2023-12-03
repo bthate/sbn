@@ -6,8 +6,7 @@
 "status of bots"
 
 
-from ..broker import Broker
-from ..errors import Errors
+from sbn import Broker, Errors
 
 
 DEBUG = False

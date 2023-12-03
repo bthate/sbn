@@ -17,14 +17,8 @@ import time
 import _thread
 
 
-from ..broker import Broker
-from ..handle import Commands, command
-from ..locate import last, sync
-from ..errors import Errors, debug
-from ..events import Event
-from ..object import Default, Object, edit, fmt, keys
-from ..reacts import Reactor
-from ..thread import launch
+from sbn import Broker, Commands, Default, Errors, Object, Reactor
+from sbn import debug, edit, fmt, keys, last, launch, sync
 
 
 Errors.filter = ["PING", "PONG", "PRIVMSG"]
