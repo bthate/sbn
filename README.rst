@@ -173,6 +173,7 @@ FILES
 ::
 
     ~/.local/bin/sbn
+    ~/.local/bin/sbnd
     ~/.local/pipx/venvs/sbn/
 
 
