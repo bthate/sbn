@@ -10,7 +10,6 @@ import queue
 import threading
 import time
 import types
-import _thread
 
 
 from .errors import Errors

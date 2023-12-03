@@ -492,10 +492,6 @@ def cb_cap(evt):
         bot.direct('CAP REQ :sasl')
 
 
-def cb_command(evt):
-    command(evt)
-
-
 def cb_error(evt):
     bot = byorig(evt.orig)
     bot.state.nrerror += 1

@@ -154,6 +154,7 @@ SYSTEMD
     Group=<user>
     WorkingDirectory=/home/<user>/.sbn
     ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
+    RemainAfterExit=yes
 
     [Install]
     WantedBy=multi-user.target
