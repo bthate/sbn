@@ -17,7 +17,7 @@ import time
 import _thread
 
 
-from sbn import Broker, Commands, Default, Errors, Object, Reactor
+from sbn import Broker, Commands, Default, Errors, Event, Object, Reactor
 from sbn import debug, edit, fmt, keys, last, launch, sync
 
 

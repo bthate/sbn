@@ -14,11 +14,8 @@ import sys
 import time
 
 
-from sbn.locate import Storage
-from sbn.errors import Errors
-from sbn.handle import Commands
-from sbn.object import Default, cdir, spl
-from sbn.thread import launch
+from sbn import Commands, Default, Errors, Storage
+from sbn import cdir, launch, spl
 
 
 Cfg         = Default()
@@ -56,6 +53,10 @@ def daemon(pidfile, verbose=False):
     with open(pidfile, "w", encoding="utf-8") as fds:
         fds.write(str(os.getpid()))
 
+def forever():
+    while 1:
+        time.sleep(1.0)
+
 
 def privileges(username):
     pwnam = pwd.getpwnam(username)
@@ -78,11 +79,13 @@ def scan(pkg, modstr, initer=False) -> []:
 
 def main():
     cdir(Storage.wd)
-    daemon(Cfg.pidfile)
+    if "-v" in sys.argv:
+        Errors.output = print
+    else:
+        daemon(Cfg.pidfile)
     privileges(Cfg.user)
     scan(modules, Cfg.mod, True)
-    while 1:
-        time.sleep(1.0)
+    forever()
 
 
 if __name__ == "__main__":
