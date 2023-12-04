@@ -25,7 +25,7 @@ from sbn import command, debug, launch, modules, parse, spl
 Cfg = Default()
 Cfg.mod  = "cmd,err,mod,req,thr,ver"
 Cfg.name = "sbn"
-Cfg.version = "73"
+Cfg.version = "74"
 Cfg.wd = os.path.expanduser(f"~/.{Cfg.name}")
 
 

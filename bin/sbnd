@@ -15,7 +15,7 @@ import time
 
 
 from sbn import Commands, Default, Errors, Storage
-from sbn import cdir, launch, spl
+from sbn import cdir, launch, modules, spl
 
 
 Cfg         = Default()
@@ -23,11 +23,8 @@ Cfg.mod     = "cmd,err,mod,irc,req,rss,thr"
 Cfg.name    = "sbn"
 Storage.wd  = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Storage.wd, f"{Cfg.name}.pid")
-Cfg.version = "73"
+Cfg.version = "74"
 Cfg.user    = getpass.getuser()
-
-
-from sbn import modules
 
 
 def daemon(pidfile, verbose=False):
