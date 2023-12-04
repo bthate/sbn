@@ -25,10 +25,10 @@ def dne(event):
         return
     selector = {'txt': event.args[0]}
     nmr = 0
-    for obj in find('todo', selector):
+    for fnm, obj in find('todo', selector):
         nmr += 1
         obj.__deleted__ = True
-        sync(obj)
+        sync(obj, fnm)
         event.reply('ok')
         break
     if not nmr:
@@ -38,8 +38,8 @@ def dne(event):
 def tdo(event):
     if not event.rest:
         nmr = 0
-        for obj in find('todo'):
-            lap = laps(time.time()-fntime(obj.__fnm__))
+        for fnm, obj in find('todo'):
+            lap = laps(time.time()-fntime(fnm))
             event.reply(f'{nmr} {obj.txt} {lap}')
             nmr += 1
         if not nmr:
