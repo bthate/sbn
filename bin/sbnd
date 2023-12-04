@@ -8,23 +8,27 @@
 
 
 import getpass
+import inspect
 import os
 import pwd
 import sys
 import time
 
 
-from sbn import Commands, Default, Errors, Storage
+from sbn import Commands, Default, Errors, Object, Storage
 from sbn import cdir, launch, modules, spl
 
 
 Cfg         = Default()
 Cfg.mod     = "cmd,err,mod,irc,req,rss,thr"
 Cfg.name    = "sbn"
-Storage.wd  = os.path.expanduser(f"~/.{Cfg.name}")
-Cfg.pidfile = os.path.join(Storage.wd, f"{Cfg.name}.pid")
+Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
+Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
 Cfg.version = "74"
 Cfg.user    = getpass.getuser()
+
+
+Storage.wd = Cfg.wd
 
 
 def daemon(pidfile, verbose=False):
@@ -67,8 +71,17 @@ def scan(pkg, modstr, initer=False) -> []:
         module = getattr(pkg, modname, None)
         if not module:
             continue
-        Commands.scan(module)
-        Storage.scan(module)
+        for key, cmd in inspect.getmembers(module, inspect.isfunction):
+            if key.startswith("cb"):
+                continue
+            if 'event' in cmd.__code__.co_varnames:
+                Commands.add(cmd)
+        for key, clz in inspect.getmembers(module, inspect.isclass):
+            if key.startswith("cb"):
+                continue
+            if not issubclass(clz, Object):
+                continue
+            Storage.add(clz)
         if initer and "init" in dir(module):
             threads.append(launch(module.init, name=f"init {modname}"))
     return threads

@@ -8,6 +8,7 @@
 "created clients"
 
 
+import inspect
 import os
 import random
 import shutil
@@ -34,8 +35,10 @@ Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
 Cfg.version = "73"
+Cfg.wd = ".test"
 
-Storage.wd = ".test"
+
+Storage.wd = Cfg.wd
 
 
 paylock = _thread.allocate_lock()
@@ -116,8 +119,17 @@ def scan(pkg, modstr, initer=False) -> []:
         module = getattr(pkg, modname, None)
         if not module:
             continue
-        Commands.scan(module)
-        Storage.scan(module)
+        for key, cmd in inspect.getmembers(module, inspect.isfunction):
+            if key.startswith("cb"):
+                continue
+            if 'event' in cmd.__code__.co_varnames:
+                Commands.add(cmd)
+        for key, clz in inspect.getmembers(module, inspect.isclass):
+            if key.startswith("cb"):
+                continue
+            if not issubclass(clz, Object):
+                continue
+            Storage.add(clz)
         if initer and "init" in dir(module):
             threads.append(launch(module.init, name=f"init {modname}"))
     return threads
