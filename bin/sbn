@@ -7,6 +7,7 @@
 "main"
 
 
+import inspect
 import os
 import readline
 import sys
@@ -17,8 +18,8 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from sbn import Commands, Default, Errors, Event, Reactor, Storage
-from sbn import command, debug, launch, parse, spl
+from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
+from sbn import command, debug, launch, modules, parse, spl
 
 
 Cfg = Default()
@@ -26,9 +27,6 @@ Cfg.mod  = "cmd,err,mod,req,thr,ver"
 Cfg.name = "sbn"
 Cfg.version = "73"
 Storage.wd = os.path.expanduser(f"~/.{Cfg.name}")
-
-
-from sbn import modules
 
 
 class Console(Reactor):
@@ -65,8 +63,17 @@ def scan(pkg, modstr, initer=False) -> []:
         module = getattr(pkg, modname, None)
         if not module:
             continue
-        Commands.scan(module)
-        Storage.scan(module)
+        for key, cmd in inspect.getmembers(module, inspect.isfunction):
+            if key.startswith("cb"):
+                continue
+            if 'event' in cmd.__code__.co_varnames:
+                Commands.add(cmd)
+        for key, clz in inspect.getmembers(module, inspect.isclass):
+            if key.startswith("cb"):
+                continue
+            if not issubclass(clz, Object):
+                continue
+            Storage.add(clz)
         if initer and "init" in dir(module):
             threads.append(launch(module.init, name=f"init {modname}"))
     return threads

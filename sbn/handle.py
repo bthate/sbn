@@ -6,9 +6,6 @@
 "commands"
 
 
-import inspect
-
-
 from .errors import Errors
 from .events import Event
 from .object import Object
@@ -47,14 +44,6 @@ class Commands(Object):
             Errors.add(exc)
         evt.ready()
  
-    @staticmethod
-    def scan(mod) -> None:
-        for key, cmd in inspect.getmembers(mod, inspect.isfunction):
-            if key.startswith("cb"):
-                continue
-            if 'event' in cmd.__code__.co_varnames:
-                Commands.add(cmd)
-
 
 def command(txt):
     evn = Event()
