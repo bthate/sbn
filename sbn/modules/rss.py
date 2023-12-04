@@ -243,7 +243,7 @@ def rem(event):
     for fnm, feed in find('rss', selector):
         if feed:
             feed.__deleted__ = True
-            sync(feed)
+            sync(feed, fnm)
     event.reply('ok')
 
 
