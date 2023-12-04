@@ -26,7 +26,7 @@ Cfg = Default()
 Cfg.mod  = "cmd,err,mod,req,thr,ver"
 Cfg.name = "sbn"
 Cfg.version = "73"
-Storage.wd = os.path.expanduser(f"~/.{Cfg.name}")
+Cfg.wd = os.path.expanduser(f"~/.{Cfg.name}")
 
 
 class Console(Reactor):
@@ -103,6 +103,7 @@ def main():
     Errors.output = print
     Commands.add(ver)
     parse(Cfg, " ".join(sys.argv[1:]))
+    Storage.wd = Cfg.wd
     if "mod" in Cfg.set:
         Cfg.mod += "," + Cfg.set.mod 
     if "v" in Cfg.opts:
