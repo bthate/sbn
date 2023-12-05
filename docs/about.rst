@@ -33,6 +33,11 @@
     :target: verbatim.html
 
 
+.. raw:: html
+
+    <br>
+
+
 In 2018 i :ref:`informed <guilty>` the king of the netherlands that what he calls medicine in his "care" laws are not medicine but poison.
 :ref:`Proof <evidence>` of these medicine being poison were shown to the king, who's (personal) kabinet wrote back that
 :ref:`"the king took note of what i have written" <king>`.
