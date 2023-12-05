@@ -15,11 +15,11 @@ import sys
 import time
 
 
-from sbn import Commands, Default, Errors, Object, Storage
+from sbn import Commands, Config, Default, Errors, Object, Storage
 from sbn import cdir, launch, modules, spl
 
 
-Cfg         = Default()
+Cfg         = Config()
 Cfg.mod     = "cmd,err,mod,irc,req,rss,thr"
 Cfg.name    = "sbn"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")

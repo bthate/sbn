@@ -21,14 +21,14 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
+from sbn import Commands, Config, Default, Errors, Event, Object, Reactor, Storage
 from sbn import keys, laps, launch, modules, parse, spl
 
 
 STARTTIME = time.time()
 
 
-Cfg = Default()
+Cfg = Config()
 Cfg.debug = True
 Cfg.mod =  "cmd,err,fnd,irc,log,req,rss,tdo,thr"
 Cfg.name = "tinder"
