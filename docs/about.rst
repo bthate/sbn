@@ -10,7 +10,6 @@
 
 .. raw:: html
 
-    <br><br>
     <center>
     <i>
     By law, with the use of poison, killing, torturing, castrating, destroying,
@@ -26,7 +25,7 @@
     and all psychiatric patients (WvGGZ) here in the Netherlands
     </i>
     </center>
-    <br><br>
+    <br>
 
 
 .. image:: skull3.png
