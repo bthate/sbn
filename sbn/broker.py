@@ -37,3 +37,8 @@ class Broker(Object):
     def first():
         if Broker.objs:
             return Broker.objs[0]
+
+    @staticmethod
+    def remove(obj):
+        if obj in Broker.objs:
+            Broker.objs.remove(obj)
