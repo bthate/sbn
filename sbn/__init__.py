@@ -76,6 +76,3 @@ def __dir__():
         'values',
         'write'
     )
-
-
-__all__ = __dir__()
