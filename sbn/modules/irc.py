@@ -112,8 +112,8 @@ class Output(Cache):
         return txt
 
     def oput(self, channel, txt):
-        if channel is None or txt is None:
-            return
+        #if channel is None or txt is None:
+        #    return
         if channel not in self.cache:
             self.cache[channel] = []
         self.oqueue.put_nowait((channel, txt))
@@ -177,7 +177,7 @@ class IRC(Reactor, Output):
 
     def announce(self, txt):
         for channel in self.channels:
-            self.say(channel, txt)
+            self.oput(channel, txt)
 
     def command(self, cmd, *args):
         with saylock:
@@ -234,6 +234,8 @@ class IRC(Reactor, Output):
                 OSError,
                 BrokenPipeError
                ) as ex:
+            pass
+        except Exception as ex:
             Errors.errors.append(ex)
 
     def doconnect(self, server, nck, port=6667):
@@ -289,7 +291,7 @@ class IRC(Reactor, Output):
             self.command('JOIN', channel)
 
     def keep(self):
-        while 1:
+        while not self.stopped.is_set():
             self.events.connected.wait()
             self.events.authed.wait()
             self.state.keeprunning = True
@@ -392,7 +394,6 @@ class IRC(Reactor, Output):
                 self.stop()
                 debug("handler stopped")
                 evt = self.event(str(ex))
-                debug(str(evt))
                 return evt
         try:
             txt = self.buffer.pop(0)
@@ -467,10 +468,11 @@ class IRC(Reactor, Output):
             launch(self.keep)
 
     def stop(self):
-        Broker.remove(self)
-        Reactor.stop(self)
-        self.dostop.set()
         self.disconnect()
+        self.dostop.set()
+        self.oput(None, None)
+        Reactor.stop(self)
+        Broker.remove(self)
 
     def wait(self):
         self.events.ready.wait()
