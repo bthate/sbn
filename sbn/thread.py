@@ -12,7 +12,7 @@ import time
 import types
 
 
-from .errors import Errors
+from .errors import Errors, debug
 
 
 def __dir__():
@@ -71,6 +71,7 @@ def launch(func, *args, **kwargs) -> Thread:
     nme = kwargs.get("name", name(func))
     thread = Thread(func, nme, *args, **kwargs)
     thread.start()
+    debug(f"launch {nme}")
     return thread
 
 

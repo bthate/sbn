@@ -15,7 +15,6 @@ from .parser import parse
 def __dir__():
     return (
         'Commands',
-        'command'
     )
 
 
@@ -43,12 +42,3 @@ class Commands(Object):
         except Exception as exc:
             Errors.add(exc)
         evt.ready()
- 
-
-def command(txt):
-    evn = Event()
-    evn.txt = txt
-    parse(evn)
-    Commands.handle(evn)
-    evn.wait()
-    return evn

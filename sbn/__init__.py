@@ -6,7 +6,7 @@
 "Skull, Bones and Number (OTP-CR-117/19)"
 
 
-from . import broker, command, default, errors, event, object, parser, reactor
+from . import broker, default, errors, event, object, parser, reactor
 from . import locate, storage, thread, timer
 
 
@@ -19,6 +19,7 @@ from .object  import *
 from .parser  import *
 from .reactor import *
 from .repeat  import *
+from .runtime import *
 from .locate  import *
 from .thread  import *
 from .timer   import *

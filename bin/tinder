@@ -22,7 +22,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
-from sbn import keys, laps, launch, modules, parse, spl
+from sbn import command, keys, laps, launch, modules, parse, scan, spl
 
 
 STARTTIME = time.time()
@@ -30,7 +30,7 @@ STARTTIME = time.time()
 
 Cfg = Default()
 Cfg.debug = True
-Cfg.mod =  "cmd,err,fnd,irc,log,req,rss,tdo,thr"
+Cfg.mod =  "cmd,err,fnd,irc,log,req,rss,tdo,thr,ver"
 Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
@@ -70,6 +70,10 @@ class CLI(Reactor):
 
     threaded = True
 
+    def __init__(self):
+        Reactor.__init__(self)
+        self.register("command", command)
+
     def say(self, channel, txt):
         if "v" not in Cfg.opts:
             return
@@ -95,7 +99,7 @@ def consume(evts):
 
 def payload(clt) -> None:
     cmds = list(keys(Commands.cmds))
-    random.shuffle(cmds)
+    #random.shuffle(cmds)
     with paylock:
         nmr = 0
         for cmnd in cmds:
@@ -111,28 +115,6 @@ def payload(clt) -> None:
                     Commands.handle(evt)
                 nmr += 1
         return nmr
-
-
-def scan(pkg, modstr, initer=False) -> []:
-    threads = []
-    for modname in spl(modstr):
-        module = getattr(pkg, modname, None)
-        if not module:
-            continue
-        for key, cmd in inspect.getmembers(module, inspect.isfunction):
-            if key.startswith("cb"):
-                continue
-            if 'event' in cmd.__code__.co_varnames:
-                Commands.add(cmd)
-        for key, clz in inspect.getmembers(module, inspect.isclass):
-            if key.startswith("cb"):
-                continue
-            if not issubclass(clz, Object):
-                continue
-            Storage.add(clz)
-        if initer and "init" in dir(module):
-            threads.append(launch(module.init, name=f"init {modname}"))
-    return threads
 
 
 def wrap(func) -> None:
@@ -159,6 +141,8 @@ def main() -> None:
         Errors.output = print
     nrs = Cfg.index or 1
     cli = CLI()
+    if "t" in Cfg.opts:
+        cli.start()
     waiters = []
     for _nr in range(nrs):
         waiters.append(launch(payload, cli, name=f"payload {_nr}"))
@@ -174,3 +158,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     wrap(main)
+    Errors.show()

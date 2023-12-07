@@ -10,9 +10,10 @@ import datetime
 import os
 
 
-from .object  import fqn, search, write
+from .default import Default
+from .object  import fqn, read, search, update, write
 from .storage import Storage
-from .utility import fntime
+from .utility import fntime, strip
 
 
 def __dir__():
