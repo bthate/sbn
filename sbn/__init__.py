@@ -6,22 +6,23 @@
 "Skull, Bones and Number (OTP-CR-117/19)"
 
 
-from . import broker, errors, events, handle, object, parser, reacts
-from . import config, locate, thread, timers
+from . import broker, command, default, errors, event, object, parser, reactor
+from . import locate, storage, thread, timer
 
 
-from .broker import *
-from .config import *
-from .errors import *
-from .events import *
-from .handle import *
-from .object import *
-from .parser import *
-from .reacts import *
-from .locate import *
-from .thread import *
-from .timers import *
-
+from .broker  import *
+from .command import *
+from .default import *
+from .errors  import *
+from .event   import *
+from .object  import *
+from .parser  import *
+from .reactor import *
+from .repeat  import *
+from .locate  import *
+from .thread  import *
+from .timer   import *
+from .utility import *
 
 def __dir__():
     return (

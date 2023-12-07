@@ -28,7 +28,7 @@ __all__ = __dir__()
 
 class Thread(threading.Thread):
 
-    debug     = False
+    debug = False
 
     def __init__(self, func, thrname, *args, daemon=True, **kwargs):
         ""

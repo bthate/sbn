@@ -12,11 +12,12 @@ import pathlib
 import _thread
 
 
+from .utility import cdir, spl
+
+
 def __dir__():
     return (
-            'Default',
             'Object',
-            'cdir',
             'construct',
             'edit',
             'fmt',
@@ -25,7 +26,6 @@ def __dir__():
             'keys',
             'read',
             'search',
-            'spl',
             'update',
             'values',
             'write'
@@ -36,19 +36,6 @@ __all__ = __dir__()
 
 
 lock = _thread.allocate_lock()
-
-
-def cdir(pth) -> None:
-    pth = pathlib.Path(pth)
-    os.makedirs(pth, exist_ok=True)
-
-
-def spl(txt) -> []:
-    try:
-        res = txt.split(',')
-    except (TypeError, ValueError):
-        res = txt
-    return [x for x in res if x]
 
 
 class Object:
@@ -69,18 +56,6 @@ class Object:
     def __str__(self):
         ""
         return str(self.__dict__)
-
-
-class Default(Object):
-
-    __slots__ = ("__default__",)
-
-    def __init__(self):
-        Object.__init__(self)
-        self.__default__ = ""
-
-    def __getattr__(self, key):
-        return self.__dict__.get(key, self.__default__)
 
 
 class ObjectDecoder(json.JSONDecoder):

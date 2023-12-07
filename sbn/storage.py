@@ -3,7 +3,7 @@
 # pylint: disable=C,R,W0105,E0402,W0611
 
 
-"find objects"
+"directory of objects"
 
 
 import datetime
@@ -11,8 +11,10 @@ import os
 import time
 
 
-from .object import Object, Default, cdir, fqn, items, update
-from .object import read, search, write
+from .default import Default
+from .object  import Object, cdir, fqn, items, update
+from .object  import read, search, write
+from .utility import fntime, strip
 
 
 def __dir__():
@@ -109,23 +111,6 @@ def find(mtc, selector=None, index=None) -> []:
         if index is not None and nr != int(index):
             continue
         yield (fnm, obj)
-
-
-def fntime(daystr) -> float:
-    daystr = daystr.replace('_', ':')
-    datestr = ' '.join(daystr.split(os.sep)[-2:])
-    if '.' in datestr:
-        datestr, rest = datestr.rsplit('.', 1)
-    else:
-        rest = ''
-    timed = time.mktime(time.strptime(datestr, '%Y-%m-%d %H:%M:%S'))
-    if rest:
-        timed += float('.' + rest)
-    return timed
-
-
-def strip(pth, nmr=3) -> str:
-    return os.sep.join(pth.split(os.sep)[-nmr:])
 
 
 def ident(obj) -> str:

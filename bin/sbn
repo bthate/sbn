@@ -18,11 +18,11 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from sbn import Commands, Config, Default, Errors, Event, Object, Reactor, Storage
+from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
 from sbn import command, debug, launch, modules, parse, spl
 
 
-Cfg = Config()
+Cfg = Default()
 Cfg.mod  = "cmd,err,mod,req,thr,ver"
 Cfg.name = "sbn"
 Cfg.version = "74"
