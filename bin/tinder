@@ -68,8 +68,6 @@ param.ver = "72"
 
 class CLI(Reactor):
 
-    threaded = True
-
     def __init__(self):
         Reactor.__init__(self)
         self.register("command", command)
@@ -107,7 +105,8 @@ def payload(clt) -> None:
                 evt = Event()
                 evt.orig = object.__repr__(clt)
                 evt.txt = cmnd + " " + ex
-                parse(evt)
+                evt.type = "command"
+                #parse(evt)
                 if "t" in Cfg.opts:
                     clt.put(evt)
                     events.append(evt)

@@ -19,7 +19,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
-from sbn import command, debug, launch, modules, parse, spl
+from sbn import command, debug, forever, launch, modules, parse, scan, spl
 
 
 Cfg = Default()
@@ -50,33 +50,6 @@ class Console(Reactor):
 
 
 csl = Console()
-
-
-def forever():
-    while 1:
-        time.sleep(1.0)
-
-
-def scan(pkg, modstr, initer=False) -> []:
-    threads = []
-    for modname in spl(modstr):
-        module = getattr(pkg, modname, None)
-        if not module:
-            continue
-        for key, cmd in inspect.getmembers(module, inspect.isfunction):
-            if key.startswith("cb"):
-                continue
-            if 'event' in cmd.__code__.co_varnames:
-                Commands.add(cmd)
-        for key, clz in inspect.getmembers(module, inspect.isclass):
-            if key.startswith("cb"):
-                continue
-            if not issubclass(clz, Object):
-                continue
-            Storage.add(clz)
-        if initer and "init" in dir(module):
-            threads.append(launch(module.init, name=f"init {modname}"))
-    return threads
 
 
 def wrap(func) -> None:

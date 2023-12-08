@@ -7,6 +7,7 @@
 
 
 import inspect
+import time
 
 
 from .command import Commands
@@ -21,6 +22,7 @@ from .utility import spl, strip
 def __dir__():
      return (
          'command',
+         'forever',
          'scan'
     )
 
@@ -28,10 +30,14 @@ def __dir__():
 def command(txt):
     evn = Event()
     evn.txt = txt
-    parse(evn)
     Commands.handle(evn)
     evn.wait()
     return evn
+
+
+def forever():
+    while 1:
+        time.sleep(1.0)
 
 
 def scan(pkg, modstr, initer=False) -> []:

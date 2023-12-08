@@ -38,7 +38,6 @@ class Reactor(Object):
 
     def callback(self, evt) -> None:
         func = getattr(self.cbs, evt.type, None)
-        print(func)
         if not func:
             evt.ready()
             return

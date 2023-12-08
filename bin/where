@@ -2,5 +2,4 @@ grep -R "print(" sbn
 grep -R importlib sbn
 grep -R __import__ sbn
 grep -R rssbot sbn
-grep -R inspect sbn
 grep -R sys sbn
