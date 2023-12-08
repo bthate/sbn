@@ -29,6 +29,9 @@ Cfg.version = "74"
 Cfg.wd = os.path.expanduser(f"~/.{Cfg.name}")
 
 
+Storage.wd = Cfg.wd
+
+
 class Console(Reactor):
 
     def __init__(self):
@@ -47,9 +50,6 @@ class Console(Reactor):
         sys.stdout.write(txt)
         sys.stdout.write("\n")
         sys.stdout.flush()
-
-
-csl = Console()
 
 
 def wrap(func) -> None:
@@ -73,15 +73,15 @@ def ver(event):
 
 
 def main():
-    Errors.output = print
-    Commands.add(ver)
     parse(Cfg, " ".join(sys.argv[1:]))
-    Storage.wd = Cfg.wd
     if "mod" in Cfg.set:
         Cfg.mod += "," + Cfg.set.mod 
     if "v" in Cfg.opts:
+        Errors.output = print
         dte = time.ctime(time.time()).replace("  ", " ")
         debug(f"{Cfg.name.upper()} started {Cfg.opts.upper()} started {dte}")
+    Commands.add(ver)
+    csl = Console()
     if "c" in Cfg.opts:
         thrs = scan(modules, Cfg.mod, True)
         if "w" in Cfg.opts:

@@ -7,7 +7,6 @@
 
 
 from .errors import Errors
-from .event  import Event
 from .object import Object
 from .parser import parse
 

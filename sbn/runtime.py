@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain
 #
-#
+# pylint: disable=C,R
 
 
 "run"
@@ -13,17 +13,16 @@ import time
 from .command import Commands
 from .event   import Event
 from .object  import Object
-from .parser  import parse
 from .storage import Storage
 from .thread  import launch
-from .utility import spl, strip
+from .utility import spl
 
 
 def __dir__():
-     return (
-         'command',
-         'forever',
-         'scan'
+    return (
+        'command',
+        'forever',
+        'scan'
     )
 
 

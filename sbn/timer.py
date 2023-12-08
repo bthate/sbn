@@ -10,7 +10,7 @@ import threading
 import time
 
 
-from .thread import Thread, launch
+from .thread import launch
 
 
 def __dir__():
