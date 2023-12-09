@@ -11,7 +11,7 @@ import os
 import _thread
 
 
-from .utility import cdir, spl
+from .utils import cdir, spl
 
 
 def __dir__():

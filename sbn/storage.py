@@ -14,7 +14,7 @@ import time
 from .default import Default
 from .object  import Object, cdir, fqn, items, update
 from .object  import read, search, write
-from .utility import fntime, strip
+from .utils   import fntime, strip
 
 
 def __dir__():
