@@ -11,7 +11,7 @@ import os
 import sys
 
 
-NAME = os.path.dirname(__file__).split(os.sep)[-2]
+NAME = "sbn"
 SKIP = ["env", ".git"]
 
 
@@ -54,5 +54,5 @@ loop(".", "rm -fRv __pycache__")
 
 
 popen("python3 setup.py sdist")
-popen("python3 -mvirtualenv --system-site-packages env")
-popen("env/bin/pip3 install %s -f dist --upgrade" % NAME)
+popen("python3 -mvirtualenv env")
+popen("./env/bin/pip3 install %s -f dist --upgrade" % NAME)
