@@ -15,9 +15,6 @@ import termios
 import time
 
 
-sys.path.insert(0, os.getcwd())
-
-
 from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
 from sbn import command, debug, forever, launch, modules, parse, scan, spl
 
@@ -68,10 +65,6 @@ def wrap(func) -> None:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
 
 
-def ver(event):
-    event.reply(f"{Cfg.name.upper()} {Cfg.version}")
-
-
 def main():
     parse(Cfg, " ".join(sys.argv[1:]))
     if "mod" in Cfg.set:
@@ -80,7 +73,6 @@ def main():
         Errors.output = print
         dte = time.ctime(time.time()).replace("  ", " ")
         debug(f"{Cfg.name.upper()} started {Cfg.opts.upper()} started {dte}")
-    Commands.add(ver)
     csl = Console()
     if "c" in Cfg.opts:
         thrs = scan(modules, Cfg.mod, True)

@@ -8,7 +8,6 @@
 
 
 import getpass
-import inspect
 import os
 import pwd
 import sys
@@ -16,7 +15,7 @@ import time
 
 
 from sbn import Commands, Default, Errors, Object, Storage
-from sbn import cdir, launch, modules, spl
+from sbn import cdir, forever, launch, modules, scan, spl
 
 
 Cfg         = Default()
@@ -54,37 +53,11 @@ def daemon(pidfile, verbose=False):
     with open(pidfile, "w", encoding="utf-8") as fds:
         fds.write(str(os.getpid()))
 
-def forever():
-    while 1:
-        time.sleep(1.0)
-
 
 def privileges(username):
     pwnam = pwd.getpwnam(username)
     os.setgid(pwnam.pw_gid)
     os.setuid(pwnam.pw_uid)
-
-
-def scan(pkg, modstr, initer=False) -> []:
-    threads = []
-    for modname in spl(modstr):
-        module = getattr(pkg, modname, None)
-        if not module:
-            continue
-        for key, cmd in inspect.getmembers(module, inspect.isfunction):
-            if key.startswith("cb"):
-                continue
-            if 'event' in cmd.__code__.co_varnames:
-                Commands.add(cmd)
-        for key, clz in inspect.getmembers(module, inspect.isclass):
-            if key.startswith("cb"):
-                continue
-            if not issubclass(clz, Object):
-                continue
-            Storage.add(clz)
-        if initer and "init" in dir(module):
-            threads.append(launch(module.init, name=f"init {modname}"))
-    return threads
 
 
 def main():
