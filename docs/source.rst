@@ -8,7 +8,7 @@
 .. title:: Source
 
 
-**GENOCIDE**
+**Skull, Bones and Number (OTP-CR-117/19)**
 
 .. raw:: html
 
@@ -20,16 +20,21 @@
     :template: base.rst
 
     sbn.broker		list of bots
-    sbn.define		definitions
+    sbn.command		commands
+    sbn.default         default values
     sbn.errors		exceptions
-    sbn.events          event
-    sbn.handle          commands
+    sbn.event           event
     sbn.locate          find objects
+    sbn.modules         usercode
     sbn.object          clean namespace
     sbn.parser          parse cli
-    sbn.reacts          reactor
+    sbn.reactor         reactor
+    sbn.repeat          repeater
+    sbn.run             runtime
+    sbn.storage         directory
     sbn.thread          threads
-    sbn.timers          repeater
+    sbn.timer           anytime
+    sbn.utils           utilities
 
 
 **MODULES**
@@ -45,6 +50,7 @@
     :template: base.rst
 
     sbn.modules.cmd 	list of commands
+    sbn.modules.dbg     raises an exception
     sbn.modules.err     show errors
     sbn.modules.log	log text
     sbn.modules.irc     internet realy chat
