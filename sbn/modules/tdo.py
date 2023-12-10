@@ -12,6 +12,11 @@ import time
 from sbn import Object, find, fntime, laps, sync
 
 
+class NoDate(Exception):
+
+    pass
+
+
 class Todo(Object):
 
     def __init__(self):
@@ -49,3 +54,4 @@ def tdo(event):
     obj.txt = event.rest
     sync(obj)
     event.reply('ok')
+

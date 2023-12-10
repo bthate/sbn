@@ -14,16 +14,25 @@ import time
 def __dir__():
     return (
         'cdir',
+        'day',
         'fntime',
+        'hms',
         'laps',
+        'now',
         'spl',
-        'strip'
+        'strip',
+        'year'
     )
+
 
 
 def cdir(pth) -> None:
     pth = pathlib.Path(pth)
     os.makedirs(pth, exist_ok=True)
+
+
+def day():
+    return str(datetime.datetime.today()).split()[0]
 
 
 def fntime(daystr) -> float:
@@ -37,6 +46,10 @@ def fntime(daystr) -> float:
     if rest:
         timed += float('.' + rest)
     return timed
+
+
+def hms():
+    return str(datetime.datetime.today()).split()[1].split(".")[0]
 
 
 def laps(seconds, short=True) -> str:
@@ -78,6 +91,9 @@ def laps(seconds, short=True) -> str:
     return txt
 
 
+def now():
+    return str(datetime.datetime.now())
+
 def spl(txt) -> []:
     try:
         res = txt.split(',')
@@ -88,3 +104,7 @@ def spl(txt) -> []:
 
 def strip(pth, nmr=3) -> str:
     return os.sep.join(pth.split(os.sep)[-nmr:])
+
+
+def year():
+    return str(datetime.datetime.now().year)

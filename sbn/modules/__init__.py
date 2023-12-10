@@ -6,7 +6,7 @@
 "preimport"
 
 
-from . import cmd, dbg, err, fnd, irc, log, mod, req, rss, tdo, thr
+from . import cmd, dbg, err, fnd, irc, log, mod, req, rss, tdo, thr, tmr
 
 
 def __dir__():
@@ -21,7 +21,8 @@ def __dir__():
         'req',
         'rss',
         'tdo',
-        'thr'
+        'thr',
+        'tmr'
     )
 
 
