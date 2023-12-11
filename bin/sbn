@@ -16,7 +16,10 @@ import time
 
 
 from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
-from sbn import command, debug, forever, launch, modules, parse, scan, spl
+from sbn import command, debug, forever, launch, modules, scan, spl
+
+
+from sbn.utils import parse
 
 
 Cfg = Default()

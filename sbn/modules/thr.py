@@ -10,7 +10,8 @@ import threading
 import time
 
 
-from sbn import Object, laps, update
+from sbn import Object, update
+from sbn.utils import laps
 
 
 STARTTIME = time.time()

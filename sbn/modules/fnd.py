@@ -6,8 +6,8 @@
 "locate"
 
 
-from sbn import Storage, find, fmt
-
+from sbn import Storage, fmt
+from sbn.utils import find
 
 def fnd(event):
     if not event.rest:

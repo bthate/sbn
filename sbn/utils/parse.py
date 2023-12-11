@@ -6,7 +6,7 @@
 "parse"
 
 
-from .default import Default
+from ..default import Default
 
 
 def __dir__():

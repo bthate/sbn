@@ -9,7 +9,10 @@
 import time
 
 
-from sbn import Object, find, fntime, laps, sync
+from sbn import Object, fntime
+
+
+from sbn.utils import find, laps, sync
 
 
 class Log(Object):

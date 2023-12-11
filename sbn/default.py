@@ -11,8 +11,11 @@ from .object import Object
 
 def __dir__():
     return (
-        'Default'
+        'Default',
     )
+
+
+__all__ = __dir__()
 
 
 class Default(Object):

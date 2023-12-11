@@ -18,7 +18,9 @@ import _thread
 
 
 from sbn import Broker, Commands, Default, Errors, Event, Object, Reactor
-from sbn import Output, byorig, debug, edit, fmt, keys, last, launch, sync
+from sbn import Output, byorig, debug, edit, fmt, keys, launch
+
+from sbn.utils import last, sync
 
 
 Errors.filter = ["PING", "PONG", "PRIVMSG"]

@@ -19,7 +19,10 @@ from urllib.parse import quote_plus, urlencode
 
 
 from sbn import Broker, Default, Object, Repeater
-from sbn import find, fmt, fntime, laps, last, launch, sync, update
+from sbn import fmt, fntime, launch, update
+
+
+from sbn.utils import find, laps, last, sync
 
 
 def init():

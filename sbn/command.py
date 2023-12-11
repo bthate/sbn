@@ -8,16 +8,27 @@
 
 from .errors import Errors
 from .object import Object
-from .parser import parse
+
+
+from .utils.parse import parse
 
 
 def __dir__():
     return (
         'Commands',
+        'command'
     )
 
 
 __all__ = __dir__()
+
+
+def command(txt):
+    evn = Event()
+    evn.txt = txt
+    Commands.handle(evn)
+    evn.wait()
+    return evn
 
 
 class Commands(Object):

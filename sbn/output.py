@@ -12,13 +12,19 @@ import threading
 
 
 from .cache import Cache
-from .utils import wrapper
+from .wrap  import TextWrap
 
 
 def __dir__():
     return (
             'Output',
            )
+
+
+__all__  = __dir__()
+
+
+wrapper = TextWrap()
 
 
 class Output(Cache):
@@ -51,7 +57,6 @@ class Output(Cache):
             if self.dostop.is_set():
                 break
             txtlist = wrapper.wrap(txt)
-            print(txtlist)
             if len(txtlist) > 3:
                 Output.extend(channel, txtlist)
                 length = len(txtlist)

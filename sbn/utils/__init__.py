@@ -6,28 +6,37 @@
 "utilities"
 
 
-from . import find, main, parse, run, time
+from . import find, parse, time
 
 
 from .find  import *
 from .parse import *
-from .run   import *
 from .time  import *
 
 
 def __dir__():
     return (
+        'NoDate',
+        'day',
         'fetch',
+        'get_day',
+        'get_hour',
+        'get_time',
         'find',
-        'forever',
+        'hms',
         'ident',
+        'laps',
         'last',
-        'main',
+        'now',
         'parse',
         'parse_time',
-        'run',
-        'scan',
         'sync',
-        'time'
+        'to_date',
+        'to_day',
+        'to_time',
+        'today',
+        'year'
     )
 
+
+__all__ = __dir__()
