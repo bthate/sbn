@@ -12,6 +12,7 @@ from .object import Object
 def __dir__():
     return (
         'Broker',
+        'byorig',
     )
 
 
@@ -42,3 +43,7 @@ class Broker(Object):
     def remove(obj):
         if obj in Broker.objs:
             Broker.objs.remove(obj)
+
+
+def byorig(orig):
+    return Broker.byorig(orig)

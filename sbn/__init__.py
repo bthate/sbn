@@ -11,11 +11,13 @@ from . import locate, run, storage, thread, timer
 
 
 from .broker  import *
+from .cache   import *
 from .command import *
 from .default import *
 from .errors  import *
 from .event   import *
 from .object  import *
+from .output  import *
 from .parser  import *
 from .reactor import *
 from .repeat  import *
@@ -30,6 +32,7 @@ def __dir__():
     return (
         'Broker',
         'CLI',
+        'Cache',
         'Censor',
         'Commands',
         'Config',
@@ -37,6 +40,7 @@ def __dir__():
         'Errors',
         'Event',
         'Object',
+        'Output',
         'Reactor',
         'Repeater',
         'Storage',

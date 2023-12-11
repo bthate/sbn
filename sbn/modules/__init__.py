@@ -7,6 +7,7 @@
 
 
 from . import cmd, dbg, err, fnd, irc, log, mod, req, rss, tdo, thr, tmr
+from . import mre, pwd
 
 
 def __dir__():
@@ -18,6 +19,8 @@ def __dir__():
         'irc',
         'log',
         'mod',
+        'mre',
+        'pwd',
         'req',
         'rss',
         'tdo',
