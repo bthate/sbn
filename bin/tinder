@@ -22,7 +22,10 @@ sys.path.insert(0, os.getcwd())
 
 
 from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
-from sbn import command, keys, laps, launch, modules, parse, scan, spl
+from sbn import keys, launch, modules, scan, spl
+
+
+from sbn.utils import laps, parse
 
 
 STARTTIME = time.time()
@@ -34,7 +37,7 @@ Cfg.mod =  "cmd,err,fnd,irc,log,req,rss,tdo,thr,ver"
 Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
-Cfg.version = "73"
+Cfg.version = "76"
 Cfg.wd = ".test"
 
 
@@ -45,7 +48,6 @@ paylock = _thread.allocate_lock()
 outlock = _thread.allocate_lock()
 
 
-errors = []
 events = []
 
 
@@ -70,7 +72,7 @@ class CLI(Reactor):
 
     def __init__(self):
         Reactor.__init__(self)
-        self.register("command", command)
+        self.register("command", Commands.handle)
 
     def say(self, channel, txt):
         if "v" not in Cfg.opts:
@@ -100,14 +102,14 @@ def payload(clt) -> None:
     #random.shuffle(cmds)
     with paylock:
         nmr = 0
-        for cmnd in cmds:
-            for ex in getattr(param, cmnd, [""]):
+        for cmd in cmds:
+            for ex in getattr(param, cmd, [""]):
                 evt = Event()
                 evt.orig = object.__repr__(clt)
-                evt.txt = cmnd + " " + ex
+                evt.txt = cmd + " " + ex
                 evt.type = "command"
-                #parse(evt)
                 if "t" in Cfg.opts:
+                    print(evt)
                     clt.put(evt)
                     events.append(evt)
                 else:
@@ -142,6 +144,7 @@ def main() -> None:
     cli = CLI()
     if "t" in Cfg.opts:
         cli.start()
+        cli.threaded = True
     waiters = []
     for _nr in range(nrs):
         waiters.append(launch(payload, cli, name=f"payload {_nr}"))
@@ -157,4 +160,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     wrap(main)
-    Errors.show()
+    if Errors.errors:
+        Errors.output = print
+        Errors.show()

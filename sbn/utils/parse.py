@@ -29,7 +29,8 @@ def parse(obj, txt=None) -> None:
     obj.opts    = obj.opts or ""
     obj.result  = obj.reult or []
     obj.sets    = obj.sets or Default()
-    obj.otxt    = txt or obj.txt or ""
+    obj.txt     = txt or obj.txt or ""
+    obj.otxt    = obj.txt
     _nr = -1
     for spli in obj.otxt.split():
         if spli.startswith("-"):

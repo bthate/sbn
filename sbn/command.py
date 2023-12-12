@@ -43,6 +43,7 @@ class Commands(Object):
     def handle(evt) -> None:
         parse(evt)
         func = getattr(Commands.cmds, evt.cmd, None)
+        print(func, evt)
         if not func:
             evt.ready()
             return

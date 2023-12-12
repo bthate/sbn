@@ -11,6 +11,7 @@ from .errors  import Errors
 from .event   import Event
 from .object  import Object
 from .storage import Storage
+from .thread  import launch
 from .utility import spl
 
 

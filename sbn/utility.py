@@ -6,8 +6,11 @@
 "core utilities"
 
 
+import os
 import pathlib
 import time
+import types
+import _thread
 
 
 def cdir(pth) -> None:
@@ -30,7 +33,10 @@ def fntime(daystr) -> float:
 
 def forever():
     while 1:
-        time.sleep(1.0)
+        try:
+            time.sleep(1.0)
+        except (KeyboardInterrupt, EOFError):
+           _thread.interrupt_main()
 
 
 def name(obj) -> str:

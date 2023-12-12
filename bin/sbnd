@@ -23,7 +23,7 @@ Cfg.mod     = "cmd,err,mod,irc,req,rss,thr"
 Cfg.name    = "sbn"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
-Cfg.version = "75"
+Cfg.version = "76"
 Cfg.user    = getpass.getuser()
 
 

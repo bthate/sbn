@@ -25,7 +25,7 @@ from sbn.utils import parse
 Cfg = Default()
 Cfg.mod  = "cmd,dbg,err,mod,mre,pwd,req,thr,tmr,ver"
 Cfg.name = "sbn"
-Cfg.version = "75"
+Cfg.version = "76"
 Cfg.wd = os.path.expanduser(f"~/.{Cfg.name}")
 Errors.output = print
 Storage.wd = Cfg.wd

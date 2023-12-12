@@ -12,33 +12,26 @@ import time
 import types
 
 
-from .errors import Errors
+from .errors  import Errors
+from .utility import name
 
 
 def __dir__():
     return (
         'Thread',
-        'launch',
-        'name'
+        'launch'
     )
 
 
 __all__ = __dir__()
 
 
-def name(obj) -> str:
-    typ = type(obj)
-    if isinstance(typ, types.ModuleType):
-        return obj.__name__
-    if '__self__' in dir(obj):
-        return f'{obj.__self__.__class__.__name__}.{obj.__name__}'
-    if '__class__' in dir(obj) and '__name__' in dir(obj):
-        return f'{obj.__class__.__name__}.{obj.__name__}'
-    if '__class__' in dir(obj):
-        return f"{obj.__class__.__module__}.{obj.__class__.__name__}"
-    if '__name__' in dir(obj):
-        return f'{obj.__class__.__name__}.{obj.__name__}'
-    return None
+
+def launch(func, *args, **kwargs):
+    nme = kwargs.get("name", name(func))
+    thread = Thread(func, nme, *args, **kwargs)
+    thread.start()
+    return thread
 
 
 class Thread(threading.Thread):
@@ -80,10 +73,3 @@ class Thread(threading.Thread):
             Errors.add(exc)
             if args:
                 args[0].ready()
-
-
-def launch(func, *args, **kwargs) -> Thread:
-    nme = kwargs.get("name", name(func))
-    thread = Thread(func, nme, *args, **kwargs)
-    thread.start()
-    return thread
