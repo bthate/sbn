@@ -37,7 +37,7 @@ def debug(txt):
 
 
 def scan(pkg, modstr, initer=False) -> []:
-    threads = []
+    mods = []
     for modname in spl(modstr):
         module = getattr(pkg, modname, None)
         if not module:
@@ -54,5 +54,6 @@ def scan(pkg, modstr, initer=False) -> []:
                 continue
             Storage.add(clz)
         if initer and "init" in dir(module):
-            threads.append(launch(module.init, name=f"init {modname}"))
-    return threads
+            module._thr = launch(module.init, name=f"init {modname}")
+        mods.append(module)
+    return mods

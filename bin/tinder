@@ -109,7 +109,6 @@ def payload(clt) -> None:
                 evt.txt = cmd + " " + ex
                 evt.type = "command"
                 if "t" in Cfg.opts:
-                    print(evt)
                     clt.put(evt)
                     events.append(evt)
                 else:
@@ -137,7 +136,9 @@ def main() -> None:
     if os.path.exists(Storage.wd):
         shutil.rmtree(Storage.wd)
     parse(Cfg, " ".join(sys.argv[1:]))
-    scan(modules, Cfg.mod)
+    for mod in scan(modules, Cfg.mod, True):
+        mod.DEBUG = True
+    time.sleep(600)
     if "v" in Cfg.opts:
         Errors.output = print
     nrs = Cfg.index or 1

@@ -76,10 +76,10 @@ def main():
         debug(f"{Cfg.name.upper()} started {Cfg.opts.upper()} started {dte}")
     csl = Console()
     if "c" in Cfg.opts:
-        thrs = scan(modules, Cfg.mod, True)
+        mods = scan(modules, Cfg.mod, True)
         if "w" in Cfg.opts:
-            for thr in thrs:
-                thr.join()
+            for mod in mods:
+                mod._thr and mod._thr.join()
         if "t" in Cfg.opts:
             csl.threaded = True
         csl.start()
