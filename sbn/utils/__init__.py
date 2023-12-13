@@ -6,11 +6,12 @@
 "utilities"
 
 
-from . import find, parse, time
+from . import find, parse, run, time
 
 
 from .find  import *
 from .parse import *
+from .run   import *
 from .time  import *
 
 
@@ -30,6 +31,7 @@ def __dir__():
         'now',
         'parse',
         'parse_time',
+        'scan',
         'sync',
         'to_date',
         'to_day',

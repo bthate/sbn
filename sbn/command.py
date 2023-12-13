@@ -10,25 +10,13 @@ from .errors import Errors
 from .object import Object
 
 
-from .utils.parse import parse
-
-
 def __dir__():
     return (
         'Commands',
-        'command'
     )
 
 
 __all__ = __dir__()
-
-
-def command(txt):
-    evn = Event()
-    evn.txt = txt
-    Commands.handle(evn)
-    evn.wait()
-    return evn
 
 
 class Commands(Object):
@@ -41,7 +29,7 @@ class Commands(Object):
 
     @staticmethod
     def handle(evt) -> None:
-        parse(evt)
+        #parse(evt)
         func = getattr(Commands.cmds, evt.cmd, None)
         if not func:
             evt.ready()

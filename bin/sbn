@@ -16,10 +16,9 @@ import time
 
 
 from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
-from sbn import command, debug, forever, launch, modules, scan, spl
+from sbn import modules, spl
 
-
-from sbn.utils import parse
+from sbn.utils import command, debug, forever, launch, parse, scan
 
 
 Cfg = Default()
@@ -42,6 +41,7 @@ class Console(Reactor):
         evt.orig = object.__repr__(self)
         evt.txt = input("> ")
         evt.type = "command"
+        parse(evt)
         return evt
 
     def say(self, channel, txt):
@@ -79,7 +79,8 @@ def main():
         mods = scan(modules, Cfg.mod, True)
         if "w" in Cfg.opts:
             for mod in mods:
-                mod._thr and mod._thr.join()
+                if "_thr_" in dir(mod):
+                    mod._thr.join()
         if "t" in Cfg.opts:
             csl.threaded = True
         csl.start()

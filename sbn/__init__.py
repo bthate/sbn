@@ -20,7 +20,6 @@ from .object  import *
 from .output  import *
 from .reactor import *
 from .repeat  import *
-from .run     import *
 from .storage import *
 from .thread  import *
 from .timer   import *
@@ -45,7 +44,6 @@ def __dir__():
         'Storage',
         'Thread',
         'Timer',
-        'cdir',
         'cfg',
         'command',
         'construct',
@@ -70,13 +68,8 @@ def __dir__():
         'launch',
         'load',
         'loads', 
-        'name',
-        'parse',
         'read',
-        'scan',
         'search',
-        'spl',
-        'strip',
         'sync',
         'update',
         'values',

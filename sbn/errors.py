@@ -16,7 +16,6 @@ from .object import Object
 def __dir__():
     return (
         'Errors',
-        'debug'
     )
 
 
@@ -66,8 +65,3 @@ class Errors(Object):
             if skp in str(txt):
                 return True
         return False
-
-
-def debug(txt):
-    if Errors.output and not Errors.skip(txt):
-        Errors.output(txt)
