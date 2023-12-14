@@ -11,7 +11,7 @@ import threading
 import time
 
 
-from .thread import launch
+from .utils.run import launch
 
 
 def __dir__():

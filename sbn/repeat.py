@@ -6,8 +6,11 @@
 "repeater"
 
 
-from .thread import Thread, launch
+from .thread import Thread
 from .timer  import Timer
+
+
+from .utils.run import launch
 
 
 def __dir__():

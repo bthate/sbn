@@ -19,19 +19,10 @@ from .utility import name
 def __dir__():
     return (
         'Thread',
-        'launch'
     )
 
 
 __all__ = __dir__()
-
-
-
-def launch(func, *args, **kwargs):
-    nme = kwargs.get("name", name(func))
-    thread = Thread(func, nme, *args, **kwargs)
-    thread.start()
-    return thread
 
 
 class Thread(threading.Thread):

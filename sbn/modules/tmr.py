@@ -9,9 +9,10 @@
 import time
 
 
-from sbn import Event, Timer, launch
-from sbn.utils  import NoDate,  day, now, to_time, to_day, get_day, get_hour
+from sbn import Event, Timer
 
+from sbn.utils import NoDate, day, now, to_time, to_day, get_day, get_hour
+from sbn.utils import launch
 
 def tmr(event):
     if not event.rest:
