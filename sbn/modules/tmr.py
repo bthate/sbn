@@ -10,9 +10,9 @@ import time
 
 
 from sbn import Event, Timer
-
 from sbn.utils import NoDate, day, now, to_time, to_day, get_day, get_hour
-from sbn.utils import launch
+from sbn.utils import laps, launch
+
 
 def tmr(event):
     if not event.rest:
@@ -20,7 +20,7 @@ def tmr(event):
         return
     seconds = 0
     line = ""
-    for word in event._parsed.args:
+    for word in event.args:
         if word.startswith("+"):
              try:
                  seconds = int(word[1:])
@@ -33,17 +33,19 @@ def tmr(event):
         target = time.time() + seconds
     else:
         try:
-            target = get_day(event._parsed.rest)
+            target = get_day(event.rest)
         except NoDate:
             target = to_day(day())
-        hour =  get_hour(event._parsed.rest)
+        hour =  get_hour(event.rest)
         if hour:
             target += hour
     if not target or time.time() > target:
         event.reply("already passed given time.")
         return
-    e = Event()
-    e.txt = event.rest
-    timer = Timer(target, e.reply, e.txt)
+    diff = target - time.time()
+    event.reply("ok " +  laps(diff))
+    event.show()
+    event.result = []
+    event.result.append(event.rest)
+    timer = Timer(diff, event.show)
     launch(timer.start)
-    event.reply("ok " +  time.ctime(target).replace("  ", " "))

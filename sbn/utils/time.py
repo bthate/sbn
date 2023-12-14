@@ -96,7 +96,7 @@ def get_day(daystr):
             ymre = re.search('(\d+)-(\d+)', daystr)
             (day, month) = ymre.groups()
             year = ttime.strftime("%Y", ttime.localtime())
-        except: raise ENODATE(daystr)
+        except: raise NoDate(daystr)
     day = int(day)
     month = int(month)
     year = int(year)
@@ -128,7 +128,7 @@ def get_hour(daystr):
 def get_time(txt):
     try:
         target = get_day(txt)
-    except ENODATE:
+    except NoDate:
         target = to_day(day())
     hour =  get_hour(txt)
     if hour:
@@ -197,7 +197,7 @@ def parse_time(txt):
     if not target:
         try:
             target = get_day(txt)
-        except ENODATE:
+        except NoDate:
             target = to_day(day())
         hour =  get_hour(txt)
         if hour:
@@ -299,7 +299,7 @@ def to_time(daystr):
     if not res:
         try: res = ttime.mktime(ttime.strptime(daystr, "%d-%m-%Y"))
         except: pass
-    if not res: raise ENODATE(daystr)
+    if not res: raise NoDate(daystr)
     return res
 
 
