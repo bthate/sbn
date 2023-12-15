@@ -44,7 +44,6 @@ class Event(Default):
             bot = Broker.byorig(self.orig) or Broker.first()
             if bot:
                 bot.say(self.channel, txt)
-        self.done = True
 
     def wait(self):
         for thr in self._thrs:

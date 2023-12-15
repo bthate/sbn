@@ -18,9 +18,7 @@ from sbn.utils import find, laps, launch, sync
 
 
 def init():
-    for fn, obj in find("timer"):
-        if obj.done:
-            continue
+    for fnm, obj in find("timer"):
         if "time" not in obj:
             continue
         diff = float(obj.time) - time.time()
