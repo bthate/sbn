@@ -23,10 +23,8 @@ def __dir__():
         'laps',
         'now',
         'parse_time',
-        'to_date',
         'to_day',
         'to_time',
-        'today',
         'year'
     )
 
@@ -73,7 +71,7 @@ def day():
     return str(datetime.datetime.today()).split()[0]
 
 
-def extract_time(daystr):
+def extract_date(daystr):
     for format in year_formats:
         try:
             res = ttime.mktime(ttime.strptime(daystr, format))
@@ -81,10 +79,6 @@ def extract_time(daystr):
             res = None
         if res:
             return res
-
-
-def file_time(timestamp):
-    return str(datetime.datetime.fromtimestamp(timestamp)).replace(" ", os.sep) + "." + str(random.randint(111111,999999))
 
 
 def get_day(daystr):
@@ -199,49 +193,12 @@ def parse_time(txt):
             target = get_day(txt)
         except NoDate:
             target = to_day(day())
+        print(time.ctime(float(target)))
         hour =  get_hour(txt)
+        print(hour)
         if hour:
             target += hour
     return target
-
-
-def to_date(*args, **kwargs):
-    date = args[0]
-    if not date:
-        return None
-    date = date.replace("_", ":")
-    res = date.split()
-    ddd = ""
-    try:
-        if "+" in res[3]:
-            raise ValueError
-        if "-" in res[3]:
-            raise ValueError
-        int(res[3])
-        ddd = "{:4}-{:#02}-{:#02} {:6}".format(res[3], monthint[res[2]], int(res[1]), res[4])
-    except (IndexError, KeyError, ValueError):
-        try:
-            if "+" in res[4]:
-                raise ValueError
-            if "-" in res[4]:
-                raise ValueError
-            int(res[4])
-            ddd = "{:4}-{:#02}-{:02} {:6}".format(res[4], monthint[res[1]], int(res[2]), res[3])
-        except (IndexError, KeyError, ValueError):
-            try:
-                ddd = "{:4}-{:#02}-{:02} {:6}".format(res[2], monthint[res[1]], int(res[0]), res[3])
-            except (IndexError, KeyError):
-                try:
-                    ddd = "{:4}-{:#02}-{:02}".format(res[2], monthint[res[1]], int(res[0]))
-                except (IndexError, KeyError):
-                    try:
-                        ddd = "{:4}-{:#02}".format(res[2], monthint[res[1]])
-                    except (IndexError, KeyError):
-                        try:
-                            ddd = "{:4}".format(res[2])
-                        except (IndexError, KeyError):
-                            ddd = ""
-    return ddd.replace(":", "_")
 
 
 def to_day(daystr):
@@ -252,7 +209,7 @@ def to_day(daystr):
         line = previous + " " + word
         previous = word
         try:
-            res = extract_time(line.strip())
+            res = extract_date(line.strip())
         except ValueError:
             res = None
         if res:
@@ -263,7 +220,7 @@ def to_day(daystr):
 def to_time(daystr):
     daystr = str(daystr)
     daystr = daystr.split(".")[0]
-    daystr = daystr.replace("GMT", "")
+    daystr = daystr.replace("GMT", "CEST")
     daystr = daystr.replace("_", ":")
     daystr = " ".join([x.capitalize() for x in daystr.split() if not x[0] in ["+", "-"]])
     res = 0
@@ -301,13 +258,6 @@ def to_time(daystr):
         except: pass
     if not res: raise NoDate(daystr)
     return res
-
-
-def today():
-    t = rtime().split(".")[0]
-    ttime = ttime.strptime(t, "%Y-%m-%d/%H:%M:%S")
-    result = ttime.mktime(ttime)
-    return result
 
 
 def year():

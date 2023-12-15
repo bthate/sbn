@@ -6,12 +6,33 @@
 "timer"
 
 
+import datetime
 import time
 
 
-from sbn import Event, Timer
+from sbn import Broker, Default, Event, Timer, construct, update
+
+
 from sbn.utils import NoDate, day, now, to_time, to_day, get_day, get_hour
-from sbn.utils import laps, launch
+from sbn.utils import find, laps, launch, sync
+
+
+def init():
+    for fn, timer in find("timer"):
+        if timer.done:
+            continue
+        if "time" not in timer:
+            continue
+        bot = Broker.first()
+        dte = datetime.time()
+        tme1 = dte.utcfromtimestamp(float(timer.time))
+        dte2 = datetime.time()
+        tme2 = dte2.utc()
+        diff = tm1 - tm2
+        print(diff)
+        if diff > 0:
+            tmr = Timer(diff, bot.announce, timer.txt)
+            launch(tmr.start)
 
 
 def tmr(event):
@@ -42,10 +63,13 @@ def tmr(event):
     if not target or time.time() > target:
         event.reply("already passed given time.")
         return
+    event.time = target
     diff = target - time.time()
     event.reply("ok " +  laps(diff))
     event.show()
     event.result = []
     event.result.append(event.rest)
     timer = Timer(diff, event.show)
+    update(timer, event)
+    sync(timer)
     launch(timer.start)

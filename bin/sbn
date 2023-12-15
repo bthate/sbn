@@ -25,7 +25,7 @@ from sbn.utils import command, debug, forever, launch, parse, scan
 
 
 Cfg = Default()
-Cfg.mod  = "cmd,dbg,err,mod,mre,pwd,req,thr,tmr,ver"
+Cfg.mod  = "cmd,dbg,err,fnd,mod,mre,pwd,req,thr,tmr,ver"
 Cfg.name = "sbn"
 Cfg.version = "76"
 Cfg.wd = os.path.expanduser(f"~/.{Cfg.name}")
@@ -38,6 +38,9 @@ class Console(Reactor):
     def __init__(self):
         Reactor.__init__(self)
         self.register("command", Commands.handle)
+
+    def announce(self, txt):
+        self.say("", txt)
 
     def poll(self) -> Event:
         evt = Event()

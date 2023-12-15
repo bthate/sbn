@@ -11,6 +11,9 @@ import threading
 import time
 
 
+from .object import Object
+
+
 from .utils.run import launch
 
 
@@ -28,10 +31,11 @@ class NoDate(Exception):
     pass
 
 
-class Timer:
+class Timer(Object):
 
     def __init__(self, sleep, func, *args, thrname=None):
         ""
+        Object.__init__(self)
         self.args  = args
         self.func  = func
         self.sleep = sleep

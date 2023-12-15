@@ -33,10 +33,8 @@ def __dir__():
         'parse_time',
         'scan',
         'sync',
-        'to_date',
         'to_day',
         'to_time',
-        'today',
         'year'
     )
 
