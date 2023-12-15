@@ -18,26 +18,30 @@ from sbn.utils import find, laps, launch, sync
 
 
 def init():
-    for fn, timer in find("timer"):
-        if timer.done:
+    for fn, obj in find("timer"):
+        if obj.done:
             continue
-        if "time" not in timer:
+        if "time" not in obj:
             continue
-        bot = Broker.first()
-        dte = datetime.time()
-        tme1 = dte.utcfromtimestamp(float(timer.time))
-        dte2 = datetime.time()
-        tme2 = dte2.utc()
-        diff = tm1 - tm2
-        print(diff)
+        diff = float(obj.time) - time.time()
         if diff > 0:
-            tmr = Timer(diff, bot.announce, timer.txt)
+            bot = Broker.first()
+            tmr = Timer(diff, bot.announce, obj.rest)
             launch(tmr.start)
 
 
 def tmr(event):
     if not event.rest:
-        event.reply("tmr <txt with time>")
+        nmr = 0
+        for fnm, obj in find('timer'):
+            if "time" not in obj:
+                continue
+            lap = float(obj.time) - time.time()
+            if lap > 0:
+                event.reply(f'{nmr} {obj.txt} {laps(lap)}')
+                nmr += 1
+        if not nmr:
+            event.reply("no timers")
         return
     seconds = 0
     line = ""
