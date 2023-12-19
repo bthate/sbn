@@ -44,9 +44,6 @@ script-files = [
 ]
 
 [tool.setuptools.data-files]
-"sbn" = [
-    "files/sbn.service"
-]
 "share/doc/sbn" = [
     "docs/about.rst",
     "docs/conf.py",
