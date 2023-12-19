@@ -193,9 +193,7 @@ def parse_time(txt):
             target = get_day(txt)
         except NoDate:
             target = to_day(day())
-        print(time.ctime(float(target)))
         hour =  get_hour(txt)
-        print(hour)
         if hour:
             target += hour
     return target

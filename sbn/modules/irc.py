@@ -19,9 +19,7 @@ import _thread
 
 from sbn import Broker, Commands, Default, Errors, Event, Object, Reactor
 from sbn import Output, byorig, edit, fmt, keys
-
-
-from sbn.utils import debug, launch, last, sync
+from sbn import debug, launch, last, parse, sync
 
 
 Errors.filter = ["PING", "PONG", "PRIVMSG"]
@@ -475,6 +473,7 @@ def cb_privmsg(evt):
         if evt.txt:
             evt.txt = evt.txt[0].lower() + evt.txt[1:]
         debug(f"command from {evt.origin}: {evt.txt}")
+        parse(evt)
         Commands.handle(evt)
 
 

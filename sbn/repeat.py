@@ -8,9 +8,7 @@
 
 from .thread import Thread
 from .timer  import Timer
-
-
-from .utils.run import launch
+from .utils import launch
 
 
 def __dir__():

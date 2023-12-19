@@ -15,15 +15,18 @@ import time
 
 
 from sbn import Commands, Default, Errors, Object, Storage
-from sbn import cdir, forever, launch, modules, scan, spl
+from sbn import cdir,  modules, spl
+
+
+from sbn.utils import forever, launch, scan
 
 
 Cfg         = Default()
-Cfg.mod     = "cmd,err,mod,irc,req,rss,thr"
+Cfg.mod     = "cmd,err,log,mod,irc,rss,thr,tdo"
 Cfg.name    = "sbn"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
-Cfg.version = "76"
+Cfg.version = "77"
 Cfg.user    = getpass.getuser()
 
 

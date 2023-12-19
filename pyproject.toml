@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "76"
+version = "77"
 authors = [
     {name = "Bart Thate", email = "skullbonesandnumber@gmail.com" },
 ]
@@ -44,6 +44,9 @@ script-files = [
 ]
 
 [tool.setuptools.data-files]
+"sbn" = [
+    "files/sbn.service"
+]
 "share/doc/sbn" = [
     "docs/about.rst",
     "docs/conf.py",

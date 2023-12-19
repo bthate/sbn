@@ -24,6 +24,32 @@ from .storage import *
 from .thread  import *
 from .timer   import *
 from .utility import *
+from .utils import *
+
+
+def __utils__():
+    return (
+        'NoDate',
+        'day',
+        'fetch',
+        'get_day',
+        'get_hour',
+        'get_time',
+        'find',
+        'hms',
+        'ident',
+        'laps',
+        'last',
+        'now',
+        'parse',
+        'parse_time',
+        'scan',
+        'sync',
+        'to_day',
+        'to_time',
+        'year'
+    )
+
 
 
 def __dir__():
@@ -74,4 +100,8 @@ def __dir__():
         'update',
         'values',
         'write'
-    )
+    ) + __utils__()
+
+
+
+__all__ = __dir__()

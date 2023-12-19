@@ -9,8 +9,7 @@
 import time
 
 
-from sbn import Object, fntime
-from sbn.utils import find, laps, sync
+from sbn import Object, fntime, find, laps, sync
 
 
 class NoDate(Exception):
@@ -55,4 +54,3 @@ def tdo(event):
     obj.txt = event.rest
     sync(obj)
     event.reply('ok')
-
