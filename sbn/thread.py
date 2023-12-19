@@ -62,5 +62,5 @@ class Thread(threading.Thread):
             if Thread.debug:
                 raise
             Errors.add(exc)
-            if args:
+            if args and "ready" in dir(args[0]):
                 args[0].ready()

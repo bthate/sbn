@@ -22,7 +22,10 @@ def init():
         diff = float(obj.time) - time.time()
         if diff > 0:
             bot = Broker.first()
-            tmr = Timer(diff, bot.announce, obj.rest)
+            evt = Event()
+            update(evt, obj)
+            evt.orig = object.__repr__(bot)
+            tmr = Timer(diff, evt.show)
             launch(tmr.start)
 
 
@@ -66,7 +69,6 @@ def tmr(event):
     event.time = target
     diff = target - time.time()
     event.reply("ok " +  laps(diff))
-    event.show()
     event.result = []
     event.result.append(event.rest)
     timer = Timer(diff, event.show)
