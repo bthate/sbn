@@ -22,11 +22,11 @@ from sbn.utils import forever, launch, scan
 
 
 Cfg         = Default()
-Cfg.mod     = "cmd,err,log,mod,irc,rss,thr,tdo"
+Cfg.mod     = "cmd,err,log,irc,rss,tdo,thr,ver"
 Cfg.name    = "sbn"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
-Cfg.version = "77"
+Cfg.version = "78"
 Cfg.user    = getpass.getuser()
 
 

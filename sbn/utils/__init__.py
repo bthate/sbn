@@ -19,6 +19,7 @@ def __dir__():
     return (
         'NoDate',
         'day',
+        'debug',
         'fetch',
         'get_day',
         'get_hour',
@@ -26,6 +27,7 @@ def __dir__():
         'find',
         'hms',
         'ident',
+        'launch',
         'laps',
         'last',
         'now',

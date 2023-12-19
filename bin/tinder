@@ -22,10 +22,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from sbn import Commands, Default, Errors, Event, Object, Reactor, Storage
-from sbn import keys, launch, modules, scan, spl
-
-
-from sbn.utils import laps, parse
+from sbn import keys, laps,launch, modules, parse, scan, spl
 
 
 STARTTIME = time.time()
@@ -37,7 +34,7 @@ Cfg.mod =  "cmd,err,fnd,irc,log,req,rss,tdo,thr,ver"
 Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
-Cfg.version = "76"
+Cfg.version = "78"
 Cfg.wd = ".test"
 
 
@@ -65,7 +62,7 @@ param.nme = ["hnrss hackernews"]
 param.pwd = ["bart bla"]
 param.rem = ["hnrss"]
 param.rss = ["http://hnrss.org/newest"]
-param.ver = "72"
+param.ver = [""]
 
 
 class CLI(Reactor):
@@ -108,6 +105,7 @@ def payload(clt) -> None:
                 evt.orig = object.__repr__(clt)
                 evt.txt = cmd + " " + ex
                 evt.type = "command"
+                parse(evt)
                 if "t" in Cfg.opts:
                     clt.put(evt)
                     events.append(evt)
@@ -138,14 +136,13 @@ def main() -> None:
     parse(Cfg, " ".join(sys.argv[1:]))
     for mod in scan(modules, Cfg.mod, True):
         mod.DEBUG = True
-    time.sleep(600)
     if "v" in Cfg.opts:
         Errors.output = print
     nrs = Cfg.index or 1
     cli = CLI()
     if "t" in Cfg.opts:
-        cli.start()
         cli.threaded = True
+    cli.start()
     waiters = []
     for _nr in range(nrs):
         waiters.append(launch(payload, cli, name=f"payload {_nr}"))

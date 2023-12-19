@@ -25,6 +25,7 @@ def __dir__():
         'command',
         'debug',
         'forever',
+        'launch',
         'scan'
     )
 
