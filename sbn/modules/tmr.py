@@ -11,7 +11,7 @@ import time
 
 
 from sbn import Broker, Default, Event, Timer, construct, update
-from sbn import NoDate, day, now, to_time, to_day, get_day, get_hour
+from sbn import NoDate, today, now, to_time, to_day, get_day, get_hour
 from sbn import find, laps, launch, sync
 
 
@@ -59,7 +59,7 @@ def tmr(event):
         try:
             target = get_day(event.rest)
         except NoDate:
-            target = to_day(day())
+            target = to_day(today())
         hour =  get_hour(event.rest)
         if hour:
             target += hour

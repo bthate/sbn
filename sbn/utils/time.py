@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0718
+# pylint: disable=C,R,W0718,W0702
 
 
 "time related utilities"
@@ -8,14 +8,13 @@
 
 import datetime
 import re
-import threading
 import time as ttime
 
 
 def __dir__():
     return (
         'NoDate',
-        'day',
+        'today',
         'get_day',
         'get_hour',
         'get_time',
@@ -45,7 +44,7 @@ year_formats = [
 ]
 
 
-timere = re.compile('(\S+)\s+(\S+)\s+(\d+)\s+(\d+):(\d+):(\d+)\s+(\d+)')
+timere = re.compile(r'(\S+)\s+(\S+)\s+(\d+)\s+(\d+):(\d+):(\d+)\s+(\d+)')
 
 
 bdmonths = ['Bo', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -67,14 +66,14 @@ monthint = {
 }
 
 
-def day():
+def today():
     return str(datetime.datetime.today()).split()[0]
 
 
 def extract_date(daystr):
-    for format in year_formats:
+    for fmt in year_formats:
         try:
-            res = ttime.mktime(ttime.strptime(daystr, format))
+            res = ttime.mktime(ttime.strptime(daystr, fmt))
         except:
             res = None
         if res:
@@ -83,47 +82,48 @@ def extract_date(daystr):
 
 def get_day(daystr):
     try:
-        ymdre = re.search('(\d+)-(\d+)-(\d+)', daystr)
-        (day, month, year) = ymdre.groups()
+        ymdre = re.search(r'(\d+)-(\d+)-(\d+)', daystr)
+        (day, month, yea) = ymdre.groups()
     except:
         try:
-            ymre = re.search('(\d+)-(\d+)', daystr)
+            ymre = re.search(r'(\d+)-(\d+)', daystr)
             (day, month) = ymre.groups()
-            year = ttime.strftime("%Y", ttime.localtime())
-        except: raise NoDate(daystr)
+            yea = ttime.strftime("%Y", ttime.localtime())
+        except Exception as ex:
+            raise NoDate(daystr) from ex
     day = int(day)
     month = int(month)
-    year = int(year)
-    date = "%s %s %s" % (day, bdmonths[month], year)
-    return ttime.mktime(ttime.strptime(date, "%d %b %Y"))
+    yea = int(yea)
+    date = "%s %s %s" % (day, bdmonths[month], yea)
+    return ttime.mktime(ttime.strptime(date, r"%d %b %Y"))
 
 
 def get_hour(daystr):
     try:
-        hmsre = re.search('(\d+):(\d+):(\d+)', str(daystr))
+        hmsre = re.search(r'(\d+):(\d+):(\d+)', str(daystr))
         hours = 60 * 60 * (int(hmsre.group(1)))
         hoursmin = hours  + int(hmsre.group(2)) * 60
-        hms = hoursmin + int(hmsre.group(3))
+        hmsres = hoursmin + int(hmsre.group(3))
     except AttributeError:
         pass
     except ValueError:
         pass
     try:
-        hmre = re.search('(\d+):(\d+)', str(daystr))
+        hmre = re.search(r'(\d+):(\d+)', str(daystr))
         hours = 60 * 60 * (int(hmre.group(1)))
-        hms = hours + int(hmre.group(2)) * 60
+        hmsres = hours + int(hmre.group(2)) * 60
     except AttributeError:
         return 0
     except ValueError:
         return 0
-    return hms
+    return hmsres
 
 
 def get_time(txt):
     try:
         target = get_day(txt)
     except NoDate:
-        target = to_day(day())
+        target = to_day(today())
     hour =  get_hour(txt)
     if hour:
         target += hour
@@ -139,13 +139,13 @@ def laps(seconds, short=True) -> str:
     nsec = float(seconds)
     if nsec < 1:
         return f"{nsec:.2f}s"
-    year = 365*24*60*60
+    yea = 365*24*60*60
     week = 7*24*60*60
     nday = 24*60*60
     hour = 60*60
     minute = 60
-    years = int(nsec/year)
-    nsec -= years*year
+    yeas = int(nsec/yea)
+    nsec -= yeas*yea
     weeks = int(nsec/week)
     nsec -= weeks*week
     nrdays = int(nsec/nday)
@@ -155,8 +155,8 @@ def laps(seconds, short=True) -> str:
     minutes = int(nsec/minute)
     nsec -= int(minute*minutes)
     sec = int(nsec)
-    if years:
-        txt += f"{years}y"
+    if yeas:
+        txt += f"{yeas}y"
     if weeks:
         nrdays += weeks * 7
     if nrdays:
@@ -192,7 +192,7 @@ def parse_time(txt):
         try:
             target = get_day(txt)
         except NoDate:
-            target = to_day(day())
+            target = to_day(today())
         hour =  get_hour(txt)
         if hour:
             target += hour
@@ -222,37 +222,37 @@ def to_time(daystr):
     daystr = daystr.replace("_", ":")
     daystr = " ".join([x.capitalize() for x in daystr.split() if not x[0] in ["+", "-"]])
     res = 0
-    try: res = ttime.mktime(ttime.strptime(daystr, "%a, %d %b %Y %H:%M:%S"))
+    try: res = ttime.mktime(ttime.strptime(daystr, r"%a, %d %b %Y %H:%M:%S"))
     except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%a, %d %b %Y %H:%M:%S %z"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%a, %d %b %Y %H:%M:%S %z"))
         except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%a, %d %b %Y %H:%M:%S %z"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%a, %d %b %Y %H:%M:%S %z"))
         except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%a %d %b %H:%M:%S %Y"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%a %d %b %H:%M:%S %Y"))
         except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%a %d %b %H:%M:%S %Y %z"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%a %d %b %H:%M:%S %Y %z"))
         except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%Y-%m-%d %H:%M:%S"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%Y-%m-%d %H:%M:%S"))
         except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%d-%m-%Y %H:%M:%S"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%d-%m-%Y %H:%M:%S"))
         except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%d-%m-%Y %H:%M"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%d-%m-%Y %H:%M"))
         except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%Y-%m-%d %H:%M"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%Y-%m-%d %H:%M"))
         except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%Y-%m-%d"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%Y-%m-%d"))
         except: pass
     if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, "%d-%m-%Y"))
+        try: res = ttime.mktime(ttime.strptime(daystr, r"%d-%m-%Y"))
         except: pass
     if not res: raise NoDate(daystr)
     return res

@@ -18,7 +18,7 @@ from .time  import *
 def __dir__():
     return (
         'NoDate',
-        'day',
+        'today',
         'debug',
         'fetch',
         'get_day',

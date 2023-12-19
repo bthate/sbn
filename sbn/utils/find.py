@@ -11,8 +11,9 @@ import os
 
 
 from ..default import Default
-from ..object  import fqn, read, search, update, write
+from ..object  import fqn, read, update, write
 from ..storage import Storage, fntime, strip
+from ..utility import spl
 
 
 def __dir__():
@@ -21,6 +22,7 @@ def __dir__():
         'ident',
         'fetch',
         'last',
+        'search',
         'sync'
     )
 
@@ -69,6 +71,24 @@ def last(obj, selector=None) -> None:
         inp = result[-1]
         update(obj, inp[-1])
         return inp[0]
+
+
+def search(obj, selector) -> bool:
+    res = False
+    if not selector:
+        return True
+    for key, value in items(selector):
+        if key not in obj:
+            res = False
+            break
+        for vval in spl(str(value)):
+            val = getattr(obj, key, None)
+            if str(vval).lower() in str(val).lower():
+                res = True
+            else:
+                res = False
+                break
+    return res
 
 
 def sync(obj, pth=None) -> str:

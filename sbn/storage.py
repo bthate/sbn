@@ -12,7 +12,7 @@ import time
 
 
 from .object  import Object, cdir, fqn, items, update
-from .object  import read, search, write
+from .object  import read, write
 from .utility import fntime, strip
 
 

@@ -11,7 +11,7 @@ import os
 import _thread
 
 
-from .utility import cdir, spl
+from .utility import cdir
 
 
 def __dir__():
@@ -24,7 +24,6 @@ def __dir__():
             'items',
             'keys',
             'read',
-            'search',
             'update',
             'values',
             'write'
@@ -222,24 +221,6 @@ def keys(obj) -> []:
     if isinstance(obj, type({})):
         return obj.keys()
     return list(obj.__dict__.keys())
-
-
-def search(obj, selector) -> bool:
-    res = False
-    if not selector:
-        return True
-    for key, value in items(selector):
-        if key not in obj:
-            res = False
-            break
-        for vval in spl(str(value)):
-            val = getattr(obj, key, None)
-            if str(vval).lower() in str(val).lower():
-                res = True
-            else:
-                res = False
-                break
-    return res
 
 
 def update(obj, data, empty=True) -> None:

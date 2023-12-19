@@ -30,23 +30,23 @@ from .utils import *
 def __utils__():
     return (
         'NoDate',
-        'day',
         'fetch',
+        'today',
         'get_day',
-        'get_hour',
         'get_time',
         'find',
-        'hms',
         'ident',
         'laps',
+        'get_hour',
         'last',
         'now',
         'parse',
+        'hms',
         'parse_time',
         'scan',
+        'to_time',
         'sync',
         'to_day',
-        'to_time',
         'year'
     )
 
