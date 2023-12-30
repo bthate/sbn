@@ -1,38 +1,30 @@
+#!/usr/bin/env python3
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,E1102
+# pylint: disable=C,R,W0201,W0212,W0105,W0613,W0406,E0102,W0611,W0718,W0125
 
 
-"errors"
+"deferred exception handling"
 
 
 import io
 import traceback
 
 
-from .object import Object
+from obj import Object
 
 
-def __dir__():
-    return (
-        'Errors',
-    )
-
-
-__all__ = __dir__()
-
-
-class Errors(Object):
+class Error(Object):
 
     errors = []
     filter = []
-    output = None
+    output = print
     shown  = []
 
     @staticmethod
     def add(exc) -> None:
         excp = exc.with_traceback(exc.__traceback__)
-        Errors.errors.append(excp)
+        Error.errors.append(excp)
 
     @staticmethod
     def format(exc) -> str:
@@ -50,18 +42,23 @@ class Errors(Object):
 
     @staticmethod
     def handle(exc) -> None:
-        if Errors.output:
-            txt = str(Errors.format(exc))
-            Errors.output(txt)
+        if Error.output:
+            txt = str(Error.format(exc))
+            Error.output(txt)
 
     @staticmethod
     def show() -> None:
-        for exc in Errors.errors:
-            Errors.handle(exc)
+        for exc in Error.errors:
+            Error.handle(exc)
 
     @staticmethod
     def skip(txt) -> bool:
-        for skp in Errors.filter:
+        for skp in Error.filter:
             if skp in str(txt):
                 return True
         return False
+
+
+def debug(txt):
+    if Error.output and not Error.skip(txt):
+        Error.output(txt)

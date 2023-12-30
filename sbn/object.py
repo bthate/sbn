@@ -1,59 +1,59 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0105,E0402,W0622,W0102
+# pylint: disable=C,R,E0603,E0402,W0401,W0614,W0611,W0622,W0105
 
 
 "a clean namespace"
 
 
+import datetime
 import json
 import os
-import _thread
-
-
-from .utility import cdir
+import sys
 
 
 def __dir__():
     return (
             'Object',
             'construct',
+            'dump',
+            'dumps',
             'edit',
             'fmt',
             'fqn',
+            'ident',
             'items',
             'keys',
-            'read',
+            'load',
+            'loads',
             'update',
             'values',
-            'write'
            )
 
 
 __all__ = __dir__()
 
 
-lock = _thread.allocate_lock()
-
-
 class Object:
 
 
+    def __contains__(self, key):
+        return key in dir(self)
+
     def __iter__(self):
-        ""
         return iter(self.__dict__)
 
     def __len__(self):
-        ""
         return len(self.__dict__)
 
     def __repr__(self):
-        ""
         return dumps(self)
 
     def __str__(self):
-        ""
         return str(self.__dict__)
+
+
+"decoder"
 
 
 class ObjectDecoder(json.JSONDecoder):
@@ -89,10 +89,7 @@ def loads(string, *args, **kw) -> Object:
     return json.loads(string, *args, **kw)
 
 
-def read(obj, pth) -> None:
-    with lock:
-        with open(pth, 'r', encoding='utf-8') as ofile:
-            update(obj, load(ofile))
+"encoder"
 
 
 class ObjectEncoder(json.JSONEncoder):
@@ -141,11 +138,7 @@ def dumps(*args, **kw) -> str:
     return json.dumps(*args, **kw)
 
 
-def write(obj, pth) -> None:
-    with lock:
-        cdir(os.path.dirname(pth))
-        with open(pth, 'w', encoding='utf-8') as ofile:
-            dump(obj, ofile)
+"methods"
 
 
 def construct(obj, *args, **kwargs) -> None:
@@ -190,6 +183,8 @@ def fmt(obj, args=None, skip=None, plain=False) -> str:
         skip = []
     txt = ""
     for key in args:
+        if key.startswith("__"):
+            continue
         if key in skip:
             continue
         value = getattr(obj, key, None)
@@ -210,6 +205,12 @@ def fqn(obj) -> str:
         kin = obj.__name__
     return kin
 
+
+def ident(obj) -> str:
+    return os.path.join(
+                        fqn(obj),
+                        os.path.join(*str(datetime.datetime.now()).split())
+                       )
 
 def items(obj) -> []:
     if isinstance(obj, type({})):

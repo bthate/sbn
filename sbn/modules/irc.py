@@ -1,12 +1,11 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,E1101,W0718,W0612,E0611
+# pylint: disable=C,R,E1101,W0105,W0718,W0612,E0611
 
 
 "internet relay chat"
 
 
-import base64
 import os
 import queue
 import socket
@@ -17,15 +16,15 @@ import time
 import _thread
 
 
-from sbn import Broker, Commands, Default, Errors, Event, Object, Reactor
-from sbn import Output, byorig, edit, fmt, keys
-from sbn import debug, launch, last, parse, sync
+from .. import Default, Object, edit, fmt, keys
+from .. import Client, Command, Error, Event
+from .. import byorig, debug, last, launch, write
 
 
-Errors.filter = ["PING", "PONG", "PRIVMSG"]
+Error.filter = ["PING", "PONG", "PRIVMSG"]
 
 
-NAME = "sbn"
+NAME = "op"
 
 
 saylock = _thread.allocate_lock()
@@ -66,10 +65,86 @@ class Config(Default):
         self.username = self.username or Config.username
 
 
-class IRC(Reactor, Output):
+class TextWrap(textwrap.TextWrapper):
 
     def __init__(self):
-        Reactor.__init__(self)
+        super().__init__()
+        self.break_long_words = False
+        self.drop_whitespace = False
+        self.fix_sentence_endings = True
+        self.replace_whitespace = True
+        self.tabsize = 4
+        self.width = 400
+
+
+wrapper = TextWrap()
+
+
+class Output():
+
+    cache = Object()
+
+    def __init__(self):
+        self.dostop = threading.Event()
+        self.oqueue = queue.Queue()
+
+    def dosay(self, channel, txt):
+        raise NotImplementedError
+
+    @staticmethod
+    def extend(channel, txtlist):
+        if channel not in Output.cache:
+            Output.cache[channel] = []
+        Output.cache[channel].extend(txtlist)
+
+    @staticmethod
+    def gettxt(channel):
+        txt = None
+        try:
+            che = getattr(Output.cache, channel, None)
+            if che:
+                txt = che.pop(0)
+        except (KeyError, IndexError):
+            pass
+        return txt
+
+    def oput(self, channel, txt):
+        if channel not in dir(Output.cache):
+            setattr(Output.cache, channel, [])
+        self.oqueue.put_nowait((channel, txt))
+
+    def out(self):
+        while not self.dostop.is_set():
+            (channel, txt) = self.oqueue.get()
+            if channel is None and txt is None:
+                break
+            if self.dostop.is_set():
+                break
+            txtlist = wrapper.wrap(txt)
+            if len(txtlist) > 3:
+                self.extend(channel, txtlist)
+                length = len(txtlist)
+                self.say(
+                         channel,
+                         f"use !mre to show more (+{length})"
+                        )
+                continue
+            _nr = -1
+            for txt in txtlist:
+                _nr += 1
+                self.dosay(channel, txt)
+
+    @staticmethod
+    def size(chan):
+        if chan in Output.cache:
+            return len(Output.cache.get(chan, []))
+        return 0
+
+
+class IRC(Client, Output):
+
+    def __init__(self):
+        Client.__init__(self)
         Output.__init__(self)
         self.buffer = []
         self.cfg = Config()
@@ -158,7 +233,7 @@ class IRC(Reactor, Output):
                ) as ex:
             pass
         except Exception as ex:
-            Errors.errors.append(ex)
+            Error.errors.append(ex)
 
     def doconnect(self, server, nck, port=6667):
         while 1:
@@ -307,7 +382,7 @@ class IRC(Reactor, Output):
                     ConnectionResetError,
                     BrokenPipeError
                    ) as ex:
-                Errors.errors.append(ex)
+                Error.add(ex)
                 self.stop()
                 debug("handler stopped")
                 evt = self.event(str(ex))
@@ -334,7 +409,7 @@ class IRC(Reactor, Output):
                     ConnectionResetError,
                     BrokenPipeError
                    ) as ex:
-                Errors.errors.append(ex)
+                Error.errors.append(ex)
                 self.stop()
                 return
         self.state.last = time.time()
@@ -380,7 +455,7 @@ class IRC(Reactor, Output):
         self.events.connected.clear()
         self.events.joined.clear()
         launch(Output.out, self)
-        Reactor.start(self)
+        Client.start(self)
         launch(
                self.doconnect,
                self.cfg.server or "localhost",
@@ -394,8 +469,7 @@ class IRC(Reactor, Output):
         self.disconnect()
         self.dostop.set()
         self.oput(None, None)
-        Reactor.stop(self)
-        Broker.remove(self)
+        Client.stop(self)
 
     def wait(self):
         self.events.ready.wait()
@@ -473,8 +547,7 @@ def cb_privmsg(evt):
         if evt.txt:
             evt.txt = evt.txt[0].lower() + evt.txt[1:]
         debug(f"command from {evt.origin}: {evt.txt}")
-        parse(evt)
-        Commands.handle(evt)
+        Command.handle(evt)
 
 
 def cb_quit(evt):
@@ -482,6 +555,9 @@ def cb_quit(evt):
     debug(f"quit from {bot.cfg.server}")
     if evt.orig and evt.orig in bot.zelf:
         bot.stop()
+
+
+"commands"
 
 
 def cfg(event):
@@ -497,5 +573,5 @@ def cfg(event):
                    )
     else:
         edit(config, event.sets)
-        sync(config, path)
+        write(config, path)
         event.reply('ok')

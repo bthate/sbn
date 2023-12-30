@@ -3,29 +3,28 @@
 #
 
 
-"preimport"
+"pre-import"
 
 
-from . import cmd, dbg, err, fnd, irc, log, mod, req, rss, tdo, thr, tmr
-from . import mre, pwd
+import sys
+
+
+from . import cmd, err, irc, log, mod, mre, pwd, rss, tdo, thr, tmr
 
 
 def __dir__():
     return (
         'cmd',
-        'dbg',
         'err',
-        'fnd',
         'irc',
         'log',
         'mod',
         'mre',
         'pwd',
-        'req',
         'rss',
         'tdo',
         'thr',
-        'tmr'
+        'tmr',
     )
 
 

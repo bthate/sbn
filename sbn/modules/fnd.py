@@ -6,19 +6,20 @@
 "locate"
 
 
-from sbn import Storage, find, fmt
+from .. import Storage, find, fmt
 
 
 def fnd(event):
+    Storage.skel()
     if not event.rest:
-        res = sorted([x.split('.')[-1].lower() for x in Storage.files()])
+        res = sorted([x.split('.')[-1].lower() for x in Storage.types()])
         if res:
             event.reply(",".join(res))
         return
     otype = event.args[0]
     clz = Storage.long(otype)
     if "." not in clz:
-        for fnm in Storage.files():
+        for fnm in Storage.types():
             claz = fnm.split(".")[-1]
             if otype == claz.lower():
                 clz = fnm

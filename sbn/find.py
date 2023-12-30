@@ -1,29 +1,26 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0105,E0402,W0611
+# pylint: disable=C,R,W0105,E0402
 
 
 "find objects"
 
 
-import datetime
 import os
+import time
 
 
-from ..default import Default
-from ..object  import fqn, read, update, write
-from ..storage import Storage, fntime, strip
-from ..utility import spl
+from .object import fqn, ident, items, update
+from .default import Default
+from .storage import Storage, read
 
 
 def __dir__():
     return (
         'find',
         'ident',
-        'fetch',
         'last',
         'search',
-        'sync'
     )
 
 
@@ -35,7 +32,7 @@ def find(mtc, selector=None, index=None) -> []:
     nr = -1
     for fnm in sorted(Storage.fns(clz), key=fntime):
         obj = Default()
-        fetch(obj, fnm)
+        read(obj, fnm)
         if '__deleted__' in obj:
             continue
         if selector and not search(obj, selector):
@@ -45,19 +42,6 @@ def find(mtc, selector=None, index=None) -> []:
             continue
         yield (fnm, obj)
 
-
-def ident(obj) -> str:
-    return os.path.join(
-                        fqn(obj),
-                        os.path.join(*str(datetime.datetime.now()).split())
-                       )
-
-
-
-def fetch(obj, pth) -> None:
-    pth2 = Storage.store(pth)
-    read(obj, pth2)
-    return strip(pth)
 
 
 def last(obj, selector=None) -> None:
@@ -91,9 +75,25 @@ def search(obj, selector) -> bool:
     return res
 
 
-def sync(obj, pth=None) -> str:
-    if pth is None:
-        pth = ident(obj)
-    pth2 = Storage.store(pth)
-    write(obj, pth2)
-    return pth
+"utility"
+
+
+def fntime(daystr) -> float:
+    daystr = daystr.replace('_', ':')
+    datestr = ' '.join(daystr.split(os.sep)[-2:])
+    if '.' in datestr:
+        datestr, rest = datestr.rsplit('.', 1)
+    else:
+        rest = ''
+    timed = time.mktime(time.strptime(datestr, '%Y-%m-%d %H:%M:%S'))
+    if rest:
+        timed += float('.' + rest)
+    return timed
+
+
+def spl(txt) -> []:
+    try:
+        res = txt.split(',')
+    except (TypeError, ValueError):
+        res = txt
+    return [x for x in res if x]

@@ -3,37 +3,35 @@
 # pylint: disable=C,R,W0718,W0702
 
 
-"time related utilities"
+"parsing text"
 
 
 import datetime
+import os
 import re
 import time as ttime
+
+
+from obj import Default
 
 
 def __dir__():
     return (
         'NoDate',
-        'today',
+        'fntime',
         'get_day',
         'get_hour',
         'get_time',
-        'hms',
         'laps',
-        'now',
+        'parse_command',
         'parse_time',
-        'to_day',
-        'to_time',
-        'year'
+        'spl',
+        'today',
+        'to_day'
     )
 
 
 __all__ = __dir__()
-
-
-class NoDate(Exception):
-
-    pass
 
 
 year_formats = [
@@ -44,30 +42,12 @@ year_formats = [
 ]
 
 
-timere = re.compile(r'(\S+)\s+(\S+)\s+(\d+)\s+(\d+):(\d+):(\d+)\s+(\d+)')
-
-
 bdmonths = ['Bo', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 
-monthint = {
-    'Jan': 1,
-    'Feb': 2,
-    'Mar': 3,
-    'Apr': 4,
-    'May': 5,
-    'Jun': 6,
-    'Jul': 7,
-    'Aug': 8,
-    'Sep': 9,
-    'Oct': 10,
-    'Nov': 11,
-    'Dec': 12 
-}
+class NoDate(Exception):
 
-
-def today():
-    return str(datetime.datetime.today()).split()[0]
+    pass
 
 
 def extract_date(daystr):
@@ -78,6 +58,19 @@ def extract_date(daystr):
             res = None
         if res:
             return res
+
+
+def fntime(daystr) -> float:
+    daystr = daystr.replace('_', ':')
+    datestr = ' '.join(daystr.split(os.sep)[-2:])
+    if '.' in datestr:
+        datestr, rest = datestr.rsplit('.', 1)
+    else:
+        rest = ''
+    timed = ttime.mktime(ttime.strptime(datestr, '%Y-%m-%d %H:%M:%S'))
+    if rest:
+        timed += float('.' + rest)
+    return timed
 
 
 def get_day(daystr):
@@ -130,10 +123,6 @@ def get_time(txt):
     return target
 
 
-def hms():
-    return str(datetime.datetime.today()).split()[1].split(".")[0]
-
-
 def laps(seconds, short=True) -> str:
     txt = ""
     nsec = float(seconds)
@@ -173,8 +162,57 @@ def laps(seconds, short=True) -> str:
     return txt
 
 
-def now():
-    return str(datetime.datetime.now())
+def parse_command(obj, txt=None) -> None:
+    args = []
+    obj.args    = obj.args or []
+    obj.cmd     = obj.cmd or ""
+    obj.gets    = obj.gets or Default()
+    obj.hasmods = obj.hasmod or False
+    obj.index   = None
+    obj.mod     = obj.mod or ""
+    obj.opts    = obj.opts or ""
+    obj.result  = obj.reult or []
+    obj.sets    = obj.sets or Default()
+    obj.txt     = txt or obj.txt or ""
+    obj.otxt    = obj.txt
+    _nr = -1
+    for spli in obj.otxt.split():
+        if spli.startswith("-"):
+            try:
+                obj.index = int(spli[1:])
+            except ValueError:
+                obj.opts += spli[1:]
+            continue
+        if "==" in spli:
+            key, value = spli.split("==", maxsplit=1)
+            if key in obj.gets:
+                val = getattr(obj.gets, key)
+                value = val + "," + value
+            setattr(obj.gets, key, value)
+            continue
+        if "=" in spli:
+            key, value = spli.split("=", maxsplit=1)
+            if key == "mod":
+                obj.hasmods = True
+                if obj.mod:
+                    obj.mod += f",{value}"
+                else:
+                    obj.mod = value
+                continue
+            setattr(obj.sets, key, value)
+            continue
+        _nr += 1
+        if _nr == 0:
+            obj.cmd = spli
+            continue
+        args.append(spli)
+    if args:
+        obj.args = args
+        obj.txt  = obj.cmd or ""
+        obj.rest = " ".join(obj.args)
+        obj.txt  = obj.cmd + " " + obj.rest
+    else:
+        obj.txt = obj.cmd or ""
 
 
 def parse_time(txt):
@@ -199,6 +237,14 @@ def parse_time(txt):
     return target
 
 
+def spl(txt) -> []:
+    try:
+        res = txt.split(',')
+    except (TypeError, ValueError):
+        res = txt
+    return [x for x in res if x]
+
+
 def to_day(daystr):
     previous = ""
     line = ""
@@ -215,48 +261,5 @@ def to_day(daystr):
         line = ""
 
 
-def to_time(daystr):
-    daystr = str(daystr)
-    daystr = daystr.split(".")[0]
-    daystr = daystr.replace("GMT", "CEST")
-    daystr = daystr.replace("_", ":")
-    daystr = " ".join([x.capitalize() for x in daystr.split() if not x[0] in ["+", "-"]])
-    res = 0
-    try: res = ttime.mktime(ttime.strptime(daystr, r"%a, %d %b %Y %H:%M:%S"))
-    except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%a, %d %b %Y %H:%M:%S %z"))
-        except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%a, %d %b %Y %H:%M:%S %z"))
-        except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%a %d %b %H:%M:%S %Y"))
-        except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%a %d %b %H:%M:%S %Y %z"))
-        except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%Y-%m-%d %H:%M:%S"))
-        except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%d-%m-%Y %H:%M:%S"))
-        except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%d-%m-%Y %H:%M"))
-        except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%Y-%m-%d %H:%M"))
-        except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%Y-%m-%d"))
-        except: pass
-    if not res:
-        try: res = ttime.mktime(ttime.strptime(daystr, r"%d-%m-%Y"))
-        except: pass
-    if not res: raise NoDate(daystr)
-    return res
-
-
-def year():
-    return str(datetime.datetime.now().year)
+def today():
+    return str(datetime.datetime.today()).split()[0]

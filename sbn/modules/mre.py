@@ -1,9 +1,9 @@
 # This file is placed in the Public Domain.
 #
-#
+# pylint: disable=C,R
 
 
-from sbn import byorig
+from .. import byorig
 
 
 def mre(event):
@@ -23,4 +23,3 @@ def mre(event):
             bot.say(event.channel, txt)
     size = bot.size(event.channel)
     event.reply(f'{size} more in cache')
-
