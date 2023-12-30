@@ -37,13 +37,10 @@ dev = []
 [tool.setuptools]
 packages = [
    "sbn",
-   "sbn.modules",
+   "sbn.mods",
 ]
 zip-safe = true
-script-files = [
-    "bin/sbn",
-    "bin/sbnd"
-]
+
 
 [tool.setuptools.data-files]
 "share/doc/sbn" = [

@@ -37,7 +37,7 @@ Cfg.user    = getpass.getuser()
 Storage.wd   = Cfg.wd
 
 
-from . import modules
+from . import mods as modules
 
 
 class Console(Client):
