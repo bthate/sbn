@@ -17,12 +17,12 @@ import time
 
 
 from .default import Default
-from .error   import Error, debug
-from .object  import Object
+from .excepts import Error, debug
+from .objects import Object
 from .handler import Client, Command, Event, cmnd, forever
-from .parse   import parse_command, spl
-from .disk    import Storage, cdir
-from .thread  import launch
+from .parsers import parse_command, spl
+from .storage import Storage, cdir
+from .threads import launch
 
 
 Cfg         = Default()
@@ -37,7 +37,7 @@ Cfg.user    = getpass.getuser()
 Storage.wd   = Cfg.wd
 
 
-from . import mods as modules
+from . import modules
 
 
 class Console(Client):

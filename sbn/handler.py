@@ -15,11 +15,11 @@ import _thread
 
 
 from .default import Default
-from .error   import Error
-from .fleet   import Fleet
-from .object  import Object
-from .parse   import parse_command, spl
-from .thread  import launch
+from .excepts import Error
+from .brokers import Fleet
+from .objects import Object
+from .parsers import parse_command, spl
+from .threads import launch
 
 
 class Command(Object):

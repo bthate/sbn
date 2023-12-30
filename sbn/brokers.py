@@ -7,7 +7,7 @@
 "list of bots"
 
 
-from .object import Object
+from .objects import Object
 
 
 class Fleet(Object):

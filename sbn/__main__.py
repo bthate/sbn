@@ -6,7 +6,7 @@
 "main"
 
 
-from .run import wrapped
+from .runtime import wrapped
 
 
 if __name__ == "__main__":
