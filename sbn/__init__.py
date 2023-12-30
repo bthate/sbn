@@ -7,7 +7,7 @@
 
 
 from .object  import *
-from .storage import *
+from .disk    import *
 from .default import *
 from .error   import *
 from .find    import *
@@ -62,3 +62,26 @@ def __dir__():
 
 
 __all__ = __dir__()
+
+
+
+def scan(pkg, modstr, initer=False, wait=True) -> []:
+    mds = []
+    for modname in spl(modstr):
+        module = getattr(pkg, modname, None)
+        if not module:
+            continue
+        for _key, cmd in inspect.getmembers(module, inspect.isfunction):
+            if 'event' in cmd.__code__.co_varnames:
+                Command.add(cmd)
+        for _key, clz in inspect.getmembers(module, inspect.isclass):
+            if not issubclass(clz, Object):
+                continue
+            Storage.add(clz)
+        if initer and "init" in dir(module):
+            module._thr = launch(module.init, name=f"init {modname}")
+            mds.append(module)
+    if wait and initer:
+        for mod in mds:
+            mod._thr.join()
+    return mds

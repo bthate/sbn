@@ -13,10 +13,8 @@ import time
 import types
 
 
-from obj import Object
-
-
-from .error import Error
+from .error  import Error
+from .object import Object
 
 
 class Thread(threading.Thread):

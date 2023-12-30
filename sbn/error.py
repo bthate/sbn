@@ -11,7 +11,7 @@ import io
 import traceback
 
 
-from obj import Object
+from .object import Object
 
 
 class Error(Object):

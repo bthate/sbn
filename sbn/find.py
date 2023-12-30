@@ -10,9 +10,9 @@ import os
 import time
 
 
-from .object import fqn, ident, items, update
+from .object  import fqn, ident, items, update
 from .default import Default
-from .storage import Storage, read
+from .disk    import Storage, read
 
 
 def __dir__():

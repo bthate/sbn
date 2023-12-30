@@ -8,6 +8,7 @@
 
 
 import getpass
+import inspect
 import os
 import pwd
 import sys
@@ -15,15 +16,13 @@ import termios
 import time
 
 
-sys.path.insert(0, os.getcwd())
-
-
 from .default import Default
 from .error   import Error, debug
 from .object  import Object
-from .handler import Client, Event, cmnd, forever, scan
+from .handler import Client, Command, Event, cmnd, forever
 from .parse   import parse_command, spl
-from .storage import Storage, cdir
+from .disk    import Storage, cdir
+from .thread  import launch
 
 
 Cfg         = Default()
@@ -45,6 +44,10 @@ class Console(Client):
 
     def announce(self, txt):
         pass
+
+    def callback(self, evt):
+        Client.callback(self, evt)
+        evt.wait()
 
     def poll(self) -> Event:
         evt = Event()
@@ -86,6 +89,28 @@ def privileges(username):
     pwnam = pwd.getpwnam(username)
     os.setgid(pwnam.pw_gid)
     os.setuid(pwnam.pw_uid)
+
+
+def scan(pkg, modstr, initer=False, wait=True) -> []:
+    mds = []
+    for modname in spl(modstr):
+        module = getattr(pkg, modname, None)
+        if not module:
+            continue
+        for _key, cmd in inspect.getmembers(module, inspect.isfunction):
+            if 'event' in cmd.__code__.co_varnames:
+                Command.add(cmd)
+        for _key, clz in inspect.getmembers(module, inspect.isclass):
+            if not issubclass(clz, Object):
+                continue
+            Storage.add(clz)
+        if initer and "init" in dir(module):
+            module._thr = launch(module.init, name=f"init {modname}")
+            mds.append(module)
+    if wait and initer:
+        for mod in mds:
+            mod._thr.join()
+    return mds
 
 
 def main():

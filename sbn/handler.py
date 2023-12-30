@@ -14,13 +14,11 @@ import time
 import _thread
 
 
-from obj import Default, Object
-
-
+from .default import Default
 from .error   import Error
 from .fleet   import Fleet
+from .object  import Object
 from .parse   import parse_command, spl
-from .storage import Storage
 from .thread  import launch
 
 
@@ -145,25 +143,3 @@ def forever():
             time.sleep(1.0)
         except (KeyboardInterrupt, EOFError):
             _thread.interrupt_main()
-
-
-def scan(pkg, modstr, initer=False, wait=True) -> []:
-    mds = []
-    for modname in spl(modstr):
-        module = getattr(pkg, modname, None)
-        if not module:
-            continue
-        for _key, cmd in inspect.getmembers(module, inspect.isfunction):
-            if 'event' in cmd.__code__.co_varnames:
-                Command.add(cmd)
-        for _key, clz in inspect.getmembers(module, inspect.isclass):
-            if not issubclass(clz, Object):
-                continue
-            Storage.add(clz)
-        if initer and "init" in dir(module):
-            module._thr = launch(module.init, name=f"init {modname}")
-            mds.append(module)
-    if wait and initer:
-        for mod in mds:
-            mod._thr.join()
-    return mds
