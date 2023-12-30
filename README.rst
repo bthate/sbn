@@ -153,7 +153,7 @@ SYSTEMD
     User=<user>
     Group=<user>
     WorkingDirectory=/home/<user>/.sbn
-    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbn -d mod=irc,log,rss
     RemainAfterExit=yes
 
     [Install]

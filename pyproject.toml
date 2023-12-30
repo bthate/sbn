@@ -37,7 +37,7 @@ dev = []
 [tool.setuptools]
 packages = [
    "sbn",
-   "sbn.mods",
+   "sbn.modules",
 ]
 zip-safe = true
 
