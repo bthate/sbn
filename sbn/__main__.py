@@ -28,8 +28,8 @@ from .storage import Storage, cdir
 
 Cfg         = Default()
 Cfg.mod     = "cmd,err,mod,mre,pwd,thr"
-Cfg.name    = "op"
-Cfg.version = "10"
+Cfg.name    = "sbn"
+Cfg.version = "79"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
 Cfg.user    = getpass.getuser()
@@ -44,8 +44,7 @@ from . import modules
 class Console(Client):
 
     def announce(self, txt):
-        if "v" in Cfg.opts:
-            self.say("", txt)
+        pass
 
     def poll(self) -> Event:
         evt = Event()
@@ -140,6 +139,10 @@ def wrap(func) -> None:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old2)
 
 
-if __name__ == "__main__":
+def wrapped():
     wrap(main)
     Error.show()
+
+
+if __name__ == "__main__":
+    wrapped()
