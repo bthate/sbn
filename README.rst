@@ -78,7 +78,7 @@ USAGE
 
     start daemon
 
-    $ sbnd
+    $ sbn -d mod=irc,rss
     $ 
 
     show request to the prosecutor
@@ -120,8 +120,8 @@ COMMANDS
 
 ::
 
-    cmd - commands
     cfg - irc configuration
+    cmd - commands
     dlt - remove a user
     dpl - sets display items
     fnd - find objects 
@@ -173,7 +173,6 @@ FILES
 ::
 
     ~/.local/bin/sbn
-    ~/.local/bin/sbnd
     ~/.local/pipx/venvs/sbn/
 
 

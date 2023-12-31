@@ -19,22 +19,22 @@
     :toctree: 
     :template: base.rst
 
-    sbn.broker		list of bots
+    sbn.brokers		list of bots
+    sbn.clients         clients
+    sbn.collect         collections
     sbn.command		commands
     sbn.default         default values
-    sbn.errors		exceptions
-    sbn.event           event
-    sbn.locate          find objects
+    sbn.excepts		exceptions
+    sbn.handler         handler
+    sbn.locates         find objects
+    sbn.message         event
     sbn.modules         usercode
-    sbn.object          clean namespace
-    sbn.parser          parse cli
-    sbn.reactor         reactor
-    sbn.repeat          repeater
-    sbn.run             runtime
+    sbn.objects         clean namespace
+    sbn.parsers         parse cli
+    sbn.runtime         runtime
     sbn.storage         directory
-    sbn.thread          threads
-    sbn.timer           anytime
-    sbn.utils           utilities
+    sbn.threads         threads
+    sbn.utility         utilities
 
 
 **MODULES**
@@ -52,10 +52,19 @@
     sbn.modules.cmd 	list of commands
     sbn.modules.dbg     raises an exception
     sbn.modules.err     show errors
-    sbn.modules.log	log text
+    sbn.modules.fnd     locate objects
     sbn.modules.irc     internet realy chat
     sbn.modules.log     log text
+    sbn.modules.mbx     mailbox
+    sbn.modules.mdl     model
+    sbn.modules.mod     list of modules
+    sbn.modules.mre     more
+    sbn.modules.pwd     sasl password
     sbn.modules.req	request
+    sbn.modules.rst     rest server
     sbn.modules.rss	rich site syndicate
     sbn.modules.tdo	todo list
     sbn.modules.thr	list threads
+    sbn.modules.tmr	timers
+    sbn.modules.udp     udp to irc relay
+    sbn.modules.wsd     bad trip
