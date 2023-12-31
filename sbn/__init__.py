@@ -3,17 +3,20 @@
 # pylint: disable=E0603,E0402,W0401,W0614,W0611,W0622
 
 
-"program"
+"package"
 
 
-from .objects import *
-from .storage import *
+from .brokers import *
+from .clients import *
+from .command import *
 from .default import *
 from .excepts import *
-from .locates import *
-from .brokers import *
 from .handler import *
+from .locates import *
+from .message import *
+from .objects import *
 from .parsers import *
+from .storage import *
 from .threads import *
 
 
@@ -62,26 +65,3 @@ def __dir__():
 
 
 __all__ = __dir__()
-
-
-
-def scan(pkg, modstr, initer=False, wait=True) -> []:
-    mds = []
-    for modname in spl(modstr):
-        module = getattr(pkg, modname, None)
-        if not module:
-            continue
-        for _key, cmd in inspect.getmembers(module, inspect.isfunction):
-            if 'event' in cmd.__code__.co_varnames:
-                Command.add(cmd)
-        for _key, clz in inspect.getmembers(module, inspect.isclass):
-            if not issubclass(clz, Object):
-                continue
-            Storage.add(clz)
-        if initer and "init" in dir(module):
-            module._thr = launch(module.init, name=f"init {modname}")
-            mds.append(module)
-    if wait and initer:
-        for mod in mds:
-            mod._thr.join()
-    return mds

@@ -14,12 +14,15 @@ import pwd
 import sys
 import termios
 import time
+import _thread
 
 
+from .clients import Client
+from .command import Command
 from .default import Default
 from .excepts import Error, debug
+from .message import Event
 from .objects import Object
-from .handler import Client, Command, Event, cmnd, forever
 from .parsers import parse_command, spl
 from .storage import Storage, cdir
 from .threads import launch
@@ -28,7 +31,7 @@ from .threads import launch
 Cfg         = Default()
 Cfg.mod     = "cmd,err,mod,mre,pwd,thr"
 Cfg.name    = "sbn"
-Cfg.version = "79"
+Cfg.version = "80"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
 Cfg.user    = getpass.getuser()
@@ -61,6 +64,14 @@ class Console(Client):
         print(txt)
 
 
+def cmnd(txt):
+    evn = Event()
+    evn.txt = txt
+    Command.handle(evn)
+    evn.wait()
+    return evn
+
+
 def daemon(pidfile, verbose=False):
     pid = os.fork()
     if pid != 0:
@@ -83,6 +94,14 @@ def daemon(pidfile, verbose=False):
     cdir(os.path.dirname(pidfile))
     with open(pidfile, "w", encoding="utf-8") as fds:
         fds.write(str(os.getpid()))
+
+
+def forever():
+    while 1:
+        try:
+            time.sleep(1.0)
+        except (KeyboardInterrupt, EOFError):
+            _thread.interrupt_main()
 
 
 def privileges(username):
