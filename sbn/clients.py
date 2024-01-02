@@ -24,7 +24,7 @@ class Client(Handler):
 
     def __init__(self):
         Handler.__init__(self)
-        self.register("command", Command.submit)
+        self.register("command", Command.handle)
         Fleet.add(self)
 
     def announce(self, txt):

@@ -43,8 +43,6 @@ import time
 import _thread
 
 
-from .utility import cdir
-
 "defines"
 
 

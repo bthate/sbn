@@ -6,12 +6,10 @@
 "commands"
 
 
-from . import Object
-
-
 from .excepts import Error
+from .objects import Object
 from .parsers import parse_command
-from .threads import launch, submit
+from .threads import launch
 
 
 def __dir__():
@@ -42,11 +40,3 @@ class Command(Object):
             except Exception as exc:
                 Error.add(exc)
         evt.ready()
-
-    @staticmethod
-    def threaded(evt):
-        evt._thr = launch(Command.handle, evt)
-
-    @staticmethod
-    def submit(evt):
-        submit(Command.handle, evt)

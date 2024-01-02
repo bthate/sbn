@@ -10,10 +10,9 @@ import os
 import time
 
 
-from . import fqn, items, update
-
-
 from .default import Default
+from .objects import fqn, items, update
+from .parsers import spl
 from .storage import Storage, ident, read
 
 
@@ -93,11 +92,3 @@ def fntime(daystr) -> float:
     if rest:
         timed += float('.' + rest)
     return timed
-
-
-def spl(txt) -> []:
-    try:
-        res = txt.split(',')
-    except (TypeError, ValueError):
-        res = txt
-    return [x for x in res if x]

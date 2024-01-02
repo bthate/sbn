@@ -6,19 +6,14 @@
 "threads"
 
 
-from multiprocessing.pool import ThreadPool
-from concurrent.futures import ThreadPoolExecutor
-
 import queue
 import threading
 import time
 import types
 
 
-from . import Object
-
-
 from .excepts import Error
+from .objects import Object
 
 
 def __dir__():
@@ -28,14 +23,10 @@ def __dir__():
        'Timer',
        'launch',
        'name',
-       'threaded'
     )
 
 
 __all__ = __dir__()
-
-
-pool = ThreadPoolExecutor(6)
 
 
 class Thread(threading.Thread):
@@ -130,14 +121,3 @@ def name(obj) -> str:
     if '__name__' in dir(obj):
         return f'{obj.__class__.__name__}.{obj.__name__}'
     return None
-
-
-def submit(func, *args, **kwargs):
-    return pool.submit(func, *args, **kwargs)
-
-
-def threaded(func, *args):
-    """ threading decorator. """
-    def thrfunc(*args, **kwargs):
-        return launch(func, *args, kwargs)
-    return thrfunc

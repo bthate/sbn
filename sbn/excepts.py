@@ -10,7 +10,7 @@ import io
 import traceback
 
 
-from . import Object
+from .objects import Object
 
 
 def __dir__():

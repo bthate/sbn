@@ -11,9 +11,8 @@ import threading
 import _thread
 
 
-from . import Object
-
 from .excepts import Error
+from .objects import Object
 from .threads import launch
 
 

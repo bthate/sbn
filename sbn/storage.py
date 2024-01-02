@@ -11,9 +11,9 @@ import os
 import pathlib
 
 
-from . import Object, dump, fqn, load, update
-from . import read as fetch
-from . import write as sync
+from .objects import Object, dump, fqn, load, update
+from .objects import read as fetch
+from .objects import write as sync
 
 
 def __dir__():

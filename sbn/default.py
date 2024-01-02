@@ -6,7 +6,7 @@
 "default"
 
 
-from . import Object
+from .objects import Object
 
 
 def __dir__():
