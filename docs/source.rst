@@ -21,7 +21,6 @@
 
     sbn.brokers		list of bots
     sbn.clients         clients
-    sbn.collect         collections
     sbn.command		commands
     sbn.default         default values
     sbn.excepts		exceptions
@@ -34,7 +33,6 @@
     sbn.runtime         runtime
     sbn.storage         directory
     sbn.threads         threads
-    sbn.utility         utilities
 
 
 **MODULES**
