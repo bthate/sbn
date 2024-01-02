@@ -18,7 +18,7 @@ import _thread
 
 from ..defines import Default, Object, edit, fmt, keys
 from ..defines import Client, Command, Error, Event
-from ..defines import byorig, debug, last, launch, write
+from ..defines import byorig, debug, last, launch, sync
 
 
 Error.filter = ["PING", "PONG", "PRIVMSG"]
@@ -573,5 +573,5 @@ def cfg(event):
                    )
     else:
         edit(config, event.sets)
-        write(config, path)
+        sync(config, path)
         event.reply('ok')

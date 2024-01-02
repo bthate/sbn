@@ -9,7 +9,7 @@
 import time
 
 
-from ..defines import Object, find, fntime, laps, write
+from ..defines import Object, find, fntime, laps, sync
 
 
 class Log(Object):
@@ -31,5 +31,5 @@ def log(event):
         return
     obj = Log()
     obj.txt = event.rest
-    write(obj)
+    sync(obj)
     event.reply('ok')

@@ -10,6 +10,7 @@ import getpass
 import inspect
 import os
 import pwd
+import readline
 import sys
 import termios
 import time

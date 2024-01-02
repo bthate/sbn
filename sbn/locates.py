@@ -13,7 +13,7 @@ import time
 from .default import Default
 from .objects import fqn, items, update
 from .parsers import spl
-from .storage import Storage, ident, read
+from .storage import Storage, ident, fetch
 
 
 def __dir__():
@@ -35,7 +35,7 @@ def find(mtc, selector=None, index=None) -> []:
     nr = -1
     for fnm in sorted(Storage.fns(clz), key=fntime):
         obj = Default()
-        read(obj, fnm)
+        fetch(obj, fnm)
         if '__deleted__' in obj:
             continue
         if selector and not search(obj, selector):

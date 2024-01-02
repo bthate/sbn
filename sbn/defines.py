@@ -25,21 +25,17 @@ from .threads import *
 
 def __object__():
     return (
-            'Default',
             'Object',
             'construct',
-            'dump',
-            'dumps',
             'edit',
             'fmt',
             'fqn',
-            'ident',
             'items',
             'keys',
-            'load',
-            'loads',
+            'read',
             'update',
             'values',
+            'write'
            )
 
 
@@ -47,8 +43,11 @@ def __dir__():
     return (
         'Client',
         'Command',
+        'Default',
         'Error',
         'Event',
+        'Fleet',
+        'Repeater',
         'Storage',
         'byorig',
         'cdir',
@@ -60,8 +59,6 @@ def __dir__():
         'launch',
         'last',
         'parse_command',
-        'read',
         'sync',
-        'write',
         'Storage',
     ) + __object__()

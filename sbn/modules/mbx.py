@@ -11,7 +11,7 @@ import os
 import time
 
 
-from ..defines import Object, find, fmt, fntime, laps, write, update
+from ..defines import Object, find, fmt, fntime, laps, sync, update
 
 
 bdmonths = ['Bo', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -128,7 +128,7 @@ def mbx(event):
             if payload.get_content_type() == 'text/plain':
                 o.text += payload.get_payload()
         o.text = o.text.replace("\\n", "\n")
-        write(o)
+        sync(o)
         nr += 1
     if nr:
         event.reply("ok %s" % nr)

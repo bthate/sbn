@@ -10,7 +10,7 @@ import time
 
 
 from ..defines import Event, Fleet, Timer
-from ..defines import find, laps, launch, update, write
+from ..defines import find, laps, launch, update, sync
 from ..defines  import NoDate, today, to_day, get_day, get_hour
 
 
@@ -72,5 +72,5 @@ def tmr(event):
     event.result.append(event.rest)
     timer = Timer(diff, event.show)
     update(timer, event)
-    write(timer)
+    sync(timer)
     launch(timer.start)

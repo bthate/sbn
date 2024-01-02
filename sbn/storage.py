@@ -8,23 +8,24 @@
 
 import datetime
 import os
-import pathlib
 
 
-from .objects import Object, dump, fqn, load, update
-from .objects import read as fetch
-from .objects import write as sync
+from .objects import Object, cdir, fqn, read, write
 
 
 def __dir__():
     return (
         'Storage',
-        'read',
-        'write'
+        'fetch',
+        'sync'
     )
 
 
 __all__ = __dir__()
+
+
+def strip(pth, nmr=3) -> str:
+    return os.sep.join(pth.split(os.sep)[-nmr:])
 
 
 class Storage(Object):
@@ -86,28 +87,16 @@ def ident(obj) -> str:
                         os.path.join(*str(datetime.datetime.now()).split())
                        )
 
-def read(obj, pth) -> None:
+def fetch(obj, pth) -> None:
     pth2 = Storage.store(pth)
-    fetch(obj, pth2)
+    read(obj, pth2)
     return strip(pth)
 
 
-
-def write(obj, pth=None) -> str:
+def sync(obj, pth=None) -> str:
     if pth is None:
         pth = ident(obj)
     pth2 = Storage.store(pth)
-    sync(obj, pth2)
+    write(obj, pth2)
     return pth
 
-
-"utility"
-
-
-def cdir(pth) -> None:
-    pth = pathlib.Path(pth)
-    os.makedirs(pth, exist_ok=True)
-
-
-def strip(pth, nmr=3) -> str:
-    return os.sep.join(pth.split(os.sep)[-nmr:])

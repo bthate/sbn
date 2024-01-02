@@ -3,37 +3,7 @@
 # pylint: disable=C,R,E0603,E0402,W0401,W0614,W0611,W0622,W0105
 
 
-""" Objects Library.
-
-    OBJX provides all the tools to program a cli program, such as disk
-    perisistence for configuration files, event handler to handle the
-    client/server connection, code to introspect modules for commands,
-    deferred exception handling to not crash on an error, a parser to
-    parse commandline options and values, etc.
-
-    OBJX provides an objx namespace that allows for easy json save//load
-    to/from disk of objects. It provides an "clean namespace" Object class
-    that only has dunder methods, so the namespace is not cluttered with
-    method names. This makes storing and reading to/from json possible.
-
-    >>> from objx import Object, read, write
-    >>> o = Object()
-    >>> o.a = "b"
-    >>> write(o, "test")
-    >>> oo = Object()
-    >>> read(oo, "test")
-    >>> oo
-    {"a": "b"}  
-
-    OBJX provides a demo prgram, it can connect to IRC, fetch and
-    display RSS feeds, take todo notes, keep a shopping list
-    and log text. You can also copy/paste the service file and run
-    it under systemd for 24/7 presence in a IRC channel. See the 
-    MANUAL.rst file installed with this library.
-
-    OBJX is Public Domain.
-
-"""
+"objects."
 
 
 import pathlib
@@ -41,9 +11,6 @@ import json
 import os
 import time
 import _thread
-
-
-"defines"
 
 
 def __dir__():
@@ -75,20 +42,12 @@ def cdir(pth) -> None:
     os.makedirs(pth, exist_ok=True)
 
 
-
-"object"
-
-
 class Object:
 
 
     def __contains__(self, key):
         "see if attribute is available."
         return key in dir(self)
-
-    def __dir__(self):
-        "list of keys."
-        return __all__
 
     def __iter__(self):
         "iterate over attributes."
@@ -105,9 +64,6 @@ class Object:
     def __str__(self):
         "return python string."
         return str(self.__dict__)
-
-
-"decoder"
 
 
 class ObjectDecoder(json.JSONDecoder):
@@ -148,9 +104,6 @@ def loads(string, *args, **kw) -> Object:
     kw["cls"] = ObjectDecoder
     kw["object_hook"] = hook
     return json.loads(string, *args, **kw)
-
-
-"encoder"
 
 
 class ObjectEncoder(json.JSONEncoder):
