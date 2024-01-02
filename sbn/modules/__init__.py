@@ -12,7 +12,7 @@ import sys
 
 
 from . import cmd, dbg, err, fnd, irc, log, mbx, mdl, mod, mre, pwd, req
-from . import rss, rst, tdo, tmr, udp, wsd
+from . import rss, rst, tdo, thr, tmr, udp, wsd
 
 
 def __dir__():
