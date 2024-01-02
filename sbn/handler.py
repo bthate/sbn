@@ -8,10 +8,22 @@
 
 import queue
 import threading
+import _thread
 
 
-from .objects import Object
+from . import Object
+
+from .excepts import Error
 from .threads import launch
+
+
+def __dir__():
+    return (
+        'Handler',
+   ) 
+
+
+__all__ = __dir__()
 
 
 class Handler(Object):
@@ -28,7 +40,7 @@ class Handler(Object):
             evt.ready()
             return
         evt._thr = launch(func, evt)
-
+ 
     def loop(self) -> None:
         while not self.stopped.is_set():
             try:
@@ -50,4 +62,3 @@ class Handler(Object):
 
     def stop(self) -> None:
         self.stopped.set()
-

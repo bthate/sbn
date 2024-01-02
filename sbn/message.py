@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,R,W0201,W0212,W0105,W0613,W0406,E0102,W0611,W0718,W0125
@@ -12,6 +11,15 @@ import threading
 
 from .brokers import Fleet
 from .default import Default
+
+
+def __dir__():
+    return (
+        'Event',
+    )
+
+
+__all__ = __dir__()
 
 
 class Event(Default):
@@ -42,4 +50,3 @@ class Event(Default):
             self._thr.join()
         self._ready.wait()
         return self.result
-

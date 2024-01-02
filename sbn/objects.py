@@ -3,53 +3,109 @@
 # pylint: disable=C,R,E0603,E0402,W0401,W0614,W0611,W0622,W0105
 
 
-"a clean namespace"
+""" Objects Library.
+
+    OBJX provides all the tools to program a cli program, such as disk
+    perisistence for configuration files, event handler to handle the
+    client/server connection, code to introspect modules for commands,
+    deferred exception handling to not crash on an error, a parser to
+    parse commandline options and values, etc.
+
+    OBJX provides an objx namespace that allows for easy json save//load
+    to/from disk of objects. It provides an "clean namespace" Object class
+    that only has dunder methods, so the namespace is not cluttered with
+    method names. This makes storing and reading to/from json possible.
+
+    >>> from objx import Object, read, write
+    >>> o = Object()
+    >>> o.a = "b"
+    >>> write(o, "test")
+    >>> oo = Object()
+    >>> read(oo, "test")
+    >>> oo
+    {"a": "b"}  
+
+    OBJX provides a demo prgram, it can connect to IRC, fetch and
+    display RSS feeds, take todo notes, keep a shopping list
+    and log text. You can also copy/paste the service file and run
+    it under systemd for 24/7 presence in a IRC channel. See the 
+    MANUAL.rst file installed with this library.
+
+    OBJX is Public Domain.
+
+"""
 
 
-import datetime
+import pathlib
 import json
 import os
-import sys
+import time
+import _thread
+
+
+from .utility import cdir
+
+"defines"
 
 
 def __dir__():
     return (
-            'Object',
-            'construct',
-            'dump',
-            'dumps',
-            'edit',
-            'fmt',
-            'fqn',
-            'ident',
-            'items',
-            'keys',
-            'load',
-            'loads',
-            'update',
-            'values',
-           )
+        'Object',
+        'construct',
+        'edit',
+        'fmt',
+        'fqn',
+        'items',
+        'keys',
+        'read',
+        'update',
+        'values',
+        'write'
+    )
 
 
 __all__ = __dir__()
+
+
+lock = _thread.allocate_lock()
+
+
+def cdir(pth) -> None:
+    if os.path.exists(pth):
+        return
+    pth = pathlib.Path(pth)
+    os.makedirs(pth, exist_ok=True)
+
+
+
+"object"
 
 
 class Object:
 
 
     def __contains__(self, key):
+        "see if attribute is available."
         return key in dir(self)
 
+    def __dir__(self):
+        "list of keys."
+        return __all__
+
     def __iter__(self):
+        "iterate over attributes."
         return iter(self.__dict__)
 
     def __len__(self):
+        "return number of attributes."
         return len(self.__dict__)
 
     def __repr__(self):
+        "return json string."
         return dumps(self)
 
     def __str__(self):
+        "return python string."
         return str(self.__dict__)
 
 
@@ -58,17 +114,22 @@ class Object:
 
 class ObjectDecoder(json.JSONDecoder):
 
+    "decode from json string."
+
     def decode(self, s, _w=None):
+        "decode a json string."
         val = json.JSONDecoder.decode(self, s)
         if not val:
             val = {}
         return hook(val)
 
     def raw_decode(self, s, idx=0):
+        "decode raw text at index."
         return json.JSONDecoder.raw_decode(self, s, idx)
 
 
 def hook(objdict, typ=None) -> Object:
+    "construct with json data."
     if typ:
         obj = typ()
     else:
@@ -78,12 +139,14 @@ def hook(objdict, typ=None) -> Object:
 
 
 def load(fpt, *args, **kw) -> Object:
+    "load from disk."
     kw["cls"] = ObjectDecoder
     kw["object_hook"] = hook
     return json.load(fpt, *args, **kw)
 
 
 def loads(string, *args, **kw) -> Object:
+    "load from string."
     kw["cls"] = ObjectDecoder
     kw["object_hook"] = hook
     return json.loads(string, *args, **kw)
@@ -94,7 +157,10 @@ def loads(string, *args, **kw) -> Object:
 
 class ObjectEncoder(json.JSONEncoder):
 
+    "encode into a json string."
+
     def default(self, o) -> str:
+        "return json printable data."
         if isinstance(o, dict):
             return o.items()
         if isinstance(o, Object):
@@ -118,6 +184,7 @@ class ObjectEncoder(json.JSONEncoder):
             return object.__repr__(o)
 
     def encode(self, o) -> str:
+        "return json string."
         return json.JSONEncoder.encode(self, o)
 
     def iterencode(
@@ -125,15 +192,18 @@ class ObjectEncoder(json.JSONEncoder):
                    o,
                    _one_shot=False
                   ) -> str:
+        "piecemale encoding to string."
         return json.JSONEncoder.iterencode(self, o, _one_shot)
 
 
 def dump(*args, **kw) -> None:
+    "write to file."
     kw["cls"] = ObjectEncoder
     return json.dump(*args, **kw)
 
 
 def dumps(*args, **kw) -> str:
+    "write to string."
     kw["cls"] = ObjectEncoder
     return json.dumps(*args, **kw)
 
@@ -142,6 +212,7 @@ def dumps(*args, **kw) -> str:
 
 
 def construct(obj, *args, **kwargs) -> None:
+    "construct from another type."
     if args:
         val = args[0]
         if isinstance(val, zip):
@@ -155,6 +226,7 @@ def construct(obj, *args, **kwargs) -> None:
 
 
 def edit(obj, setter, skip=False) -> None:
+    "edit with a dict and it's values."
     for key, val in items(setter):
         if skip and val == "":
             continue
@@ -177,6 +249,7 @@ def edit(obj, setter, skip=False) -> None:
 
 
 def fmt(obj, args=None, skip=None, plain=False) -> str:
+    "key=value formatted string."
     if args is None:
         args = keys(obj)
     if skip is None:
@@ -200,31 +273,36 @@ def fmt(obj, args=None, skip=None, plain=False) -> str:
 
 
 def fqn(obj) -> str:
+    "full qualified name."
     kin = str(type(obj)).split()[-1][1:-2]
     if kin == "type":
         kin = obj.__name__
     return kin
 
 
-def ident(obj) -> str:
-    return os.path.join(
-                        fqn(obj),
-                        os.path.join(*str(datetime.datetime.now()).split())
-                       )
-
 def items(obj) -> []:
+    "return (key,value) list of object items."
     if isinstance(obj, type({})):
         return obj.items()
     return obj.__dict__.items()
 
 
 def keys(obj) -> []:
+    "list of attributes names."
     if isinstance(obj, type({})):
         return obj.keys()
     return list(obj.__dict__.keys())
 
 
+def read(obj, pth) -> None:
+    "locked read from path."
+    with lock:
+        with open(pth, 'r', encoding='utf-8') as ofile:
+            update(obj, load(ofile))
+
+
 def update(obj, data, empty=True) -> None:
+    "update attributes with a key/value dict."
     for key, value in items(data):
         if empty and not value:
             continue
@@ -232,4 +310,13 @@ def update(obj, data, empty=True) -> None:
 
 
 def values(obj) -> []:
+    "list of values."
     return obj.__dict__.values()
+
+
+def write(obj, pth) -> None:
+    "locked write to path."
+    with lock:
+        cdir(os.path.dirname(pth))
+        with open(pth, 'w', encoding='utf-8') as ofile:
+            dump(obj, ofile)

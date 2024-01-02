@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,R,W0201,W0212,W0105,W0613,W0406,E0102,W0611,W0718,W0125
@@ -7,14 +6,36 @@
 "threads"
 
 
+from multiprocessing.pool import ThreadPool
+from concurrent.futures import ThreadPoolExecutor
+
 import queue
 import threading
 import time
 import types
 
 
+from . import Object
+
+
 from .excepts import Error
-from .objects import Object
+
+
+def __dir__():
+    return (
+       'Repeater',
+       'Thread',
+       'Timer',
+       'launch',
+       'name',
+       'threaded'
+    )
+
+
+__all__ = __dir__()
+
+
+pool = ThreadPoolExecutor(6)
 
 
 class Thread(threading.Thread):
@@ -109,3 +130,14 @@ def name(obj) -> str:
     if '__name__' in dir(obj):
         return f'{obj.__class__.__name__}.{obj.__name__}'
     return None
+
+
+def submit(func, *args, **kwargs):
+    return pool.submit(func, *args, **kwargs)
+
+
+def threaded(func, *args):
+    """ threading decorator. """
+    def thrfunc(*args, **kwargs):
+        return launch(func, *args, kwargs)
+    return thrfunc

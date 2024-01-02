@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # This file is placed in the Public Domain.
 #
 # pylint: disable=C,R,W0201,W0212,W0105,W0613,W0406,E0102,W0611,W0718,W0125,E0401
@@ -17,15 +16,35 @@ import time
 import _thread
 
 
+from . import Object
+
+
 from .clients import Client
 from .command import Command
 from .default import Default
 from .excepts import Error, debug
 from .message import Event
-from .objects import Object
 from .parsers import parse_command, spl
 from .storage import Storage, cdir
 from .threads import launch
+
+
+def __dir__():
+    return (
+        'Cfg',
+        'Console',
+        'cmnd',
+        'daemon',
+        'forever',
+        'main',
+        'privileges',
+        'scan',
+        'wrap',
+        'wrapped'
+    )
+
+
+__all__ = __dir__()
 
 
 Cfg         = Default()
@@ -35,9 +54,7 @@ Cfg.version = "81"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
 Cfg.user    = getpass.getuser()
-
-
-Storage.wd   = Cfg.wd
+Storage.wd  = Cfg.wd
 
 
 from . import modules

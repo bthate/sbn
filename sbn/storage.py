@@ -9,10 +9,11 @@
 import datetime
 import os
 import pathlib
-import _thread
 
 
-from .objects import Object, dump, fqn, load, update
+from . import Object, dump, fqn, load, update
+from . import read as fetch
+from . import write as sync
 
 
 def __dir__():
@@ -24,9 +25,6 @@ def __dir__():
 
 
 __all__ = __dir__()
-
-
-lock = _thread.allocate_lock()
 
 
 class Storage(Object):
@@ -82,12 +80,6 @@ class Storage(Object):
         return os.listdir(Storage.store())
 
 
-def fetch(obj, pth) -> None:
-    with lock:
-        with open(pth, 'r', encoding='utf-8') as ofile:
-            update(obj, load(ofile))
-
-
 def ident(obj) -> str:
     return os.path.join(
                         fqn(obj),
@@ -100,19 +92,13 @@ def read(obj, pth) -> None:
     return strip(pth)
 
 
+
 def write(obj, pth=None) -> str:
     if pth is None:
         pth = ident(obj)
     pth2 = Storage.store(pth)
     sync(obj, pth2)
     return pth
-
-
-def sync(obj, pth) -> None:
-    with lock:
-        cdir(os.path.dirname(pth))
-        with open(pth, 'w', encoding='utf-8') as ofile:
-            dump(obj, ofile)
 
 
 "utility"
@@ -125,4 +111,3 @@ def cdir(pth) -> None:
 
 def strip(pth, nmr=3) -> str:
     return os.sep.join(pth.split(os.sep)[-nmr:])
-

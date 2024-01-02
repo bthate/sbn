@@ -1,9 +1,15 @@
 # This file is placed in the Public Domain.
 #
+# pylint: disable=C,R,E0603,E0402,W0401,W0614,W0611,W0622,W0105
+# This file is placed in the Public Domain.
+#
 # pylint: disable=E0603,E0402,W0401,W0614,W0611,W0622
 
 
-"package"
+"specification"
+
+
+from . import *
 
 
 from .brokers import *
@@ -14,7 +20,6 @@ from .excepts import *
 from .handler import *
 from .locates import *
 from .message import *
-from .objects import *
 from .parsers import *
 from .storage import *
 from .threads import *
@@ -62,6 +67,3 @@ def __dir__():
         'write',
         'Storage',
     ) + __object__()
-
-
-__all__ = __dir__()
