@@ -13,7 +13,7 @@ NAME
 
 ::
 
-    SBN - Skull, Bones and Number (OTP-CR-117/19)
+    SBN - Skull, Bones and Number
 
 
 SYNOPSIS
@@ -30,19 +30,30 @@ DESCRIPTION
 ::
 
 
-    SBN holds evidence that king netherlands is doing a genocide, a
-    written response where king netherlands confirmed taking note of 
-    “what i have written”, namely proof that medicine he uses in
-    treatement laws like zyprexa, haldol, abilify and clozapine are
-    poison that make impotent, is both physical (contracted muscles)
-    and mental (make people hallucinate) torture and kills members
-    of the victim groups. 
+    SBN holds evidence that king
+    netherlands is doing a genocide, a
+    written response where king
+    netherlands confirmed taking note
+    of “what i have written”, namely
+    proof that medicine he uses in
+    treatement laws like zyprexa,
+    haldol, abilify and clozapine are
+    poison that make impotent, is both
+    physical (contracted muscles) and
+    mental (make people hallucinate)
+    torture and kills members of the
+    victim groups. 
 
-    SBN contains correspondence with the International Criminal Court,
-    asking for arrest of the king of the netherlands, for the genocide
-    he is committing with his new treatement laws. Current status is
-    "no basis to proceed" judgement of the prosecutor which requires a
-    "basis to prosecute" to have the king actually arrested.
+    SBN contains correspondence with
+    the International Criminal Court,
+    asking for arrest of the king of
+    the netherlands, for the genocide
+    he iscommitting with his new
+    treatement laws. Current status
+    is "no basis to proceed" judgement
+    of the prosecutor which requires
+    a "basis to prosecute" to have the
+    king actually arrested.
 
 
 INSTALL
@@ -57,7 +68,8 @@ USAGE
 
 ::
 
-    without any argument the bot does nothing
+    without any argument the bot does
+    nothing
 
     $ sbn
     $
@@ -70,10 +82,10 @@ USAGE
     list of modules
 
     $ sbn mod
-    cmd,err,fnd,irc,log,mod,req,rss,tdo,thr
+    cmd,err,mod,req,thr
 
-    use mod=<name1,name2> to load additional
-    modules
+    use mod=<name1,name2> to load
+    additional modules
 
     $ sbn cfg mod=irc
 
@@ -85,12 +97,12 @@ USAGE
     use -v for verbose
 
     $ sbn -cv mod=irc
-    SBN started CV started Sat Dec 2 17:53:24 2023
+    SBN started CV started Sat Dec 2
     >
 
     start daemon
 
-    $ sbnd
+    $ sbn -d mod=irc,rss,mdl
     $ 
 
     show request to the prosecutor
@@ -152,20 +164,24 @@ SYSTEMD
 
 ::
 
-    replace "<user>" with the user running pipx
+    save the following it in
+    /etc/systems/system/sbn.service
+    and replace "<user>" with the
+    user running pipx
 
 
     [Unit]
-    Description=Skull, Bones and Number (OTP-CR-117/19)
+    Description=Skull, Bones and Number
     Requires=network.target
     After=network.target
 
     [Service]
     Type=simple
-    User=<user>
-    Group=<user>
-    WorkingDirectory=/home/<user>/.sbn
-    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
+
+    User=bart
+    Group=bart
+    WorkingDirectory=/home/bart/.sbn
+    ExecStart=/home/bart/.local/pipx/venvs/sbn/bin/sbnd
 
     [Install]
     WantedBy=multi-user.target

@@ -34,6 +34,7 @@ def __dir__():
         'Console',
         'cmnd',
         'daemon',
+        'daemoned',
         'forever',
         'main',
         'privileges',
@@ -197,6 +198,12 @@ def wrap(func) -> None:
     finally:
         if old2:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old2)
+
+
+def daemoned():
+    Cfg.opts += "d"
+    Cfg.mod += ",log,irc,rss,mdl"
+    main()
 
 
 def wrapped():
