@@ -36,6 +36,7 @@ lock = _thread.allocate_lock()
 
 
 def cdir(pth) -> None:
+    " create directory "
     if os.path.exists(pth):
         return
     pth = pathlib.Path(pth)
@@ -44,6 +45,7 @@ def cdir(pth) -> None:
 
 class Object:
 
+    "a no methods base class to provide a clean namespace."
 
     def __contains__(self, key):
         "see if attribute is available."

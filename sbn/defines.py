@@ -15,7 +15,6 @@ from .command import *
 from .default import *
 from .excepts import *
 from .handler import *
-from .locates import *
 from .message import *
 from .objects import *
 from .parsers import *
