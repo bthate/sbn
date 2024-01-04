@@ -20,7 +20,7 @@ from urllib.parse import quote_plus, urlencode
 
 from ..defines import Default, Object, fmt, update
 from ..defines import Fleet, Repeater
-from ..defines import fntime, fetch, find, launch, laps, last, sync
+from ..defines import fntime, find, launch, laps, last, sync
 
 
 def init():
