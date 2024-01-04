@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,E0603,E0402,W0401,W0614,W0611,W0622,W0105
-# This file is placed in the Public Domain.
-#
-# pylint: disable=E0603,E0402,W0401,W0614,W0611,W0622
+# pylint: disable=C,R,W0401,E0402
 
 
 "specification"

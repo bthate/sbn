@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0612.W0702
+# pylint: disable=C,R,W0612.W0702,E0402
 
 
 "timer"
@@ -11,7 +11,7 @@ import time
 
 from ..defines import Event, Fleet, Timer
 from ..defines import find, laps, launch, update, sync
-from ..defines  import NoDate, today, to_day, get_day, get_hour
+from ..defines import NoDate, today, to_day, get_day, get_hour
 
 
 def init():

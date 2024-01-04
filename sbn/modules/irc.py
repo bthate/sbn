@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,E1101,W0105,W0718,W0612,E0611
+# pylint: disable=C,R,W0105,W0612,W0718,E0402
 
 
 "internet relay chat"

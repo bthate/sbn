@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,E0603,E0402,W0401,W0614,W0611,W0622,W0105
+# pylint: disable=C,R,W0105
 
 
 """an object with a clean namespace
@@ -29,7 +29,6 @@ basic usage is:
 import pathlib
 import json
 import os
-import time
 import _thread
 
 
