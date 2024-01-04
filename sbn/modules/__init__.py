@@ -6,13 +6,12 @@
 "modules"
 
 
-import importlib
 import os
 import sys
 
 
 from . import cmd, dbg, err, fnd, irc, log, mbx, mdl, mod, mre, pwd, req
-from . import rss, rst, tdo, thr, tmr, udp, wsd
+from . import rss, tdo, thr, tmr, wsd
 
 
 def __dir__():
@@ -29,11 +28,9 @@ def __dir__():
         'pwd',
         'req',
         'rss',
-        'rst',
         'tdo',
         'thr',
         'tmr',
-        'udp',
         'wsd'
     )
 

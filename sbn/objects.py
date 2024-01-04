@@ -16,6 +16,7 @@ import _thread
 def __dir__():
     return (
         'Object',
+        'cdir',
         'construct',
         'edit',
         'fmt',
