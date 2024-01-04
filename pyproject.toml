@@ -40,6 +40,9 @@ packages = [
    "sbn",
    "sbn.modules",
 ]
+script-files = [
+   "bin/sbn",
+]
 zip-safe = true
 
 
