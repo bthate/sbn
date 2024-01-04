@@ -140,6 +140,7 @@ SYSTEMD
 
 ::
 
+    save the following it in /etc/systems/system/sbn.service and
     replace "<user>" with the user running pipx
 
 
@@ -153,7 +154,7 @@ SYSTEMD
     User=<user>
     Group=<user>
     WorkingDirectory=/home/<user>/.sbn
-    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbn -d mod=irc,log,rss
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
     RemainAfterExit=yes
 
     [Install]
