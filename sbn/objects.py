@@ -3,7 +3,27 @@
 # pylint: disable=C,R,E0603,E0402,W0401,W0614,W0611,W0622,W0105
 
 
-"objects."
+"""an object with a clean namespace
+
+This module provides an Object class and it's json encoder/decoder.
+A locked read and write method is provides as well as basic dict methods
+put in as function with the object as the first argument. This provides an 
+object with a, no methods, clean namespace to inherit from.
+
+
+basic usage is:
+
+   >>> from objects import Object, read, write
+   >>> o = Object()
+   >>> o.a = "b"
+   >>> write(o, "test")
+   >>> oo = Object()
+   >>> read(oo, "test")
+   >>> oo
+   {"a": "b"}  
+
+
+"""
 
 
 import pathlib

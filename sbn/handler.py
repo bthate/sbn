@@ -3,7 +3,15 @@
 # pylint: disable=C,R,W0201,W0212,W0105,W0613,W0406,E0102,W0611,W0718,W0125
 
 
-"event handler"
+"""event handler
+
+This event handler uses callbacks to react to events put to the handler.
+Every callback gets run in it's own thread just to escape the "it must not
+block" problem async coding delivers. It does deferred exception handling to
+not have the main loop exiting on an raised exception and uses a bus (called
+ fleet) to do the output to.
+
+"""
 
 
 import queue

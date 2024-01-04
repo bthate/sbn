@@ -24,7 +24,7 @@ from sbn.defines import cdir, launch, spl
 Cfg         = Default()
 Cfg.mod     = "cmd,err,irc,log,mdl,mod,mre,pwd,rss,thr"
 Cfg.name    = "sbn"
-Cfg.version = "81"
+Cfg.version = "90"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
 Cfg.user    = getpass.getuser()
