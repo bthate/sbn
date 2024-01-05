@@ -9,7 +9,6 @@
 from .brokers import *
 from .clients import *
 from .command import *
-from .default import *
 from .excepts import *
 from .handler import *
 from .objects import *
@@ -20,6 +19,7 @@ from .threads import *
 
 def __object__():
     return (
+            'Default',
             'Object',
             'construct',
             'edit',
@@ -38,7 +38,6 @@ def __dir__():
     return (
         'Client',
         'Command',
-        'Default',
         'Error',
         'Event',
         'Fleet',

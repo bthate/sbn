@@ -34,6 +34,7 @@ import _thread
 
 def __dir__():
     return (
+        'Default',
         'Object',
         'cdir',
         'construct',
@@ -86,6 +87,20 @@ class Object:
     def __str__(self):
         "return python string."
         return str(self.__dict__)
+
+
+class Default(Object):
+
+    "default values"
+
+    __slots__ = ("__default__",)
+
+    def __init__(self):
+        Object.__init__(self)
+        self.__default__ = ""
+
+    def __getattr__(self, key):
+        return self.__dict__.get(key, self.__default__)
 
 
 class ObjectDecoder(json.JSONDecoder):

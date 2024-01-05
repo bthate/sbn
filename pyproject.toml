@@ -20,6 +20,13 @@ classifiers=[
     'Topic :: Utilities'
 ]
 
+[project.optional-dependencies]
+dev = []
+
+[project.scripts]
+sbn = "sbn.__main__:wrapped"
+sbnd = "sbn.__main__:daemoned"
+
 
 [project.urls]
 "home" = "https://pypi.org/project/sbn"
@@ -27,8 +34,6 @@ classifiers=[
 "source" = "https://github.com/bthate/sbn"
 
 
-[project.optional-dependencies]
-dev = []
 
 
 [tool.setuptools]

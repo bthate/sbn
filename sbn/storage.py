@@ -11,8 +11,7 @@ import os
 import time
 
 
-from .default import Default
-from .objects import Object, cdir, fqn, items, read, update, write
+from .objects import Default, Object, cdir, fqn, items, read, update, write
 from .parsers import spl
 
 
