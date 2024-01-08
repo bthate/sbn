@@ -1,8 +1,5 @@
 .. _home:
 
-.. raw:: html
-
-    <br>
 
 .. title:: Home
 
@@ -12,11 +9,6 @@
 | **Post Office Box 19519**
 | **2500 CM The Hague**
 | **The Netherlands**
-
-
-.. raw:: html
-
-    <br>
 
 
 Hello Office of the Prosecutor,

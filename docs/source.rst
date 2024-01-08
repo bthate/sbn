@@ -10,6 +10,7 @@
 
 **Skull, Bones and Number (OTP-CR-117/19)**
 
+
 .. raw:: html
 
      <br>
@@ -22,15 +23,12 @@
     sbn.brokers		list of bots
     sbn.clients         clients
     sbn.command		commands
-    sbn.default         default values
+    sbn.defines         specification
     sbn.excepts		exceptions
     sbn.handler         handler
-    sbn.locates         find objects
-    sbn.message         event
     sbn.modules         usercode
     sbn.objects         clean namespace
     sbn.parsers         parse cli
-    sbn.runtime         runtime
     sbn.storage         directory
     sbn.threads         threads
 

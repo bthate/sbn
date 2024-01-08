@@ -3,13 +3,14 @@
 # pylint: disable=C,R,W0212,E0402
 
 
-"""event handler
+"""
+event handler
 
 This event handler uses callbacks to react to events put to the handler.
 Every callback gets run in it's own thread just to escape the "it must not
 block" problem async coding delivers. It does deferred exception handling to
 not have the main loop exiting on an raised exception and uses a bus (called
- fleet) to do the output to.
+fleet) to do the output to.
 
 """
 
@@ -32,7 +33,6 @@ def __dir__():
 
 
 __all__ = __dir__()
-
 
 
 class Handler(Object):

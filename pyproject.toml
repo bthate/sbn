@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "90"
+version = "91"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -34,16 +34,10 @@ sbnd = "sbn.__main__:daemoned"
 "source" = "https://github.com/bthate/sbn"
 
 
-
-
 [tool.setuptools]
 packages = [
    "sbn",
-   "sbn.modules",
-]
-script-files = [
-   "bin/sbn",
-   "bin/sbnd"
+   "sbn.modules"
 ]
 zip-safe = true
 
@@ -51,6 +45,7 @@ zip-safe = true
 [tool.setuptools.data-files]
 "share/doc/sbn" = [
     "docs/about.rst",
+    "docs/arrest.png",
     "docs/conf.py",
     "docs/ECHAhaldol.png",
     "docs/evidence.rst",
