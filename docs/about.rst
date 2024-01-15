@@ -1,10 +1,6 @@
 .. _about:
 
 
-.. raw:: html
-
-    <br>
-
 .. title:: About
 
 
@@ -27,11 +23,9 @@
     </center>
     <br>
 
-
 .. image:: skull3.png
     :width: 100%
     :target: verbatim.html
-
 
 .. raw:: html
 
