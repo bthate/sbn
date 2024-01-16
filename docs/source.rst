@@ -3,7 +3,7 @@
 
 .. raw:: html
 
-     <br>
+     <br><br>
 
 .. title:: Source
 
@@ -23,17 +23,15 @@
     sbn.brokers		list of bots
     sbn.clients         clients
     sbn.command		commands
-    sbn.defines         specification
     sbn.excepts		exceptions
     sbn.handler         handler
-    sbn.modules         usercode
     sbn.objects         clean namespace
     sbn.parsers         parse cli
     sbn.storage         directory
     sbn.threads         threads
 
 
-**MODULES**
+**Modules**
 
 
 .. raw:: html

@@ -1,5 +1,6 @@
 .. _{{ fullname }}:
 
+
 .. raw:: html
 
     <br>
@@ -9,13 +10,13 @@
 .. raw:: html
 
     <center>
-    <h3>
+    <h2>
 
 {{ fullname }}
 
 .. raw:: html
 
-    </h3>
+    </h2>
     </center>
 
 .. auto{{ objtype }}:: {{ fullname }}

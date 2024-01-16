@@ -9,23 +9,22 @@
 .. title:: Manual
 
 
-NAME
+**NAME**
 
 ::
 
-    SBN - Skull, Bones and Number
+    SBN - Skull, Bones and Number (OTP-CR-117/19)
 
 
-SYNOPSIS
+**SYNOPSIS**
 
 ::
 
-    sbn <cmd> [key=val] 
-    sbn <cmd> [key==val]
-    sbn [-c] [-v]
+    sbn <cmd> [key=val] [key==val]
+    sbn [-a] [-c] [-d] [-v]
 
 
-DESCRIPTION
+**DESCRIPTION**
 
 ::
 
@@ -56,7 +55,7 @@ DESCRIPTION
     king actually arrested.
 
 
-INSTALL
+**INSTALL**
 
 
 ::
@@ -64,7 +63,7 @@ INSTALL
     $ pipx install sbn
 
 
-USAGE
+**USAGE**
 
 ::
 
@@ -115,7 +114,7 @@ USAGE
     The Netherlands
     
 
-CONFIGURATION
+**CONFIGURATION**
 
 
 ::
@@ -139,7 +138,7 @@ CONFIGURATION
     $ sbn nme <url< <name>
 
 
-COMMANDS
+**COMMANDS**
 
 
 ::
@@ -159,7 +158,7 @@ COMMANDS
     thr - show the running threads
 
 
-SYSTEMD
+**SYSTEMD**
 
 
 ::
@@ -171,17 +170,17 @@ SYSTEMD
 
 
     [Unit]
-    Description=Skull, Bones and Number
+    Description=Skull, Bones and Number (OTP-CR-117/19)
     Requires=network.target
     After=network.target
 
     [Service]
     Type=simple
-
-    User=bart
-    Group=bart
-    WorkingDirectory=/home/bart/.sbn
-    ExecStart=/home/bart/.local/pipx/venvs/sbn/bin/sbnd
+    User=<user>
+    Group=<user>
+    WorkingDirectory=/home/<user>/.sbn
+    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
+    RemainAfterExit=yes
 
     [Install]
     WantedBy=multi-user.target
@@ -195,15 +194,17 @@ SYSTEMD
     default channel/server is #sbn on localhost
 
 
-FILES
+**FILES**
 
 ::
 
+    ~/.sbn
     ~/.local/bin/sbn
+    ~/.local/bin/sbnd
     ~/.local/pipx/venvs/sbn/
 
 
-AUTHOR
+**AUTHOR**
 
 
 ::
@@ -211,7 +212,7 @@ AUTHOR
     Bart Thate <bthate@dds.nl>
 
 
-COPYRIGHT
+**COPYRIGHT**
 
 
 ::

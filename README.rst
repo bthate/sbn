@@ -9,9 +9,8 @@ SYNOPSIS
 
 ::
 
-    sbn <cmd> [key=val] 
-    sbn <cmd> [key==val]
-    sbn [-c] [-v]
+    sbn <cmd> [key=val] [key==val]
+    sbn [-a] [-c] [-d] [-v]
 
 
 DESCRIPTION
@@ -173,7 +172,9 @@ FILES
 
 ::
 
+    ~/.sbn
     ~/.local/bin/sbn
+    ~/.local/bin/sbnd
     ~/.local/pipx/venvs/sbn/
 
 
