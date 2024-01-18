@@ -17,8 +17,11 @@ import time
 import _thread
 
 
-from sbn.defines import Client, Command, Default, Error, Event, Object, Storage
-from sbn.defines import cdir, debug, launch, parse_command, spl
+sys.path.insert(0, ".")
+
+
+from . import Client, Command, Default, Error, Event, Object, Storage
+from . import cdir, debug, launch, parse_command, spl
 
 
 def __dir__():
@@ -41,9 +44,8 @@ __all__ = __dir__()
 
 
 Cfg         = Default()
-Cfg.mod     = "cmd,err,mod,mre,pwd,thr"
+Cfg.mod     = "cmd,irc,mdl,mre,pwd,rss"
 Cfg.name    = "sbn"
-Cfg.version = "90"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
 Cfg.user    = getpass.getuser()
@@ -106,6 +108,13 @@ def daemon(pidfile, verbose=False):
         fds.write(str(os.getpid()))
 
 
+def daemoned():
+    daemon(Cfg.pidfile)
+    privileges(Cfg.user)
+    scan(modules, Cfg.mod, True)
+    forever()
+
+
 def forever():
     while 1:
         try:
@@ -151,23 +160,7 @@ def main():
         dte = time.ctime(time.time()).replace("  ", " ")
         debug(f"{Cfg.name.upper()} started {Cfg.opts.upper()} started {dte}")
     if "d" in Cfg.opts:
-        daemon(Cfg.pidfile)
-        moddir = os.path.join(Storage.wd, "mods")
-        if os.path.exists(moddir) and "m" in Cfg.opts:
-            sys.path.insert(0, os.path.dirname(moddir))
-            import mods
-            if "a" in Cfg.opts:
-                Cfg.mod += "," +  ",".join(mods.__dir__())
-            scan(mods, Cfg.mod, True)
-        privileges(Cfg.user)
-        scan(modules, Cfg.mod, True)
-        forever()
-        return
-    if os.path.exists("mods") and "m" in Cfg.opts:
-        import mods
-        if "a" in Cfg.opts:
-            Cfg.mod += "," +  ",".join(mods.__dir__())
-        scan(mods, Cfg.mod)
+        daemoned()
     csl = Console()
     if "c" in Cfg.opts:
         scan(modules, Cfg.mod, True, True)
@@ -191,12 +184,6 @@ def wrap(func) -> None:
     finally:
         if old2:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old2)
-
-
-def daemoned():
-    Cfg.opts += "d"
-    Cfg.mod += ",log,irc,rss,mdl"
-    main()
 
 
 def wrapped():

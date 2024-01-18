@@ -9,9 +9,9 @@
 import time
 
 
-from ..defines import Event, Fleet, Timer
-from ..defines import find, laps, launch, update, sync
-from ..defines import NoDate, today, to_day, get_day, get_hour
+from .. import Event, Fleet, Timer
+from .. import find, laps, launch, update, sync
+from .. import NoDate, today, to_day, get_day, get_hour
 
 
 def init():

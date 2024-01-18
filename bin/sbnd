@@ -1,1 +1,1 @@
-python3 -m sbn -d mod=irc,rss,mdl,log
+python3 -m sbn -d

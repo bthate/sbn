@@ -75,6 +75,10 @@ USAGE
     SBN started CV started Sat Dec 2 17:53:24 2023
     >
 
+    use -a to start all modules
+
+    > sbn -ca
+
     start daemon
 
     $ sbn -d mod=irc,rss

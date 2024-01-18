@@ -6,7 +6,7 @@
 "list of commands"
 
 
-from ..defines import Command
+from .. import Command
 
 
 def cmd(event):
