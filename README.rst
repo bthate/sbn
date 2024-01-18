@@ -118,17 +118,11 @@ COMMANDS
 
     cfg - irc configuration
     cmd - commands
-    dlt - remove a user
-    dpl - sets display items
-    fnd - find objects 
-    log - log some text
-    met - add a user
     mre - displays cached output
+    now - show genocide stats
     pwd - sasl nickserv name/pass
-    rem - removes a rss feed
     req - reconsider
-    rss - add a feed
-    thr - show the running threads
+    wsd - show wisdom
 
 
 SYSTEMD
@@ -142,8 +136,8 @@ SYSTEMD
 
     [Unit]
     Description=Skull, Bones and Number (OTP-CR-117/19)
-    Requires=network.target
-    After=network.target
+    Requires=network-online.target
+    After=network-online.target
 
     [Service]
     Type=simple
@@ -180,7 +174,7 @@ AUTHOR
 
 ::
 
-    Bart Thate <bthate@dds.nl>
+    OTP-CR-117/19 <skullbonesandnumber@gmail.com>
 
 
 COPYRIGHT
