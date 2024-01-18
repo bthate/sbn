@@ -11,9 +11,15 @@
 
 **NAME**
 
+    **SBN** - Skull, Bones and Number (OTP-CR-117/19)
+
+
+**INSTALL**
+
+
 ::
 
-    SBN - Skull, Bones and Number (OTP-CR-117/19)
+    $ pipx install sbn
 
 
 **SYNOPSIS**
@@ -26,10 +32,7 @@
 
 **DESCRIPTION**
 
-::
-
-
-    SBN holds evidence that king
+    **SBN** holds evidence that king
     netherlands is doing a genocide, a
     written response where king
     netherlands confirmed taking note
@@ -43,7 +46,7 @@
     torture and kills members of the
     victim groups. 
 
-    SBN contains correspondence with
+    **SBN** contains correspondence with
     the International Criminal Court,
     asking for arrest of the king of
     the netherlands, for the genocide
@@ -55,166 +58,158 @@
     king actually arrested.
 
 
-**INSTALL**
-
-
-::
-
-    $ pipx install sbn
-
-
 **USAGE**
 
-::
+    without any argument the bot does nothing
 
-    without any argument the bot does
-    nothing
+    ::
 
-    $ sbn
-    $
+        $ sbn
+        $
 
     see list of commands
 
-    $ sbn cmd
-    cmd,err,mod,req,thr,ver
+    ::
 
-    list of modules
+        $ sbn cmd
+        cfg,cmd,mre,now,pwd
 
-    $ sbn mod
-    cmd,err,mod,req,thr
-
-    use mod=<name1,name2> to load
-    additional modules
-
-    $ sbn cfg mod=irc
 
     start a console
 
-    $ sbn -c mod=irc,rss
-    >
+    ::
+
+        $ sbn -c 
+        >
 
     use -v for verbose
 
-    $ sbn -cv mod=irc
-    SBN started CV started Sat Dec 2
-    >
+    ::
+
+        $ sbn -cv
+        SBN started CV started Sat Dec 2 17:53:24 2023
+        >
 
     start daemon
 
-    $ sbn -d mod=irc,rss,mdl
-    $ 
+    ::
+
+        $ sbnd
+        $ 
+
 
     show request to the prosecutor
 
-    $ sbn req
-    Information and Evidence Unit
-    Office of the Prosecutor
-    Post Office Box 19519
-    2500 CM The Hague
-    The Netherlands
+    ::
+
+        $ sbn req
+        Information and Evidence Unit
+        Office of the Prosecutor
+        Post Office Box 19519
+        2500 CM The Hague
+        The Netherlands
+
+    show how many died in the WvGGZ
+
+    ::
+
+        $ sbn now
+        4y18d patient #47324 died from mental illness (14/32/11682) every 44m59s
     
 
 **CONFIGURATION**
 
-
-::
-
     irc
 
-    $ sbn cfg server=<server>
-    $ sbn cfg channel=<channel>
-    $ sbn cfg nick=<nick>
+    ::
+
+        $ sbn cfg server=<server>
+        $ sbn cfg channel=<channel>
+        $ sbn cfg nick=<nick>
 
     sasl
 
-    $ sbn pwd <nsvnick> <nspass>
-    $ sbn cfg password=<frompwd>
+    ::
 
-     rss
+        $ sbn pwd <nsvnick> <nspass>
+        $ sbn cfg password=<frompwd>
 
-    $ sbn rss <url>
-    $ sbn dpl <url> <item1,item2>
-    $ sbn rem <url>
-    $ sbn nme <url< <name>
+    rss
+
+    ::
+
+        $ sbn rss <url>
+        $ sbn dpl <url> <item1,item2>
+        $ sbn rem <url>
+        $ sbn nme <url> <name>
 
 
 **COMMANDS**
 
+    ::
 
-::
-
-    cmd - commands
-    cfg - irc configuration
-    dlt - remove a user
-    dpl - sets display items
-    fnd - find objects 
-    log - log some text
-    met - add a user
-    mre - displays cached output
-    pwd - sasl nickserv name/pass
-    rem - removes a rss feed
-    req - reconsider
-    rss - add a feed
-    thr - show the running threads
+        cfg - irc configuration
+        cmd - commands
+        mre - displays cached output
+        now - show genocide stats
+        pwd - sasl nickserv name/pass
+        req - reconsider
+        wsd - show wisdom
 
 
 **SYSTEMD**
 
+    save the following it in /etc/systems/system/sbn.service
+    and replace "<user>" with the user running pipx
 
-::
+    ::
+ 
+        [Unit]
+        Description=Skull, Bones and Number (OTP-CR-117/19)
+        Requires=network-online.target
+        After=network-online.target
 
-    save the following it in
-    /etc/systems/system/sbn.service
-    and replace "<user>" with the
-    user running pipx
+        [Service]
+        Type=simple
+        User=<user>
+        Group=<user>
+        WorkingDirectory=/home/<user>/.sbn
+        ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
+        RemainAfterExit=yes
 
-
-    [Unit]
-    Description=Skull, Bones and Number (OTP-CR-117/19)
-    Requires=network.target
-    After=network.target
-
-    [Service]
-    Type=simple
-    User=<user>
-    Group=<user>
-    WorkingDirectory=/home/<user>/.sbn
-    ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
-    RemainAfterExit=yes
-
-    [Install]
-    WantedBy=multi-user.target
+        [Install]
+        WantedBy=multi-user.target
 
 
     then run this
 
-    $ mkdir ~/.sbn
-    $ sudo systemctl enable sbn --now
+    ::
+
+        $ mkdir ~/.sbn
+        $ sudo systemctl enable sbn --now
 
     default channel/server is #sbn on localhost
 
 
 **FILES**
 
-::
+    ::
 
-    ~/.sbn
-    ~/.local/bin/sbn
-    ~/.local/bin/sbnd
-    ~/.local/pipx/venvs/sbn/
+        ~/.sbn
+        ~/.local/bin/sbn
+        ~/.local/bin/sbnd
+        ~/.local/pipx/venvs/sbn/
 
 
 **AUTHOR**
 
+    ::
 
-::
-
-    Bart Thate <bthate@dds.nl>
+        OTP-CR-117/19  <skullbonesandnumber@gmail.com>
 
 
 **COPYRIGHT**
 
+    ::
 
-::
-
-    SBN is Public Domain.
+        SBN is Public Domain.
