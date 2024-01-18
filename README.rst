@@ -52,36 +52,24 @@ USAGE
     see list of commands
 
     $ sbn cmd
-    cmd,err,mod,req,thr,ver
+    cfg,cmd,mre,now,pwd
 
-    list of modules
-
-    $ sbn mod
-    cmd,err,fnd,irc,log,mod,req,rss,tdo,thr
-
-    use mod=<name1,name2> to load additional
-    modules
-
-    $ sbn cfg mod=irc
+    $ sbn cfg
 
     start a console
 
-    $ sbn -c mod=irc,rss
+    $ sbn -c 
     >
 
     use -v for verbose
 
-    $ sbn -cv mod=irc
+    $ sbn -cv
     SBN started CV started Sat Dec 2 17:53:24 2023
     >
 
-    use -a to start all modules
-
-    > sbn -ca
-
     start daemon
 
-    $ sbn -d mod=irc,rss
+    $ sbnd
     $ 
 
     show request to the prosecutor
@@ -92,7 +80,12 @@ USAGE
     Post Office Box 19519
     2500 CM The Hague
     The Netherlands
-    
+
+    show how many died in the WvGGZ
+
+    $ sbn now
+    4y18d patient #47324 died from mental illness (14/32/11682) every 44m59s
+     
 
 CONFIGURATION
 
