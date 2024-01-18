@@ -137,7 +137,7 @@ class Output():
     @staticmethod
     def size(chan):
         if chan in Output.cache:
-            return len(Output.cache.get(chan, []))
+            return len(getattr(Output.cache, chan, []))
         return 0
 
 
