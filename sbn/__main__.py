@@ -44,7 +44,7 @@ __all__ = __dir__()
 
 
 Cfg         = Default()
-Cfg.mod     = "cmd,irc,mdl,mre,pwd,req,rss"
+Cfg.mod     = "cmd,irc,log,mdl,mod,mre,pwd,req,rss,tdo,thr"
 Cfg.name    = "sbn"
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")

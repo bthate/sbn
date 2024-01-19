@@ -37,8 +37,8 @@
     written response where king
     netherlands confirmed taking note
     of “what i have written”, namely
-    proof that medicine he uses in
-    treatement laws like zyprexa,
+    :ref:`proof  <evidence>` that medicine
+    he uses in treatement laws like zyprexa,
     haldol, abilify and clozapine are
     poison that make impotent, is both
     physical (contracted muscles) and
@@ -46,16 +46,17 @@
     torture and kills members of the
     victim groups. 
 
-    **SBN** contains correspondence with
-    the International Criminal Court,
+    **SBN** contains :ref:`correspondence <writings>`
+    with the International Criminal Court,
     asking for arrest of the king of
     the netherlands, for the genocide
-    he iscommitting with his new
-    treatement laws. Current status
-    is "no basis to proceed" judgement
-    of the prosecutor which requires
-    a "basis to prosecute" to have the
-    king actually arrested.
+    he is committing with his new
+    treatement laws.
+
+    Current status is "no basis to proceed" 
+    :ref:`judgement <guilty>` of the prosecutor
+    which requires a "basis to prosecute" to
+    have the king actually arrested.
 
 
 **USAGE**

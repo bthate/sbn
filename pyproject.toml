@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "91"
+version = "92"
 authors = [
     {name = "OTP-CR-117/19", email = "skullbonesandnumer@gmail.com" },
 ]

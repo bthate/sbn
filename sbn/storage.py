@@ -84,13 +84,13 @@ class Storage(Object):
         return os.listdir(Storage.store())
 
 
-def find(mtc, selector=None, index=None) -> []:
+def find(mtc, selector=None, index=None, deleted=False) -> []:
     clz = Storage.long(mtc)
     nr = -1
     for fnm in sorted(Storage.fns(clz), key=fntime):
         obj = Default()
         fetch(obj, fnm)
-        if '__deleted__' in obj:
+        if not deleted and '__deleted__' in obj:
             continue
         if selector and not search(obj, selector):
             continue
