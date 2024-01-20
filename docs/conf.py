@@ -128,7 +128,7 @@ rst_prolog = '''.. image:: genocide.png
     </center>
     <center>
     <i>
-    and all psychiatric patients (WvGGZ) here in the Netherlands.
+    and all psychiatric patients (WvGGZ) here in the Netherlands
     </i>
     </center>
 
