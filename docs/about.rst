@@ -18,4 +18,4 @@ In 2018 i :ref:`informed <guilty>` the king of the netherlands that what he call
 
 Using poison makes the care laws used in the netherlands to provide care to elderly and handicapped, criminals and psychiatric patients not care laws but genocide laws with which the king is killing groups of the population by giving them poison instead of medicine in the "care" they are forced to undergo.
 
-I :ref:`wrote <writings>` the prosecutor asking for an arrest of the king (make him stop), the prosecutor decided to call it a "no basis to proceed". It requires a `basis to prosecute <index.html>`_ of the prosecutor to get the king in his cell and his genocide, thereby, stopped.
+I :ref:`wrote <writings>` the prosecutor asking for an arrest of the king (make him stop), the prosecutor decided to call it a "no basis to proceed". It requires a `basis to prosecute <reconsider.html>`_ of the prosecutor to get the king in his cell and his genocide, thereby, stopped.

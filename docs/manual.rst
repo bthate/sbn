@@ -3,7 +3,7 @@
 
 .. raw:: html
 
-    <br><br>
+    <br>
 
 
 .. title:: Manual
@@ -200,6 +200,12 @@
         ~/.local/bin/sbn
         ~/.local/bin/sbnd
         ~/.local/pipx/venvs/sbn/
+
+
+**SOURCE**
+
+
+   source code is :ref:`here <source>`
 
 
 **AUTHOR**
