@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "92"
+version = "93"
 authors = [
-    {name = "OTP-CR-117/19", email = "skullbonesandnumer@gmail.com" },
+    {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
 readme = "README.rst"
 license = { text="Public Domain"}
@@ -52,7 +52,6 @@ zip-safe = true
     "docs/genocide.png",
     "docs/informed.jpg",
     "docs/OTP1.png",
-    "docs/reconsider.rst",
     "docs/skull.jpg",
     "docs/source.rst",
     "docs/verbatim2.png",

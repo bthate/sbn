@@ -1,27 +1,14 @@
 .. _writings:
 
+
 .. raw:: html
 
-     <br>
+    <br>
 
 .. title:: Writings
 
 
-.. raw:: html
-
-    <center>
-    <b>
-
-**W R I T I N G S**
-
-.. raw:: html
-
-    </b>
-    </center>
-    <br>
-
-
-**email 1**
+**Email 1**
 
 
 |
@@ -50,7 +37,7 @@ response **OTP-CR-117/19**
     <br><br>
 
 
-**email 2**
+**Email 2**
 
 
 |

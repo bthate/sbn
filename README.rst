@@ -174,7 +174,7 @@ AUTHOR
 
 ::
 
-    OTP-CR-117/19 <skullbonesandnumber@gmail.com>
+    Bart Thate <bthate@dds.nl>
 
 
 COPYRIGHT

@@ -5,22 +5,7 @@
 
     <br>
 
-
 .. title:: Manual
-
-
-.. raw:: html
-
-    <center>
-    <b>
-
-**M A N U A L**
-
-.. raw:: html
-
-    </b>
-    </center>
-    <br>
 
 
 **NAME**
@@ -58,7 +43,7 @@
     physical (contracted muscles) and
     mental (make people hallucinate)
     torture and kills members of the
-    victim groups. 
+    victim groups :ref:`. <source>`
 
     **SBN** contains :ref:`correspondence <writings>`
     with the International Criminal Court,
@@ -226,7 +211,7 @@
 
     ::
 
-        OTP-CR-117/19  <skullbonesandnumber@gmail.com>
+        Bart Thate <bthate@dds.nl>
 
 
 **COPYRIGHT**

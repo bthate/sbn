@@ -3,31 +3,13 @@
 
 .. raw:: html
 
-     <br>
+    </center>
+    <br>
 
 .. title:: Source
 
 
-.. raw:: html
-
-    <center>
-    <b>
-
-**S O U R C E**
-
-.. raw:: html
-
-    </b>
-    </center>
-    <br>
-
-
 **Skull, Bones and Number (OTP-CR-117/19)**
-
-
-.. raw:: html
-
-     <br>
 
 
 .. autosummary::
@@ -48,11 +30,6 @@
 **Modules**
 
 
-.. raw:: html
-
-     <br>
-
-
 .. autosummary::
     :toctree: 
     :template: base.rst
@@ -69,6 +46,7 @@
     sbn.modules.mre     more
     sbn.modules.pwd     sasl password
     sbn.modules.req	request
+    sbn.modules.rme     readme
     sbn.modules.rss     rich site syndicate
     sbn.modules.rst     rest server
     sbn.modules.slg     slogan
