@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0212,W0719,E0402
+# pylint: disable=C,R,W0212,E0402
 
 
 "event handler"
@@ -11,9 +11,8 @@ import threading
 import _thread
 
 
-from .brokers import Broker
-from .default import Default
-from .objects import Object
+from .brokers import Fleet
+from .objects import Default, Object
 from .threads import launch
 
 
@@ -25,38 +24,6 @@ def __dir__():
 
 
 __all__ = __dir__()
-
-
-class Event(Default):
-
-    def __init__(self):
-        Default.__init__(self)
-        self._ready  = threading.Event()
-        self._thr    = None
-        self.done    = False
-        self.orig    = None
-        self.result  = []
-        self.txt     = ""
-
-    def ready(self):
-        self._ready.set()
-
-    def reply(self, txt):
-        self.result.append(txt)
-
-    def show(self):
-        if not self.orig:
-            raise Exception("no orig")
-        for txt in self.result:
-            bot = Broker.byorig(self.orig) or Broker.first()
-            if bot:
-                bot.say(self.channel, txt)
-
-    def wait(self):
-        if self._thr:
-            self._thr.join()
-        self._ready.wait()
-        return self.result
 
 
 class Handler(Object):
@@ -95,3 +62,33 @@ class Handler(Object):
 
     def stop(self):
         self.stopped.set()
+
+
+class Event(Default):
+
+    def __init__(self):
+        Default.__init__(self)
+        self._ready  = threading.Event()
+        self._thr    = None
+        self.done    = False
+        self.orig    = None
+        self.result  = []
+        self.txt     = ""
+
+    def ready(self):
+        self._ready.set()
+
+    def reply(self, txt):
+        self.result.append(txt)
+
+    def show(self):
+        for txt in self.result:
+            bot = Fleet.byorig(self.orig) or Fleet.first()
+            if bot:
+                bot.say(self.channel, txt)
+
+    def wait(self):
+        if self._thr:
+            self._thr.join()
+        self._ready.wait()
+        return self.result

@@ -60,7 +60,7 @@ extensions = [
 # -- Options for HTML output -------------------------------------------------
 
 
-html_title = "Skull, Bones and Numner (OTP-CR-117/19)"
+html_title = "Skull, Bones and Number (OTP-CR-117/19)"
 html_style = 'sbn.css'
 html_static_path = ["_static"]
 html_css_files = ["sbn.css",]
@@ -113,41 +113,24 @@ rst_prolog = '''.. image:: genocide.png
     :width: 100%
     :height: 2.6cm
     :target: index.html
-
-.. raw:: html
-
-    <center>
-    <i>
-    By law, with the use of poison, killing, torturing, castrating, destroying,
-    </i>
-    </center>
-    <center>
-    <i>
-    in whole or in part, all elderly and all handicapped (Wzd), all criminals (Wfz)
-    </i>
-    </center>
-    <center>
-    <i>
-    and all psychiatric patients (WvGGZ) here in the Netherlands
-    </i>
-    </center>
-
-
 '''
 
 rst_epilog = '''.. raw:: html
 
-     <br>
-     <center>
-     <b>
+    <br>
+    <br>
+    <br>
+    <center>
+    <b>
 
-:ref:`home <about>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>` - :ref:`about <reconsider>`
+:ref:`about <about>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>` - :ref:`reconsider <reconsider>`
 
 
 .. raw:: html
 
     </b>
     </center>
+
 '''
 
 autosummary_generate = True

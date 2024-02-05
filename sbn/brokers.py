@@ -1,47 +1,49 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,E0402
+# pylint: disable=C,R, E0402
 
 
-"broker"
+"list of bots"
 
 
-from .objects import Object, keys, values
+from .objects import Object
 
 
 def __dir__():
     return (
-        "Broker",
+        "Fleet",
+        "byorig"
     )
 
 
 __all__ = __dir__()
 
 
-rpr = object.__repr__
+class Fleet(Object):
 
-
-class Broker(Object):
-
-    objs = Object()
+    objs = []
 
     @staticmethod
     def add(obj):
-        setattr(Broker.objs, rpr(obj), obj)
-
-    @staticmethod
-    def all():
-        return values(Broker.objs)
+        Fleet.objs.append(obj)
 
     @staticmethod
     def first():
-        for key in keys(Broker.objs):
-            return getattr(Broker.objs, key)
+        if Fleet.objs:
+            return Fleet.objs[0]
 
     @staticmethod
     def remove(obj):
-        delattr(Broker.objs, rpr(obj))
+        if obj in Fleet.objs:
+            Fleet.objs.remove(obj)
 
     @staticmethod
     def byorig(orig):
-        return getattr(Broker.objs, orig, None)
+        for obj in Fleet.objs:
+            if object.__repr__(obj) == orig:
+                return obj
+        return None
+
+
+def byorig(orig):
+    return Fleet.byorig(orig)

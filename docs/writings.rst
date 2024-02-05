@@ -8,7 +8,7 @@
 .. title:: Writings
 
 
-**Email 1**
+**EMAIL 1**
 
 
 |
@@ -37,7 +37,7 @@ response **OTP-CR-117/19**
     <br><br>
 
 
-**Email 2**
+**EMAIL 2**
 
 
 |

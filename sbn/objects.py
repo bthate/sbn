@@ -1,48 +1,46 @@
-# This file is placed in the Public Domain,
+# This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0613,E0101
+# pylint: disable=C,R,W0105
 
 
-"""objects library
+"a clean namespace"
 
 
-GENOCIDE provides an objects module that allows for easy json save/load
-to/from disk of objects. It provides an "clean namespace" Object class
-that only has dunder methods, so the namespace is not cluttered with
-method names. This makes storing and reading to/from json possible.
-
-    >>> from genocide.objects import Object, dumps, loads
-    >>> o = Object()
-    >>> o.a = "b"
-    >>> txt = dumps(o)
-    >>> loads(txt)
-    {"a": "b"}
-
-"""
-
-
+import pathlib
 import json
+import os
+import _thread
 
 
 def __dir__():
     return (
-        "Object",
-        "construct",
-        "dump",
-        "dumps",
-        "edit",
-        "fmt",
-        "fqn",
-        "items",
-        "keys",
-        "load",
-        "loads",
-        "update",
-        "values",
+        'Default',
+        'Object',
+        'cdir',
+        'construct',
+        'edit',
+        'fmt',
+        'fqn',
+        'items',
+        'keys',
+        'read',
+        'update',
+        'values',
+        'write'
     )
 
 
 __all__ = __dir__()
+
+
+lock = _thread.allocate_lock()
+
+
+def cdir(pth) -> None:
+    if os.path.exists(pth):
+        return
+    pth = pathlib.Path(pth)
+    os.makedirs(pth, exist_ok=True)
 
 
 class Object:
@@ -63,20 +61,27 @@ class Object:
         return str(self.__dict__)
 
 
+class Default(Object):
+
+    __slots__ = ("__default__",)
+
+    def __init__(self):
+        Object.__init__(self)
+        self.__default__ = ""
+
+    def __getattr__(self, key):
+        return self.__dict__.get(key, self.__default__)
+
+
 class ObjectDecoder(json.JSONDecoder):
-    def __init__(self, *args, **kwargs):
-        ""
-        return json.JSONDecoder.__init__(self, *args)
 
     def decode(self, s, _w=None):
-        ""
         val = json.JSONDecoder.decode(self, s)
         if not val:
             val = {}
         return hook(val)
 
     def raw_decode(self, s, idx=0):
-        ""
         return json.JSONDecoder.raw_decode(self, s, idx)
 
 
@@ -102,19 +107,24 @@ def loads(string, *args, **kw):
 
 
 class ObjectEncoder(json.JSONEncoder):
-    def __init__(self, *args, **kwargs):
-        ""
-        return json.JSONEncoder.__init__(self, *args, **kwargs)
 
     def default(self, o):
-        ""
         if isinstance(o, dict):
             return o.items()
         if isinstance(o, Object):
             return vars(o)
         if isinstance(o, list):
             return iter(o)
-        if isinstance(o, (type(str), type(True), type(False), type(int), type(float))):
+        if isinstance(
+                      o,
+                      (
+                       type(str),
+                       type(True),
+                       type(False),
+                       type(int),
+                       type(float)
+                      )
+                     ):
             return o
         try:
             return json.JSONEncoder.default(self, o)
@@ -122,24 +132,27 @@ class ObjectEncoder(json.JSONEncoder):
             return object.__repr__(o)
 
     def encode(self, o) -> str:
-        ""
         return json.JSONEncoder.encode(self, o)
 
-    def iterencode(self, o, _one_shot=False):
-        ""
+    def iterencode(
+                   self,
+                   o,
+                   _one_shot=False
+                  ):
         return json.JSONEncoder.iterencode(self, o, _one_shot)
 
 
 def dump(*args, **kw) -> None:
-    ""
     kw["cls"] = ObjectEncoder
     return json.dump(*args, **kw)
 
 
 def dumps(*args, **kw) -> str:
-    ""
     kw["cls"] = ObjectEncoder
     return json.dumps(*args, **kw)
+
+
+"methods"
 
 
 def construct(obj, *args, **kwargs):
@@ -196,7 +209,7 @@ def fmt(obj, args=None, skip=None, plain=False):
         elif isinstance(value, str) and len(value.split()) >= 2:
             txt += f'{key}="{value}" '
         else:
-            txt += f"{key}={value} "
+            txt += f'{key}={value} '
     return txt.strip()
 
 
@@ -219,6 +232,12 @@ def keys(obj):
     return list(obj.__dict__.keys())
 
 
+def read(obj, pth):
+    with lock:
+        with open(pth, 'r', encoding='utf-8') as ofile:
+            update(obj, load(ofile))
+
+
 def update(obj, data, empty=True):
     for key, value in items(data):
         if empty and not value:
@@ -228,3 +247,10 @@ def update(obj, data, empty=True):
 
 def values(obj):
     return obj.__dict__.values()
+
+
+def write(obj, pth):
+    with lock:
+        cdir(os.path.dirname(pth))
+        with open(pth, 'w', encoding='utf-8') as ofile:
+            dump(obj, ofile)

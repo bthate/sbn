@@ -10,8 +10,8 @@ import datetime
 import time
 
 
-from .. import Broker, Event, Object, Repeater
-from .. import construct, keys, laps, launch
+from .. import Object, construct, keys
+from .. import Event, Fleet, Repeater, laps, launch
 
 
 def __dir__():
@@ -277,6 +277,7 @@ construct(oorzaak, zip(oor, aantal))
 oorzaken = Object()
 
 
+
 def getalias(txt):
     for key, value in aliases.items():
         if txt.lower() in key.lower():
@@ -334,7 +335,7 @@ def cbnow(evt):
         nrtimes = int(delta/needed)
         txt += "%s: %s " % (getalias(name), nrtimes)
     txt += " http://genocide.rtfd.io"
-    for bot in Broker.all():
+    for bot in Fleet.objs:
         if "announce" in dir(bot):
             bot.announce(txt)
 
@@ -357,7 +358,7 @@ def cbstats(evt):
                                                                laps(needed),
                                                                nryear,
                                                               )
-        for bot in Broker.all():
+        for bot in Fleet.objs:
             bot.announce(txt)
 
 
