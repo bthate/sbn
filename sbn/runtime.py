@@ -17,11 +17,8 @@ import time
 import _thread
 
 
-sys.path.insert(0, ".")
-
-
-from . import Client, Command, Default, Error, Event, Object, Storage
-from . import cdir, debug, launch, parse_command, spl
+from . import Cfg, Client, Command, Default, Error, Event, Object, Storage
+from . import cdir, debug, launch, parse_command, spl, scan
 
 
 def __dir__():
@@ -34,7 +31,6 @@ def __dir__():
         'forever',
         'main',
         'privileges',
-        'scan',
         'wrap',
         'wrapped'
     )
@@ -43,16 +39,10 @@ def __dir__():
 __all__ = __dir__()
 
 
-Cfg         = Default()
-Cfg.mod     = "cmd,irc,log,mdl,mod,mre,pwd,req,rss,tdo,thr"
-Cfg.name    = "sbn"
-Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
-Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
-Cfg.user    = getpass.getuser()
 Storage.wd  = Cfg.wd
 
 
-from sbn import modules
+from . import modules
 
 
 class Console(Client):
@@ -64,7 +54,7 @@ class Console(Client):
         Client.callback(self, evt)
         evt.wait()
 
-    def poll(self) -> Event:
+    def poll(self):
         evt = Event()
         evt.orig = object.__repr__(self)
         evt.txt = input("> ")
@@ -76,12 +66,23 @@ class Console(Client):
         print(txt)
 
 
-def cmnd(txt):
+def cmnd(txt, out):
+    clt = Client()
+    clt.raw = out
     evn = Event()
+    evn.orig = object.__repr__(clt)
     evn.txt = txt
     Command.handle(evn)
     evn.wait()
     return evn
+
+
+def forever():
+    while 1:
+        try:
+            time.sleep(1.0)
+        except (KeyboardInterrupt, EOFError):
+            _thread.interrupt_main()
 
 
 def daemon(pidfile, verbose=False):
@@ -109,18 +110,11 @@ def daemon(pidfile, verbose=False):
 
 
 def daemoned():
+    Cfg.mod = ",".join(modules.__dir__())
     daemon(Cfg.pidfile)
     privileges(Cfg.user)
     scan(modules, Cfg.mod, True)
     forever()
-
-
-def forever():
-    while 1:
-        try:
-            time.sleep(1.0)
-        except (KeyboardInterrupt, EOFError):
-            _thread.interrupt_main()
 
 
 def privileges(username):
@@ -129,49 +123,7 @@ def privileges(username):
     os.setuid(pwnam.pw_uid)
 
 
-def scan(pkg, modstr, initer=False, wait=True) -> []:
-    mds = []
-    for modname in spl(modstr):
-        module = getattr(pkg, modname, None)
-        if not module:
-            continue
-        for _key, cmd in inspect.getmembers(module, inspect.isfunction):
-            if 'event' in cmd.__code__.co_varnames:
-                Command.add(cmd)
-        for _key, clz in inspect.getmembers(module, inspect.isclass):
-            if not issubclass(clz, Object):
-                continue
-            Storage.add(clz)
-        if initer and "init" in dir(module):
-            module._thr = launch(module.init, name=f"init {modname}")
-            mds.append(module)
-    if wait and initer:
-        for mod in mds:
-            mod._thr.join()
-    return mds
-
-
-def main():
-    Storage.skel()
-    parse_command(Cfg, " ".join(sys.argv[1:]))
-    if "a" in Cfg.opts:
-        Cfg.mod = ",".join(modules.__dir__())
-    if "v" in Cfg.opts:
-        dte = time.ctime(time.time()).replace("  ", " ")
-        debug(f"{Cfg.name.upper()} started {Cfg.opts.upper()} started {dte}")
-    if "d" in Cfg.opts:
-        daemoned()
-    csl = Console()
-    if "c" in Cfg.opts:
-        scan(modules, Cfg.mod, True, True)
-        csl.start()
-        forever()
-    if Cfg.otxt:
-        scan(modules, Cfg.mod)
-        return cmnd(Cfg.otxt)
-
-
-def wrap(func) -> None:
+def wrap(func):
     old2 = None
     try:
         old2 = termios.tcgetattr(sys.stdin.fileno())
@@ -184,6 +136,32 @@ def wrap(func) -> None:
     finally:
         if old2:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old2)
+
+
+def main():
+    Storage.skel()
+    parse_command(Cfg, " ".join(sys.argv[1:]))
+    if "x" in Cfg.opts:
+        Cfg.mod += "cmd,irc,mdl,mod,req,wsd"
+    else:
+        Cfg.mod = ",".join(modules.__dir__())
+    if "v" in Cfg.opts:
+        dte = time.ctime(time.time()).replace("  ", " ")
+        debug(f"{Cfg.name.upper()} {Cfg.opts.upper()} started {dte}")
+    if "d" in Cfg.opts:
+        daemoned()
+    csl = Console()
+    if "h" in Cfg.opts:
+        scan(modules, Cfg.mod)
+        print(__doc__)
+        return
+    if "c" in Cfg.opts:
+        scan(modules, Cfg.mod, True, Cfg.sets.dis, True)
+        csl.start()
+        forever()
+    if Cfg.otxt:
+        scan(modules, Cfg.mod)
+        return cmnd(Cfg.otxt, print)
 
 
 def wrapped():

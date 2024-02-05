@@ -16,7 +16,7 @@ import time
 import _thread
 
 
-from .. import Broker, Client, Command, Default, Error, Event, Object
+from .. import Broker, Cfg, Client, Command, Default, Error, Event, Object
 from .. import debug, edit, fmt, keys, last, launch, sync
 
 
@@ -54,12 +54,12 @@ class Config(Default):
 
     def __init__(self):
         Default.__init__(self)
-        self.channel = self.channel or Config.channel
+        self.channel = Cfg.sets.channel or self.channel or Config.channel
         self.commands = self.commands or Config.commands
-        self.nick = self.nick or Config.nick
+        self.nick = Cfg.sets.nick or self.nick or Config.nick
         self.port = self.port or Config.port
         self.realname = self.realname or Config.realname
-        self.server = self.server or Config.server
+        self.server = Cfg.sets.server or self.server or Config.server
         self.username = self.username or Config.username
 
 
@@ -457,8 +457,8 @@ class IRC(Client, Output):
         Client.start(self)
         launch(
                self.doconnect,
-               self.cfg.server or "localhost",
-               self.cfg.nick,
+               Cfg.server or self.cfg.server or "localhost",
+               Cfg.nick or self.cfg.nick,
                int(self.cfg.port or '6667')
               )
         if not self.state.keeprunning:
@@ -555,8 +555,6 @@ def cb_quit(evt):
     if evt.orig and evt.orig in bot.zelf:
         bot.stop()
 
-
-"commands"
 
 
 def cfg(event):

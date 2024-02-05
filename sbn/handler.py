@@ -1,18 +1,9 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0212,E0402
+# pylint: disable=C,R,W0212,W0719,E0402
 
 
-"""
-event handler
-
-This event handler uses callbacks to react to events put to the handler.
-Every callback gets run in it's own thread just to escape the "it must not
-block" problem async coding delivers. It does deferred exception handling to
-not have the main loop exiting on an raised exception and uses a bus (called
-fleet) to do the output to.
-
-"""
+"event handler"
 
 
 import queue
@@ -20,8 +11,9 @@ import threading
 import _thread
 
 
-from .brokers import Fleet
-from .objects import Default, Object
+from .brokers import Broker
+from .default import Default
+from .objects import Object
 from .threads import launch
 
 
@@ -33,44 +25,6 @@ def __dir__():
 
 
 __all__ = __dir__()
-
-
-class Handler(Object):
-
-    def __init__(self):
-        Object.__init__(self)
-        self.cbs      = Object()
-        self.queue    = queue.Queue()
-        self.stopped  = threading.Event()
-
-    def callback(self, evt) -> None:
-        func = getattr(self.cbs, evt.type, None)
-        if not func:
-            evt.ready()
-            return
-        evt._thr = launch(func, evt)
- 
-    def loop(self) -> None:
-        while not self.stopped.is_set():
-            try:
-                self.callback(self.poll())
-            except (KeyboardInterrupt, EOFError):
-                _thread.interrupt_main()
-
-    def poll(self):
-        return self.queue.get()
-
-    def put(self, evt) -> None:
-        self.queue.put_nowait(evt)
-
-    def register(self, typ, cbs) -> None:
-        setattr(self.cbs, typ, cbs)
-
-    def start(self) -> None:
-        launch(self.loop)
-
-    def stop(self) -> None:
-        self.stopped.set()
 
 
 class Event(Default):
@@ -87,12 +41,14 @@ class Event(Default):
     def ready(self):
         self._ready.set()
 
-    def reply(self, txt) -> None:
+    def reply(self, txt):
         self.result.append(txt)
 
-    def show(self) -> None:
+    def show(self):
+        if not self.orig:
+            raise Exception("no orig")
         for txt in self.result:
-            bot = Fleet.byorig(self.orig) or Fleet.first()
+            bot = Broker.byorig(self.orig) or Broker.first()
             if bot:
                 bot.say(self.channel, txt)
 
@@ -101,3 +57,41 @@ class Event(Default):
             self._thr.join()
         self._ready.wait()
         return self.result
+
+
+class Handler(Object):
+
+    def __init__(self):
+        Object.__init__(self)
+        self.cbs      = Object()
+        self.queue    = queue.Queue()
+        self.stopped  = threading.Event()
+
+    def callback(self, evt):
+        func = getattr(self.cbs, evt.type, None)
+        if not func:
+            evt.ready()
+            return
+        evt._thr = launch(func, evt)
+ 
+    def loop(self):
+        while not self.stopped.is_set():
+            try:
+                self.callback(self.poll())
+            except (KeyboardInterrupt, EOFError):
+                _thread.interrupt_main()
+
+    def poll(self):
+        return self.queue.get()
+
+    def put(self, evt):
+        self.queue.put_nowait(evt)
+
+    def register(self, typ, cbs):
+        setattr(self.cbs, typ, cbs)
+
+    def start(self):
+        launch(self.loop)
+
+    def stop(self):
+        self.stopped.set()

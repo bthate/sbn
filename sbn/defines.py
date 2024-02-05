@@ -3,16 +3,19 @@
 # pylint: disable=C,R,W0401,E0402
 
 
-"specification"
+"specifications"
 
 
 from .brokers import *
 from .clients import *
 from .command import *
+from .configs import *
+from .default import *
 from .excepts import *
 from .handler import *
 from .objects import *
 from .parsers import *
+from .scanner import *
 from .storage import *
 from .threads import *
 
@@ -36,6 +39,7 @@ def __object__():
 
 def __dir__():
     return (
+        'Cfg',
         'Client',
         'Command',
         'Error',
@@ -45,14 +49,17 @@ def __dir__():
         'Storage',
         'byorig',
         'cdir',
+        'cmnd',
         'fetch',
         'find',
         'fns',
-        'fntime',
+        'fntime'
+        'forever',
         'ident',
         'launch',
         'last',
         'parse_command',
+        'scan',
         'sync',
         'Storage',
     ) + __object__()
