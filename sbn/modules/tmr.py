@@ -9,7 +9,7 @@
 import time
 
 
-from .. import Event, Fleet, Timer
+from .. import Broker, Event, Timer
 from .. import find, laps, launch, update, sync
 from .. import NoDate, today, to_day, get_day, get_hour
 
@@ -20,7 +20,7 @@ def init():
             continue
         diff = float(obj.time) - time.time()
         if diff > 0:
-            bot = Fleet.first()
+            bot = Broker.first()
             evt = Event()
             update(evt, obj)
             evt.orig = object.__repr__(bot)

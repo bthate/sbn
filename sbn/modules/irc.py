@@ -16,17 +16,15 @@ import time
 import _thread
 
 
-from .. import Default, Object, edit, fmt, keys
-from .. import Client, Command, Error, Event
-from .. import byorig, debug, last, launch, sync
+from .. import Broker, Client, Command, Default, Error, Event, Object
+from .. import debug, edit, fmt, keys, last, launch, sync
+
+
+NAME = __file__.split(os.sep)[-3]
 
 
 Error.filter = ["PING", "PONG", "PRIVMSG"]
-
-
-NAME = "sbn"
-
-
+byorig = Broker.byorig
 saylock = _thread.allocate_lock()
 
 
@@ -95,7 +93,8 @@ class Output():
     def extend(channel, txtlist):
         if channel not in Output.cache:
             Output.cache[channel] = []
-        Output.cache[channel].extend(txtlist)
+        chanlist = getattr(Output.cache, channel)
+        chanlist.extend(txtlist)
 
     @staticmethod
     def gettxt(channel):

@@ -18,9 +18,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from .. import Default, Object, fmt, update
-from .. import Fleet, Repeater
-from .. import fntime, find, launch, laps, last, sync
+from .. import Broker, Default, Object, Repeater
+from .. import fmt, fntime, find, launch, laps, last, sync, update
 
 
 def init():
@@ -110,7 +109,7 @@ class Fetcher(Object):
             txt = f'[{feedname}] '
         for obj in result:
             txt2 = txt + self.display(obj)
-            for bot in Fleet.objs:
+            for bot in Broker.all():
                 if "announce" in dir(bot):
                     bot.announce(txt2.rstrip())
         return counter

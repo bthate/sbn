@@ -6,12 +6,12 @@
 "status of bots"
 
 
-from .. import Error, Fleet
+from .. import Broker, Error
 
 
 def err(event):
     nmr = 0
-    for bot in Fleet.objs:
+    for bot in Broker.all():
         if 'state' in dir(bot):
             event.reply(str(bot.state))
             nmr += 1
