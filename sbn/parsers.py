@@ -23,7 +23,7 @@ def __dir__():
         'get_hour',
         'get_time',
         'laps',
-        'parse_command',
+        'parse_cmd',
         'parse_time',
         'spl',
         'today',
@@ -176,7 +176,7 @@ def laps(seconds, short=True):
     return txt
 
 
-def parse_command(obj, txt=None):
+def parse_cmd(obj, txt=None):
     args = []
     obj.args    = obj.args or []
     obj.cmd     = obj.cmd or ""

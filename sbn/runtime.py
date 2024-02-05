@@ -21,7 +21,7 @@ from .configs import Cfg
 
 
 from . import Client, Command, Default, Error, Event, Object, Storage
-from . import cdir, debug, launch, parse_command, spl, scan
+from . import cdir, debug, launch, parse_cmd, spl, scan, update
 
 
 def __dir__():
@@ -142,7 +142,8 @@ def wrap(func):
 
 def main():
     Storage.skel()
-    parse_command(Cfg, " ".join(sys.argv[1:]))
+    parse_cmd(Cfg, " ".join(sys.argv[1:]))
+    update(Cfg, Cfg.sets)
     if "x" in Cfg.opts:
         Cfg.mod += "cmd,irc,mdl,mod,req,wsd"
     else:

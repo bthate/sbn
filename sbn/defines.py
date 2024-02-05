@@ -58,7 +58,7 @@ def __dir__():
         'ident',
         'launch',
         'last',
-        'parse_command',
+        'parse_cmd',
         'scan',
         'sync',
         'Storage',
