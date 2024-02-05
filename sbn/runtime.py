@@ -17,13 +17,15 @@ import time
 import _thread
 
 
-from . import Cfg, Client, Command, Default, Error, Event, Object, Storage
+from .configs import Cfg
+
+
+from . import Client, Command, Default, Error, Event, Object, Storage
 from . import cdir, debug, launch, parse_command, spl, scan
 
 
 def __dir__():
     return (
-        'Cfg',
         'Console',
         'cmnd',
         'daemon',
