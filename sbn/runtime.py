@@ -156,7 +156,8 @@ def main():
     csl = Console()
     if "h" in Cfg.opts:
         scan(modules, Cfg.mod)
-        print(__doc__)
+        from . import __doc__ as txt
+        print(txt)
         return
     if "c" in Cfg.opts:
         scan(modules, Cfg.mod, True, Cfg.sets.dis, True)

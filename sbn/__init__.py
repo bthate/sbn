@@ -4,20 +4,20 @@
 
 
 
-"""SBN - @KarimKhanQC reconsider OTP-CR-117/19
+""" @KarimKhanQC reconsider OTP-CR-117/19
+
 
 sbn <cmd> [key=val] [key==val] [mod=n1,n2]
 sbn [-a] [-c] [-d] [-h] [-v] [-w]
 
 commands:
 
-    cfg - irc configuration
-    cmd - commands
-    mod - show available modules
-    now - show genocide stats
-    req - reconsider
-    ver - version
-    wsd - show wisdom
+cfg - irc configuration
+cmd - commands
+mod - show available modules
+now - show genocide stats
+req - reconsider
+wsd - show wisdom
 
 options:
 
