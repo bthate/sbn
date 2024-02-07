@@ -9,7 +9,7 @@
 .. title:: Source
 
 
-**Skull, Bones and Number (OTP-CR-117/19)**
+**SKULL, BONES and NUMBER (OTP-CR-117/19)**
 
 
 .. autosummary::
@@ -27,7 +27,7 @@
     sbn.threads         threads
 
 
-**Modules**
+**MODULES**
 
 
 .. autosummary::
@@ -46,7 +46,6 @@
     sbn.modules.mre     more
     sbn.modules.pwd     sasl password
     sbn.modules.req	request
-    sbn.modules.rme     readme
     sbn.modules.rss     rich site syndicate
     sbn.modules.rst     rest server
     sbn.modules.slg     slogan
