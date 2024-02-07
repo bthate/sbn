@@ -9,7 +9,7 @@
 .. title:: Source
 
 
-**SKULL, BONES and NUMBER (OTP-CR-117/19)**
+**SKULL, BONES AND NUMBER (OTP-CR-117/19)**
 
 
 .. autosummary::
