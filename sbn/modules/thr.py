@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C0116,W0105,E0402,E0401,E0611
+# pylint: disable=C,R,W0105
 
 
 "show running threads"
@@ -10,13 +10,16 @@ import threading
 import time
 
 
-from .. import Object, laps, update
+from ..client  import Client
+from ..object  import Object, update
+from ..utils   import laps
 
 
 STARTTIME = time.time()
 
 
 def thr(event):
+    "show running threads."
     result = []
     for thread in sorted(threading.enumerate(), key=lambda x: x.name):
         if str(thread).startswith('<_'):
@@ -38,3 +41,9 @@ def thr(event):
         event.reply(' '.join(res))
     else:
         event.reply('no threads')
+
+
+"initialize"
+
+
+Client.add(thr)

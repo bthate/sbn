@@ -1,31 +1,30 @@
 # This file is placed in the Public Domain.
 #
-#
+# pylint: disable=C,R
+# ruff: noqa: F401
 
 
 "modules"
 
 
-from . import cmd, irc, log, mdl, mod, mre, pwd, req, rss, slg, tdo, wsd
-from . import flt, thr
+from . import cmd, dbg, err, flt, fnd, irc, log, mdl, mod, req, rss, tdo, thr, tmr
 
 
 def __dir__():
     return (
         'cmd',
+        'dbg',
+        'err',
         'flt',
+        'fnd',
         'irc',
         'log',
         'mod',
-        'mdl',
-        'mre',
-        'pwd',
         'req',
         'rss',
-        'slg',
         'tdo',
         'thr',
-        'wsd'
+        'tmr'
     )
 
 

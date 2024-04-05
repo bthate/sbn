@@ -1,25 +1,28 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,E0402
+# pylint: disable=C,R,W0105,W0611
 
 
-"locate"
+"find"
 
 
-from .. import Storage, find, fmt
+from ..client  import Client
+from ..object  import fmt
+from ..persist import Persist, Workdir, find
 
 
 def fnd(event):
-    Storage.skel()
+    "find objects."
+    Workdir.skel()
     if not event.rest:
-        res = sorted([x.split('.')[-1].lower() for x in Storage.types()])
+        res = sorted([x.split('.')[-1].lower() for x in Workdir.types()])
         if res:
             event.reply(",".join(res))
         return
     otype = event.args[0]
-    clz = Storage.long(otype)
+    clz = Persist.long(otype)
     if "." not in clz:
-        for fnm in Storage.types():
+        for fnm in Workdir.types():
             claz = fnm.split(".")[-1]
             if otype == claz.lower():
                 clz = fnm
@@ -29,3 +32,9 @@ def fnd(event):
         nmr += 1
     if not nmr:
         event.reply("no result")
+
+
+"register"
+
+
+#Client.add(fnd)

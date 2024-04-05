@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0613,E0402
+# pylint: disable=C,R,W0105
 
 
 "genocide model of the netherlands"
@@ -10,18 +10,24 @@ import datetime
 import time
 
 
-from .. import Object, construct, keys
-from .. import Event, Fleet, Repeater, laps, launch
+from ..broker   import Broker
+from ..client   import Client
+from ..event    import Event
+from ..object   import Object, construct, keys
+from ..repeater import Repeater
+from ..thread   import launch
+from ..utils    import laps
 
 
 def __dir__():
     return (
             'init',
             'now'
-           ) 
+           )
 
 
 def init():
+    "start genocide model."
     for key in keys(oorzaken):
         val = getattr(oorzaken, key, None)
         if val and int(val) > 10000:
@@ -32,7 +38,7 @@ def init():
             repeater = Repeater(sec, cbstats, evt, thrname=aliases.get(key))
             repeater.start()
     launch(daily, name="daily")
-    
+
 
 DAY = 24*60*60
 YEAR = 365*DAY
@@ -277,20 +283,25 @@ construct(oorzaak, zip(oor, aantal))
 oorzaken = Object()
 
 
-
 def getalias(txt):
+    "teturn matching alias."
+    result = None
     for key, value in aliases.items():
         if txt.lower() in key.lower():
-            return value
+            result = value
+            break
+    return result
 
 
 def getday():
+    "return timestamp of current day."
     day = datetime.datetime.now()
     day = day.replace(hour=0, minute=0, second=0, microsecond=0)
     return day.timestamp()
 
 
 def getnr(name):
+    "return number of deaths by name."
     for k in keys(oorzaken):
         if name.lower() in k.lower():
             return int(getattr(oorzaken, k))
@@ -298,6 +309,7 @@ def getnr(name):
 
 
 def seconds(nrs):
+    "calculate sedconds"
     if not nrs:
         return nrs
     return 60*60*24*365 / float(nrs)
@@ -305,6 +317,7 @@ def seconds(nrs):
 
 
 def iswanted(k, line):
+    "see whether an item is wanted."
     for word in line:
         if word in k:
             return True
@@ -312,20 +325,23 @@ def iswanted(k, line):
 
 
 def daily():
+    "run a callback daily."
     while 1:
         time.sleep(24*60*60)
-        evt = Event()
-        cbnow(evt)
+        cbnow(Event())
 
 
 def hourly():
+    "run a callback hourly."
     while 1:
         time.sleep(60*60)
-        evt = Event()
-        cbnow(evt)
+        cbnow(Event())
 
 
 def cbnow(evt):
+    "check status now callback."
+    if not evt:
+        evt = Event()
     delta = time.time() - STARTTIME
     txt = laps(delta) + " "
     for name in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
@@ -333,59 +349,56 @@ def cbnow(evt):
         if needed > 60*60:
             continue
         nrtimes = int(delta/needed)
-        txt += "%s: %s " % (getalias(name), nrtimes)
+        txt += f"{getalias(name)}: {nrtimes}"
     txt += " http://genocide.rtfd.io"
-    for bot in Fleet.objs:
+    for bot in Broker.all():
         if "announce" in dir(bot):
             bot.announce(txt)
 
 
 def cbstats(evt):
+    "callback showing stats."
     name = evt.rest or "Psych"
     needed = seconds(getnr(name))
     if needed:
         delta = time.time() - STARTTIME
-        nrtimes = int(delta/needed)
-        nryear = int(YEAR/needed)
-        nrday = int(DAY/needed)
+        nrt = int(delta/needed)
+        nry = int(YEAR/needed)
+        nrd = int(DAY/needed)
         delta2 = time.time() - getday()
-        thisday = int(delta2/needed)
-        txt = "patient #%s died from %s (%s/%s) every %s (%s/year)" % (
-                                                               nrtimes,
-                                                               getalias(name),
-                                                               thisday,
-                                                               nrday,
-                                                               laps(needed),
-                                                               nryear,
-                                                              )
-        for bot in Fleet.objs:
+        this = int(delta2/needed)
+        txt = f"#{nrt} died from {getalias(name)} ({this}/{nrd}) every {laps(needed)} ({nry}/year)"
+        for bot in Broker.all():
             bot.announce(txt)
 
 
 def now(event):
+    "showing number of psychiatric patients victims."
     name = event.rest or "Psych"
     needed = seconds(getnr(name))
     if needed:
         delta = time.time() - STARTTIME
         txt = laps(delta) + " "
-        nrtimes = int(delta/needed)
-        nryear = int(YEAR/needed)
-        nrday = int(DAY/needed)
-        thisday = int(DAY % needed)
-        txt += "patient #%s died from %s (%s/%s/%s) every %s" % (
-                                                                 nrtimes,
-                                                                 getalias(name),
-                                                                 thisday,
-                                                                 nrday,
-                                                                 nryear,
-                                                                 laps(needed)
-                                                                )
+        nrt = int(delta/needed)
+        nrd = int(DAY/needed)
+        this = int(DAY % needed)
+        txt = f"#{nrt} died from {getalias(name)} ({this}/{nrd}) every {laps(needed)}"
         event.reply(txt)
     else:
         event.reply("not needed")
 
 
+"register"
+
+
+Client.add(now)
+
+
+"runtime"
+
+
 def boot():
+    "format model data."
     _nr = -1
     for key in keys(oorzaak):
         _nr += 1

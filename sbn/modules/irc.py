@@ -1,11 +1,13 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C,R,W0105,W0612,W0718,E0402
+# pylint: disable=C,R,W0105,W0718
+# ruff: noqa: F841
 
 
 "internet relay chat"
 
 
+import base64
 import os
 import queue
 import socket
@@ -16,28 +18,47 @@ import time
 import _thread
 
 
-from ..configs import Cfg
+from ..broker  import Broker
+from ..client  import Client
+from ..default import Default
+from ..event   import Event
+from ..errors  import Errors, debug
+from ..object  import Object, edit, fmt, keys
+from ..persist import Persist, last, sync
+from ..thread  import launch
 
-from .. import Default, Object, edit, fmt, keys
-from .. import Client, Command, Error, Event
-from .. import byorig, debug, last, launch, sync
 
-
-NAME = __file__.split(os.sep)[-3]
-
-
-Error.filter = ["PING", "PONG", "PRIVMSG"]
+NAME    = __file__.split(os.sep)[-3]
+get     = Broker.get
 saylock = _thread.allocate_lock()
 
 
+Errors.filter = ["PING", "PONG", "PRIVMSG"]
+
+
 def init():
+    "initialize a irc bot."
     irc = IRC()
     irc.start()
     irc.events.joined.wait()
     return irc
 
 
+def shutdown():
+    "shutdown irc bot."
+    for bot in Broker.all():
+        if "irc" not in type(bot):
+            continue
+        debug(f"IRC stopping {repr(bot)}")
+        bot.state.pongcheck = True
+        bot.state.keeprunning = False
+        bot.events.connected.clear()
+        bot.stop()
+
+
 class Config(Default):
+
+    "Config"
 
     channel = f'#{NAME}'
     commands = True
@@ -56,16 +77,21 @@ class Config(Default):
 
     def __init__(self):
         Default.__init__(self)
-        self.channel = Cfg.channel or self.channel or Config.channel
+        self.channel = self.channel or Config.channel
         self.commands = self.commands or Config.commands
-        self.nick = Cfg.nick or self.nick or Config.nick
+        self.nick = self.nick or Config.nick
         self.port = self.port or Config.port
         self.realname = self.realname or Config.realname
-        self.server = Cfg.server or self.server or Config.server
+        self.server = self.server or Config.server
         self.username = self.username or Config.username
 
 
+Persist.add(Config)
+
+
 class TextWrap(textwrap.TextWrapper):
+
+    "TextWrap"
 
     def __init__(self):
         super().__init__()
@@ -82,6 +108,8 @@ wrapper = TextWrap()
 
 class Output():
 
+    "Output"
+
     cache = Object()
 
     def __init__(self):
@@ -89,10 +117,12 @@ class Output():
         self.oqueue = queue.Queue()
 
     def dosay(self, channel, txt):
+        "overload this."
         raise NotImplementedError
 
     @staticmethod
     def extend(channel, txtlist):
+        "add list of txt to channel cache."
         if channel not in Output.cache:
             Output.cache[channel] = []
         chanlist = getattr(Output.cache, channel)
@@ -100,6 +130,7 @@ class Output():
 
     @staticmethod
     def gettxt(channel):
+        "return text from channel cache."
         txt = None
         try:
             che = getattr(Output.cache, channel, None)
@@ -110,11 +141,13 @@ class Output():
         return txt
 
     def oput(self, channel, txt):
+        "put text to output queue."
         if channel and channel not in dir(Output.cache):
             setattr(Output.cache, channel, [])
         self.oqueue.put_nowait((channel, txt))
 
     def out(self):
+        "output loop."
         while not self.dostop.is_set():
             (channel, txt) = self.oqueue.get()
             if channel is None and txt is None:
@@ -137,6 +170,7 @@ class Output():
 
     @staticmethod
     def size(chan):
+        "return size of channel cache."
         if chan in Output.cache:
             return len(getattr(Output.cache, chan, []))
         return 0
@@ -144,19 +178,23 @@ class Output():
 
 class IRC(Client, Output):
 
+    "IRC"
+
     def __init__(self):
         Client.__init__(self)
         Output.__init__(self)
         self.buffer = []
         self.cfg = Config()
+        self.channels = []
         self.events = Default()
         self.events.authed = threading.Event()
         self.events.connected = threading.Event()
         self.events.joined = threading.Event()
         self.events.ready = threading.Event()
-        self.channels = []
         self.sock = None
         self.state = Default()
+        self.state.dostop = False
+        self.state.error = ""
         self.state.keeprunning = False
         self.state.lastline = ""
         self.state.nrconnect = 0
@@ -172,12 +210,15 @@ class IRC(Client, Output):
         self.register('PRIVMSG', cb_privmsg)
         self.register('QUIT', cb_quit)
         self.register("366", cb_ready)
+        Broker.add(self)
 
     def announce(self, txt):
+        "announce on all channels."
         for channel in self.channels:
             self.oput(channel, txt)
 
-    def command(self, cmd, *args):
+    def docommand(self, cmd, *args):
+        "send command to server."
         with saylock:
             if not args:
                 self.raw(cmd)
@@ -194,6 +235,7 @@ class IRC(Client, Output):
             self.state.last = time.time()
 
     def connect(self, server, port=6667):
+        "connect to server."
         self.state.nrconnect += 1
         self.events.connected.clear()
         if self.cfg.password:
@@ -220,23 +262,26 @@ class IRC(Client, Output):
         return False
 
     def direct(self, txt):
+        "send text directly on the socket."
         with saylock:
             self.raw(txt)
             time.sleep(2.0)
 
     def disconnect(self):
+        "disconnect from server."
         try:
             self.sock.shutdown(2)
         except (
                 ssl.SSLError,
                 OSError,
                 BrokenPipeError
-               ) as ex:
+               ) as _ex:
             pass
         except Exception as ex:
-            Error.errors.append(ex)
+            Errors.add(ex)
 
     def doconnect(self, server, nck, port=6667):
+        "loop until connected."
         while 1:
             try:
                 if self.connect(server, port):
@@ -246,50 +291,56 @@ class IRC(Client, Output):
                     OSError,
                     ConnectionResetError
                    ) as ex:
-                self.state.errors = str(ex)
+                self.state.error = str(ex)
                 debug(str(ex))
             debug(f"sleeping {self.cfg.sleep} seconds")
             time.sleep(self.cfg.sleep)
         self.logon(server, nck)
 
     def event(self, txt):
+        "create an event."
         evt = self.parsing(txt)
         cmd = evt.command
         if cmd == 'PING':
             self.state.pongcheck = True
-            self.command('PONG', evt.txt or '')
+            self.docommand('PONG', evt.txt or '')
         elif cmd == 'PONG':
             self.state.pongcheck = False
         if cmd == '001':
             self.state.needconnect = False
             if self.cfg.servermodes:
-                self.command(f'MODE {self.cfg.nick} {self.cfg.servermodes}')
+                self.docommand(f'MODE {self.cfg.nick} {self.cfg.servermodes}')
             self.zelf = evt.args[-1]
         elif cmd == "376":
             self.joinall()
         elif cmd == '002':
             self.state.host = evt.args[2][:-1]
         elif cmd == '366':
-            self.state.errors = []
+            self.state.error = ""
             self.events.joined.set()
         elif cmd == '433':
-            self.state.errors = txt
+            self.state.error = txt
             nck = self.cfg.nick + '_'
-            self.command('NICK', nck)
+            self.docommand('NICK', nck)
         return evt
 
     def joinall(self):
+        "join all channels."
         for channel in self.channels:
-            self.command('JOIN', channel)
+            self.docommand('JOIN', channel)
 
     def keep(self):
+        "keep alive."
         while not self.stopped.is_set():
+            if self.state.stopkeep:
+                self.state.stopkeep = False
+                break
             self.events.connected.wait()
             self.events.authed.wait()
             self.state.keeprunning = True
             time.sleep(self.cfg.sleep)
             self.state.pongcheck = True
-            self.command('PING', self.cfg.server)
+            self.docommand('PING', self.cfg.server)
             if self.state.pongcheck:
                 debug("failed pongcheck, restarting")
                 self.state.pongcheck = False
@@ -300,6 +351,7 @@ class IRC(Client, Output):
                 break
 
     def logon(self, server, nck):
+        "log onto server,"
         self.events.connected.wait()
         self.events.authed.wait()
         self.direct(f'NICK {nck}')
@@ -307,6 +359,7 @@ class IRC(Client, Output):
 
 
     def parsing(self, txt):
+        "parse text into an event."
         rawstr = str(txt)
         rawstr = rawstr.replace('\u0001', '')
         rawstr = rawstr.replace('\001', '')
@@ -368,6 +421,7 @@ class IRC(Client, Output):
         return obj
 
     def poll(self):
+        "poll for event."
         self.events.connected.wait()
         if not self.buffer:
             try:
@@ -383,7 +437,7 @@ class IRC(Client, Output):
                     ConnectionResetError,
                     BrokenPipeError
                    ) as ex:
-                Error.add(ex)
+                Errors.add(ex)
                 self.stop()
                 debug("handler stopped")
                 evt = self.event(str(ex))
@@ -395,6 +449,7 @@ class IRC(Client, Output):
         return self.event(txt)
 
     def raw(self, txt):
+        "send raw text."
         txt = txt.rstrip()
         debug(txt)
         txt = txt[:500]
@@ -410,13 +465,14 @@ class IRC(Client, Output):
                     ConnectionResetError,
                     BrokenPipeError
                    ) as ex:
-                Error.errors.append(ex)
+                Errors.add(ex)
                 self.stop()
                 return
         self.state.last = time.time()
         self.state.nrsend += 1
 
     def reconnect(self):
+        "reconnect to server."
         debug(f"reconnecting to {self.cfg.server}")
         try:
             self.disconnect()
@@ -427,15 +483,18 @@ class IRC(Client, Output):
         self.doconnect(self.cfg.server, self.cfg.nick, int(self.cfg.port))
 
     def dosay(self, channel, txt):
+        "method for output cache."
         self.events.joined.wait()
         txt = str(txt).replace('\n', '')
         txt = txt.replace('  ', ' ')
-        self.command('PRIVMSG', channel, txt)
+        self.docommand('PRIVMSG', channel, txt)
 
     def say(self, channel, txt):
+        "say text on channel."
         self.oput(channel, txt)
 
     def some(self):
+        "parse part of input text."
         self.events.connected.wait()
         if not self.sock:
             return
@@ -450,39 +509,48 @@ class IRC(Client, Output):
         self.state.lastline = splitted[-1]
 
     def start(self):
+        "start bot."
         last(self.cfg)
         if self.cfg.channel not in self.channels:
             self.channels.append(self.cfg.channel)
         self.events.connected.clear()
         self.events.joined.clear()
         launch(Output.out, self)
-        Client.start(self)
+        launch(Client.start, self)
         launch(
                self.doconnect,
-               Cfg.server or self.cfg.server or "localhost",
-               Cfg.nick or self.cfg.nick,
+               self.cfg.server or "localhost",
+               self.cfg.nick,
                int(self.cfg.port or '6667')
               )
         if not self.state.keeprunning:
             launch(self.keep)
 
     def stop(self):
+        "stop bot."
+        self.state.stopkeep = True
         self.disconnect()
         self.dostop.set()
         self.oput(None, None)
         Client.stop(self)
 
     def wait(self):
+        "wait for ready."
         self.events.ready.wait()
 
 
+"callbacks"
+
+
 def cb_auth(evt):
-    bot = byorig(evt.orig)
-    bot.command(f'AUTHENTICATE {bot.cfg.password}')
+    "auth callback."
+    bot = get(evt.orig)
+    bot.docommand(f'AUTHENTICATE {bot.cfg.password}')
 
 
 def cb_cap(evt):
-    bot = byorig(evt.orig)
+    "capabilities callback."
+    bot = get(evt.orig)
     if bot.cfg.password and 'ACK' in evt.arguments:
         bot.direct('AUTHENTICATE PLAIN')
     else:
@@ -490,52 +558,61 @@ def cb_cap(evt):
 
 
 def cb_error(evt):
-    bot = byorig(evt.orig)
+    "error callback."
+    bot = get(evt.orig)
+    if not bot.state.nrerror:
+        bot.state.nrerror = 0
     bot.state.nrerror += 1
-    bot.state.errors.append(evt.txt)
+    bot.state.error = evt.txt
     debug(evt.txt)
 
 
 def cb_h903(evt):
-    bot = byorig(evt.orig)
+    "auth succeded callback."
+    bot = get(evt.orig)
     bot.direct('CAP END')
     bot.events.authed.set()
 
 
 def cb_h904(evt):
-    bot = byorig(evt.orig)
+    "auth succeded callback."
+    bot = get(evt.orig)
     bot.direct('CAP END')
     bot.events.authed.set()
 
 
 def cb_kill(evt):
-    pass
+    "got killed callback."
 
 
 def cb_log(evt):
-    pass
+    "log callback."
 
 
 def cb_ready(evt):
-    bot = byorig(evt.orig)
+    "bot is ready callback."
+    bot = get(evt.orig)
     if bot:
         bot.events.ready.set()
 
 
 def cb_001(evt):
-    bot = byorig(evt.orig)
+    "first line received callback."
+    bot = get(evt.orig)
     bot.logon()
 
 
 def cb_notice(evt):
-    bot = byorig(evt.orig)
+    "notice callback."
+    bot = get(evt.orig)
     if evt.txt.startswith('VERSION'):
         txt = f'\001VERSION {NAME.upper()} 140 - {bot.cfg.username}\001'
-        bot.command('NOTICE', evt.channel, txt)
+        bot.docommand('NOTICE', evt.channel, txt)
 
 
 def cb_privmsg(evt):
-    bot = byorig(evt.orig)
+    "privmsg callback."
+    bot = get(evt.orig)
     if not bot.cfg.commands:
         return
     if evt.txt:
@@ -548,11 +625,12 @@ def cb_privmsg(evt):
         if evt.txt:
             evt.txt = evt.txt[0].lower() + evt.txt[1:]
         debug(f"command from {evt.origin}: {evt.txt}")
-        Command.handle(evt)
+        bot.command(evt)
 
 
 def cb_quit(evt):
-    bot = byorig(evt.orig)
+    "quit callback."
+    bot = get(evt.orig)
     debug(f"quit from {bot.cfg.server}")
     if evt.orig and evt.orig in bot.zelf:
         bot.stop()
@@ -562,6 +640,7 @@ def cb_quit(evt):
 
 
 def cfg(event):
+    "configure command."
     config = Config()
     path = last(config)
     if not event.sets:
@@ -576,3 +655,45 @@ def cfg(event):
         edit(config, event.sets)
         sync(config, path)
         event.reply('ok')
+
+
+def mre(event):
+    "show from output cache."
+    if not event.channel:
+        event.reply('channel is not set.')
+        return
+    bot = Broker.get(event.orig)
+    if 'cache' not in dir(bot):
+        event.reply('bot is missing cache')
+        return
+    if event.channel not in bot.cache:
+        event.reply(f'no output in {event.channel} cache.')
+        return
+    for _x in range(3):
+        txt = bot.gettxt(event.channel)
+        if txt:
+            bot.say(event.channel, txt)
+    size = bot.size(event.channel)
+    event.reply(f'{size} more in cache')
+
+
+def pwd(event):
+    "create a base64 password."
+    if len(event.args) != 2:
+        event.reply('pwd <nick> <password>')
+        return
+    arg1 = event.args[0]
+    arg2 = event.args[1]
+    txt = f'\x00{arg1}\x00{arg2}'
+    enc = txt.encode('ascii')
+    base = base64.b64encode(enc)
+    dcd = base.decode('ascii')
+    event.reply(dcd)
+
+
+"register"
+
+
+Client.add(cfg)
+Client.add(mre)
+Client.add(pwd)
