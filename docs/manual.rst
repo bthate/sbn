@@ -148,13 +148,10 @@
 
     ::
 
-        cfg - irc configuration
         cmd - commands
-        mre - displays cached output
+        mod - show modules
         now - show genocide stats
-        pwd - sasl nickserv name/pass
         req - reconsider
-        wsd - show wisdom
 
 
 **SYSTEMD**
@@ -174,11 +171,11 @@
         User=<user>
         Group=<user>
         WorkingDirectory=/home/<user>/.sbn
-        ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
+        ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbn -d
         RemainAfterExit=yes
 
         [Install]
-        WantedBy=multi-user.target
+        WantedBy=default.target
 
 
     then run this
@@ -197,7 +194,6 @@
 
         ~/.sbn
         ~/.local/bin/sbn
-        ~/.local/bin/sbnd
         ~/.local/pipx/venvs/sbn/
 
 
