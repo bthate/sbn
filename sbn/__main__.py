@@ -6,6 +6,7 @@
 "main"
 
 
+import getpass
 import os
 import pathlib
 import pwd
@@ -101,8 +102,9 @@ def daemon(pidfile, verbose=False):
 
 def daemoned():
     "run in background"
-    Cfg.opts += ",d"
+    Cfg.opts += "d"
     main()
+
 
 def privileges(username):
     "drop privileges."
@@ -131,8 +133,9 @@ def main():
     "main"
     parse(Cfg, " ".join(sys.argv[1:]))
     skel()
-    enable(print)
-    setout(print)
+    if not "d" in Cfg.opts:
+        enable(print)
+        setout(print)
     if "a" in Cfg.opts:
         Cfg.mod = ",".join(modules.__dir__())
     if "v" in Cfg.opts:
@@ -141,6 +144,8 @@ def main():
     if "h" in Cfg.opts:
         print(__doc__)
     if "d" in Cfg.opts:
+        Cfg.mod  = ",".join(dir(modules))
+        Cfg.user = getpass.getuser()
         daemon(Cfg.pidfile, "-v" in sys.argv)
         privileges(Cfg.user)
         scan(modules, Cfg.mod)
