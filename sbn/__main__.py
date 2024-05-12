@@ -1,12 +1,13 @@
 # This file is placed in the Public Domain.
 #
-# pylint: disable=C0413
+# pylint: disable=C0413,W0212,W0611
 
 
 "main"
 
 
 import os
+import pathlib
 import pwd
 import readline
 import sys
@@ -99,6 +100,7 @@ def daemon(pidfile, verbose=False):
 
 
 def daemoned():
+    "run in background"
     Cfg.opts += ",d"
     main()
 
@@ -138,7 +140,6 @@ def main():
         debug(f'{dte} {Cfg.name.upper()} {Cfg.opts.upper()} {Cfg.mod.upper()}')
     if "h" in Cfg.opts:
         print(__doc__)
-    scan(modules, Cfg.mod, Cfg.sets.dis)
     if "d" in Cfg.opts:
         daemon(Cfg.pidfile, "-v" in sys.argv)
         privileges(Cfg.user)
@@ -146,7 +147,9 @@ def main():
         init(modules, Cfg.mod)
         while 1:
             time.sleep(1.0)
-    elif "c" in Cfg.opts:
+        return
+    scan(modules, Cfg.mod, Cfg.sets.dis)
+    if "c" in Cfg.opts:
         init(modules, Cfg.mod, Cfg.sets.dis)
         csl = Console()
         csl.start()
