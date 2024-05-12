@@ -149,21 +149,19 @@
         cfg - irc configuration
         cmd - commands
         mre - displays cached output
-        now - show genocide stats
         pwd - sasl nickserv name/pass
         req - reconsider
-        wsd - show wisdom
 
 
 **SYSTEMD**
 
-    save the following it in /etc/systemd/system/genocide.service
+    save the following it in /etc/systemd/system/sbn.service
     and replace "<user>" with the user running pipx
 
     ::
  
         [Unit]
-        Description=Skull, Bones and Numner (OTP-CR-117/19)
+        Description=Skull, Bones and Number (OTP-CR-117/19)
         Requires=network-online.target
         After=network-online.target
 
