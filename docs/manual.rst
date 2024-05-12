@@ -14,7 +14,7 @@
 
 **NAME**
 
-    ``GENOCIDE``  --  @KarimKhanQC reconsider OTP-CR-117/19
+    ``SBN``  --  Skull, Bones and Number (OTP-CR-117/19)
 
 
 **INSTALL**
@@ -22,7 +22,7 @@
 
 ::
 
-    $ pipx install genocide
+    $ pipx install sbn
     $ pipx ensurepath
 
 
@@ -30,14 +30,14 @@
 
 ::
 
-    genocide  <cmd> [key=val] [key==val]
-    genocide  [-a] [-c] [-v]
-    genocided [-v]
+    sbn  <cmd> [key=val] [key==val]
+    sbn  [-a] [-c] [-v]
+    sbnd [-v]
 
 
 **DESCRIPTION**
 
-    ``GENOCIDE`` holds evidence that king
+    ``SBN`` holds evidence that king
     netherlands is doing a genocide, a
     written response where king
     netherlands confirmed taking note
@@ -51,7 +51,7 @@
     torture and kills members of the
     victim groups :ref:`. <source>`
 
-    ``GENOCIDE`` contains :ref:`correspondence
+    ``SBN`` contains :ref:`correspondence
     <writings>` with the International Criminal
     Court, asking for arrest of the king of the
     netherlands, for the genocide he is committing
@@ -69,14 +69,14 @@
 
     ::
 
-        $ genocide
+        $ sbn
         $
 
     see list of commands
 
     ::
 
-        $ genocide cmd
+        $ sbn cmd
         cmd,dne,err,log,mod,req,tdo,thr,tmr
 
 
@@ -84,14 +84,14 @@
 
     ::
 
-        $ genocide -c 
+        $ sbn -c 
         >
 
     use -v for verbose
 
     ::
 
-        $ genocide -cv
+        $ sbn -cv
         May 12 05:51:49 2024 GENOCIDE CV CMD,ERR,LOG,MOD,REQ,TDO,THR,TMR
         >
 
@@ -99,7 +99,7 @@
 
     ::
 
-        $ genocided
+        $ sbnd
         $ 
 
 
@@ -107,7 +107,7 @@
 
     ::
 
-        $ genocide req
+        $ sbn req
         Information and Evidence Unit
         Office of the Prosecutor
         Post Office Box 19519
@@ -121,25 +121,25 @@
 
     ::
 
-        $ genocide cfg server=<server>
-        $ genocide cfg channel=<channel>
-        $ genocide cfg nick=<nick>
+        $ sbn cfg server=<server>
+        $ sbn cfg channel=<channel>
+        $ sbn cfg nick=<nick>
 
     sasl
 
     ::
 
-        $ genocide pwd <nsvnick> <nspass>
-        $ genocide cfg password=<frompwd>
+        $ sbn pwd <nsvnick> <nspass>
+        $ sbn cfg password=<frompwd>
 
     rss
 
     ::
 
-        $ genocide rss <url>
-        $ genocide dpl <url> <item1,item2>
-        $ genocide rem <url>
-        $ genocide nme <url> <name>
+        $ sbn rss <url>
+        $ sbn dpl <url> <item1,item2>
+        $ sbn rem <url>
+        $ sbn nme <url> <name>
 
 
 **COMMANDS**
@@ -163,7 +163,7 @@
     ::
  
         [Unit]
-        Description=@KarimKhanQC reconsider OTP-CR-117/19
+        Description=Skull, Bones and Numner (OTP-CR-117/19)
         Requires=network-online.target
         After=network-online.target
 
@@ -171,8 +171,8 @@
         Type=simple
         User=<user>
         Group=<user>
-        WorkingDirectory=/home/<user>/.genocide
-        ExecStart=/home/<user>/.local/pipx/venvs/genocide/bin/genocided
+        WorkingDirectory=/home/<user>/.sbn
+        ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
         RemainAfterExit=yes
 
         [Install]
@@ -183,10 +183,10 @@
 
     ::
 
-        $ mkdir ~/.genocide
-        $ sudo systemctl enable genocide --now
+        $ mkdir ~/.sbn
+        $ sudo systemctl enable sbn --now
 
-    default channel/server is #genocide on localhost
+    default channel/server is #sbn on localhost
 
 
 **SOURCE**
@@ -198,10 +198,10 @@
 
     ::
 
-        ~/.genocide
-        ~/.local/bin/genocide
-        ~/.local/bin/genocided
-        ~/.local/pipx/venvs/genocide/
+        ~/.sbn
+        ~/.local/bin/sbn
+        ~/.local/bin/sbnd
+        ~/.local/pipx/venvs/sbn/
 
 
 **AUTHOR**
@@ -215,4 +215,4 @@
 
     ::
 
-        GENOCIDE is Public Domain.
+        SBN is Public Domain.
