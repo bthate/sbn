@@ -64,7 +64,6 @@ prosecute the king for making the commiting of the above mentioned crimes
 the hope that it stops the mass torture with poison the king of the 
 netherlands and his government are doing.
 
-
 .. toctree::
     :hidden:
     :glob:

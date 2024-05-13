@@ -87,7 +87,7 @@ html_theme_options = {
     'show_relbar_top': False,
     'sidebar_width': 10,
 }
-html_favicon = "skull.jpg"
+html_favicon = "skull3.png"
 html_extra_path = []
 html_last_updated_fmt = '%Y-%b-%d'
 html_additional_pages = {}
@@ -135,8 +135,6 @@ rst_prolog = '''.. image:: genocide.png
 
 rst_epilog = '''.. raw:: html
 
-    <br>
-    <br>
     <br>
     <center>
     <b>
