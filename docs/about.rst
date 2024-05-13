@@ -10,7 +10,7 @@
 .. raw:: html
 
     <center><b>ABOUT</b></center>
-    <br>
+    <br><br>
 
 
 In 2018 i informed the king of the netherlands that what he calls
@@ -25,8 +25,7 @@ of the population by giving them poison instead of medicine in
 the "care" they are forced to undergo.
 
 I wrote the prosecutor asking for an arrest of the king (make him
-stop), the prosecutor decided to call it a "no basis to proceed", reference
-``OTP-CR-117/19``.
+stop), the prosecutor decided to call it a "no basis to proceed".
 
 
 .. raw:: html
