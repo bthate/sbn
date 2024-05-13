@@ -2,11 +2,10 @@
 requires = ["setuptools>=43.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
-
 [project]
 name = "sbn"
-description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "97"
+description = "Reconsider OTP-CR-117/19"
+version = "98"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
