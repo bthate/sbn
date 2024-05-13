@@ -46,17 +46,12 @@ zip-safe = true
 "share/doc/sbn" = [
     "README.rst",
     "docs/about.rst",
-    "docs/arrest.png",
     "docs/conf.py",
     "docs/ECHAhaldol.png",
     "docs/evidence.rst",
-    "docs/genocide.png",
     "docs/informed.jpg",
     "docs/OTP1.png",
-    "docs/skull.jpg",
     "docs/source.rst",
-    "docs/verbatim6.png",
-    "docs/banner.png",
     "docs/ECHAabilify.png",
     "docs/ECHAzyprexa.png",
     "docs/guilty.rst",
@@ -64,13 +59,12 @@ zip-safe = true
     "docs/OTP2.png",
     "docs/request.rst",
     "docs/skull3.png",
-    "docs/verbatim.rst",
     "docs/writings.rst",
     "docs/bevestigd.jpg",
     "docs/ECHAclozapine.png",
-    "docs/wallpaper.png",
     "docs/index.rst",
-    "docs/manual.rst"
+    "docs/manual.rst",
+    "docs/robots.txt"
 ]
 
 "share/doc/sbn/_static" = [
