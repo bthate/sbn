@@ -141,8 +141,7 @@ def main():
     if not "d" in Cfg.opts:
         enable(print)
         setout(print)
-    if "a" in Cfg.opts:
-        Cfg.mod = ",".join(modules.__dir__())
+    Cfg.mod = ",".join(modules.__dir__())
     if "v" in Cfg.opts:
         dte = " ".join(time.ctime(time.time()).replace("  ", " ").split()[1:])
         debug(f'{dte} {Cfg.name.upper()} {Cfg.opts.upper()} {Cfg.mod.upper()}')
