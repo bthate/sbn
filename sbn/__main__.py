@@ -36,7 +36,7 @@ Cfg.dis         = ""
 Cfg.mod         = "cmd,err,log,mod,req,tdo,thr,tmr"
 Cfg.opts        = ""
 Cfg.name        = "sbn"
-Cfg.version     = "96"
+Cfg.version     = "97"
 Cfg.wdr         = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile     = os.path.join(Cfg.wdr, f"{Cfg.name}.pid")
 
@@ -129,6 +129,11 @@ def wrap(func):
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old2)
 
 
+def wrapped():
+    main()
+    errors()
+
+
 def main():
     "main"
     parse(Cfg, " ".join(sys.argv[1:]))
@@ -165,5 +170,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-    errors()
+    wrapped()
+

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "96"
+version = "97"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -45,6 +45,7 @@ zip-safe = true
 [tool.setuptools.data-files]
 "share/doc/sbn" = [
     "README.rst",
+    "docs/genocide.png",
     "docs/about.rst",
     "docs/conf.py",
     "docs/ECHAhaldol.png",
