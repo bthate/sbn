@@ -36,7 +36,7 @@ Cfg.dis         = ""
 Cfg.mod         = "cmd,err,log,mod,req,tdo,thr,tmr"
 Cfg.opts        = ""
 Cfg.name        = "sbn"
-Cfg.version     = "98"
+Cfg.version     = "99"
 Cfg.wdr         = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile     = os.path.join(Cfg.wdr, f"{Cfg.name}.pid")
 
