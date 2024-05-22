@@ -118,7 +118,7 @@ rst_prolog = '''.. image:: genocide.png
 
     <center>
     <i>
-    By law, with the use of poison, killing, torturing, castrating, destroying in whole or in part,
+    By law, with the use of poison, killed, tortured, castrated, destroyed in whole or in part,
     </i>
     </center>
 '''

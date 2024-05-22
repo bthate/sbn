@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Reconsider OTP-CR-117/19"
-version = "98"
+version = "99"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -44,6 +44,7 @@ zip-safe = true
 [tool.setuptools.data-files]
 "share/doc/sbn" = [
     "README.rst",
+    "docs/verbatim7.png",
     "docs/genocide.png",
     "docs/about.rst",
     "docs/conf.py",
