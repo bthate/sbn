@@ -16,7 +16,7 @@
 
 **NAME**
 
-    SBN - ``Skull Bones and Number (OTP-CR-117/19)`` :ref:`. <source>` 
+    SBN - ``Skull Bones and Number (OTP-CR-117/19)``
 
 
 **INSTALL**

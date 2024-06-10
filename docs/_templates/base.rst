@@ -7,7 +7,7 @@
 
     <center>
 
-**{{ fullname }}**
+**{{ name }}**
 
 .. raw:: html
 

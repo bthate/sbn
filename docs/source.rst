@@ -9,7 +9,6 @@
 .. raw:: html
 
     <center><b>SOURCE</b></center>
-    </center>
     <br>
 
 
