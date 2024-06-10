@@ -22,14 +22,18 @@
 see :ref:`reconsider <reconsider>` for content.
 
 
-**acknowledgement**
+.. raw:: html
+
+    <br>
+
+**ACK**
 
 
 .. raw:: html
 
     <br>
 
-.. image:: ackack.png
+.. image:: ack3.png
     :width: 100%
 
 
@@ -46,7 +50,7 @@ see :ref:`reconsider <reconsider>` for content.
 
     <br>
 
-.. image:: OTP11.png
+.. image:: OTP111.png
     :width: 100%
 
 
@@ -68,14 +72,18 @@ see :ref:`reconsider <reconsider>` for content.
 
 see :ref:`request <request>` for content.
 
+.. raw:: html
 
-response **OTP-CR-117/19/001**
+    <br>
+
+
+**OTP-CR-117/19/001**
 
 .. raw:: html
 
     <br>
 
-.. image:: OTP22.png
+.. image:: OTP222.png
 
 .. raw:: html
 
