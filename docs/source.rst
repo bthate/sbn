@@ -1,8 +1,8 @@
+.. _source:
+
 .. raw:: html
 
     <br><br>
-
-.. _source:
 
 .. title:: Source
 
@@ -12,23 +12,32 @@
     <br>
 
 
-**SKULL BONES AND NUMBER (OTP-CR-117/19)**
+**SBN**
 
 
 .. autosummary::
     :toctree: 
     :template: base.rst
 
-
     sbn.broker		list of bots
+    sbn.classes		classes whitelist
     sbn.client		clients
+    sbn.commands        user commands
+    sbn.config		configuration
+    sbn.default         default values
     sbn.disk		storage
+    sbn.errors		deferred exception handling
+    sbn.event           events
     sbn.find		locate
     sbn.handler		event handler
     sbn.log		logging
     sbn.object		clean namespace
+    sbn.parser          parse for commands
+    sbn.repeater	repeating functions
     sbn.run		runtime
     sbn.thread		threads
+    sbn.timer		at a specific time
+    sbn.utils		utilities
 
 
 **MODULES**
@@ -46,6 +55,7 @@
     sbn.modules.opm     opml
     sbn.modules.req	request
     sbn.modules.rss	rich site syndicate
+    sbn.modules.slg	slogan
     sbn.modules.tdo	todo items
     sbn.modules.thr	list of threads
     sbn.modules.tmr	timers

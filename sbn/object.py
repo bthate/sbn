@@ -272,7 +272,7 @@ def pjoin(*args):
 
 
 def __dir__():
-    return sorted(
+    return (
         'Object',
         'construct',
         'dump',

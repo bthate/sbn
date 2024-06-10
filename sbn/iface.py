@@ -24,7 +24,7 @@ from .timer    import Timer
 from .utils    import *
 
 
-objxdir = (
+objxdir = [
         'Object',
         'construct',
         'dump',
@@ -43,11 +43,11 @@ objxdir = (
         'update',
         'values',
         'write'
-    )
+    ]
 
 
 
-objrdir = (
+objrdir = [
         'Classes',
         'Client',
         'Commands',
@@ -71,7 +71,7 @@ objrdir = (
         'name',
         'scan',
         'spl'
-    )
+    ]
 
 
 def __dir__():
