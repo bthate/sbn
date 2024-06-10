@@ -16,7 +16,7 @@ class Errors: # pylint: disable=R0903
     out    = None
 
     @staticmethod
-    def formatexc(exc):
+    def format(exc):
         "format an exception"
         res = ""
         stream = io.StringIO(
@@ -34,7 +34,7 @@ class Errors: # pylint: disable=R0903
     def output(exc):
         "check if output function is set."
         if Errors.out:
-            Errors.out(Errors.formatexc(exc)) # pylint: disable=E1102
+            Errors.out(Errors.format(exc)) # pylint: disable=E1102
 
 
 def errors():

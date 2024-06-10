@@ -19,14 +19,14 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from sbn.client  import Client, cmnd
-from sbn.default  import Default
-from sbn.disk    import Workdir, skel
-from sbn.event   import Event
-from sbn.log     import Logging, debug
-from sbn.parser  import parser
-from sbn.run     import broker, init, scan
-from sbn.thread  import errors, setout
+from .client  import Client, cmnd, init, scan
+from .default import Default
+from .disk    import Workdir
+from .errors  import Errors, errors
+from .event   import Event
+from .log     import Logging, debug
+from .parser  import parse
+from .run     import broker
 
 
 from sbn import modules
@@ -138,11 +138,11 @@ def wrapped():
 def main():
     "main"
     parse(Cfg, " ".join(sys.argv[1:]))
-    skel()
+    Workdir.skel()
     if not "d" in Cfg.opts:
-        enable(print)
-        setout(print)
-    Cfg.mod = ",".join(modules.__dir__())
+        Errors.out = Logging.out = print
+    if "a" in Cfg.opts:
+        Cfg.mod = ",".join(modules.__dir__())
     if "v" in Cfg.opts:
         dte = " ".join(time.ctime(time.time()).replace("  ", " ").split()[1:])
         debug(f'{dte} {Cfg.name.upper()} {Cfg.opts.upper()} {Cfg.mod.upper()}')
@@ -171,4 +171,3 @@ def main():
 
 if __name__ == "__main__":
     wrapped()
-
