@@ -42,7 +42,7 @@ to get the king in his cell and his genocide, thereby, stopped.
     </b>
     <br>
     <center>
-
+    
 .. image:: skull3.png
     :width: 90%
     :target: manual.html
@@ -50,4 +50,3 @@ to get the king in his cell and his genocide, thereby, stopped.
 .. raw:: html
 
     </center>
-    </b>

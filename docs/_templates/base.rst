@@ -13,7 +13,7 @@
     <h3>
     <b>
 
-{{ name }}
+{{ fullname }}
 
 .. raw:: html
 
