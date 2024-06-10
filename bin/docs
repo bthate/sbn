@@ -20,6 +20,8 @@ TXT = '''
 #
 #    pip-compile docs/requirements.in
 #
+markdown=<3.4,>=3.2.1
+    # BHJTW
 alabaster==0.7.13
     # via sphinx
 babel==2.12.1
@@ -99,8 +101,9 @@ def popen2(txt):
     proc.wait()
 
 
-popen('python3 setup.py sdist')
-popen("python3 -mvirtualenv --system-site-packages env")
-popen("env/bin/pip3 install %s -f dist --upgrade" % NAME)
-popen2("env/bin/python3 env/bin/pip3 install -I %s" % " ".join([f"{x}" for x in TXT.split("\n") if "#" not in x]))
+if "-f" in sys.argv:
+    popen('python3 setup.py sdist')
+    popen("python3 -mvirtualenv --system-site-packages env")
+    popen("env/bin/pip3 install %s -f dist --upgrade" % NAME)
+    popen2("env/bin/python3 env/bin/pip3 install -I %s" % " ".join([f"{x}" for x in TXT.split("\n") if "#" not in x]))
 popen("env/bin/python3 env/bin/sphinx-build docs html")

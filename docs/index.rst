@@ -41,6 +41,9 @@ to get the king in his cell and his genocide, thereby, stopped.
     </center>
     </b>
     <br>
+
+.. raw:: html
+
     <center>
 
 .. image:: skull3.png
@@ -50,7 +53,6 @@ to get the king in his cell and his genocide, thereby, stopped.
 .. raw:: html
 
     </center>
-    </b>
 
 
 .. toctree::
@@ -58,4 +60,3 @@ to get the king in his cell and his genocide, thereby, stopped.
     :glob:
 
     *
-

@@ -1,26 +1,18 @@
 .. _{{ fullname }}:
 
 
-.. raw:: html
-
-    <br>
-
 .. title:: {{ fullname }}
 
 .. raw:: html
 
     <center>
-    <h3>
-    <b>
 
-{{ fullname }}
+**{{ fullname }}**
 
 .. raw:: html
 
-    </b>
-    </h3>
-    </center>
     <br>
+    </center>
 
 .. auto{{ objtype }}:: {{ fullname }}
     :members:

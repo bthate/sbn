@@ -44,6 +44,7 @@
     sbn.modules.irc	internet realy chat
     sbn.modules.log	log text
     sbn.modules.mod	list of modules
+    sbn.modules.opm     opml
     sbn.modules.req	request
     sbn.modules.rss	rich site syndicate
     sbn.modules.tdo	todo items

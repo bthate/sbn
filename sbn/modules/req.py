@@ -74,7 +74,6 @@ p.s.
 2) your reference ``OTP-CR-117/19``
 
 
-|
 """
 
 
