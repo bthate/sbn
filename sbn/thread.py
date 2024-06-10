@@ -10,7 +10,7 @@ import time
 
 
 from .errors import later
-from .utils  import name
+from .utils  import named
 
 
 class Thread(threading.Thread):
@@ -20,7 +20,7 @@ class Thread(threading.Thread):
     def __init__(self, func, thrname, *args, daemon=True, **kwargs):
         super().__init__(None, self.run, thrname, (), {}, daemon=daemon)
         self._result   = None
-        self.name      = thrname or name(func)
+        self.name      = thrname or named(func)
         self.out       = None
         self.queue     = queue.Queue()
         self.sleep     = None
@@ -51,7 +51,7 @@ class Thread(threading.Thread):
 
 def launch(func, *args, **kwargs):
     "launch a thread."
-    nme = kwargs.get("name", name(func))
+    nme = kwargs.get("name", named(func))
     thread = Thread(func, nme, *args, **kwargs)
     thread.start()
     return thread

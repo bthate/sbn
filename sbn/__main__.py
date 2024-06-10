@@ -29,7 +29,7 @@ from .parser  import parse
 from .run     import broker
 
 
-from sbn import modules
+from . import modules
 
 
 Cfg             = Default()
@@ -131,6 +131,7 @@ def wrap(func):
 
 
 def wrapped():
+    "plain wrap"
     main()
     errors()
 
@@ -139,7 +140,7 @@ def main():
     "main"
     parse(Cfg, " ".join(sys.argv[1:]))
     Workdir.skel()
-    if not "d" in Cfg.opts:
+    if "v" in Cfg.opts and "d" not in Cfg.opts:
         Errors.out = Logging.out = print
     if "a" in Cfg.opts:
         Cfg.mod = ",".join(modules.__dir__())

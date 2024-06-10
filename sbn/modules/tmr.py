@@ -26,7 +26,7 @@ def init():
             continue
         diff = float(obj.time) - ttime.time()
         if diff > 0:
-            bot = broker.first()
+            bot = broker.first("irc")
             evt = Event()
             update(evt, obj)
             evt.orig = object.__repr__(bot)

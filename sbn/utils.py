@@ -81,7 +81,7 @@ def laps(seconds, short=True):
     return txt
 
 
-def name(obj):
+def named(obj):
     "return a full qualified name of an object/function/module."
     # pylint: disable=R0911
     typ = type(obj)

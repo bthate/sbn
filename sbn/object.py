@@ -221,7 +221,7 @@ class ObjectEncoder(json.JSONEncoder):
     def __init__(self, *args, **kwargs):
         json.JSONEncoder.__init__(self, *args, **kwargs)
 
-    def default(self, o):
+    def default(self, o): # pylint: disable=R0911
         "return stringable value."
         if isinstance(o, dict):
             return o.items()

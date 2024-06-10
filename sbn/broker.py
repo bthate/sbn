@@ -11,7 +11,7 @@ import _thread
 from .disk   import fetch, sync
 from .find   import fns
 from .object import Object, fqn, ident, keys, search, update
-from .utils  import fntime, name
+from .utils  import fntime
 
 
 lock = _thread.allocate_lock()
@@ -98,6 +98,7 @@ class Broker:
         return txt
 
     def register(self, clz):
+        "add class."
         self.fqns.append(fqn(clz))
 
 

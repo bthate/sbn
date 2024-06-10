@@ -10,8 +10,10 @@ here in the Netherlands."""
 
 
 def lne(event):
-    event.reply(TXT.split("\n")[0])
+    "display line of the slogan."
+    event.reply(TXT.split("\n", maxsplit=1)[0])
 
 
 def slg(event):
+    "show slogan."
     event.reply(TXT)
