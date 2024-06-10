@@ -118,7 +118,7 @@ rst_prolog = '''.. image:: genocide.png
 
     <center>
     <i>
-    By law, with the use of poison, killed, tortured, castrated, destroyed in whole or in part,
+    By law, with the use of poison, killed, tortured, castrated, destroyed in whole or in part <a href="manual.html">,</a>
     </i>
     </center>
 '''
@@ -129,7 +129,7 @@ rst_epilog = '''.. raw:: html
     <center>
     <b>
 
-:ref:`correspondence  <writings>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`reconsider <reconsider>`
+:ref:`manual <manual>` - :ref:`correspondence  <writings>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`reconsider <reconsider>` - :ref:`source <source>`
 
 .. raw: html
 

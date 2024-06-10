@@ -2,14 +2,21 @@
 
 .. raw:: html
 
-    <br>
+    <br><br>
 
 .. title:: Manual
 
 
+.. raw:: html
+
+    <center><b>MANUAL</b></center>
+    <br>
+
+
+
 **NAME**
 
-    ``GENOCIDE``  --  Reconsider ``OTP-CR-117/19``.
+    SBN - ``Skull Bones and Number (OTP-CR-117/19)`` :ref:`. <source>` 
 
 
 **INSTALL**
@@ -17,7 +24,7 @@
 
 ::
 
-    $ pipx install genocide
+    $ pipx install sbn
     $ pipx ensurepath
 
 
@@ -25,14 +32,14 @@
 
 ::
 
-    genocide  <cmd> [key=val] [key==val]
-    genocide  [-a] [-c] [-v]
-    genocided [-v]
+    sbn  <cmd> [key=val] [key==val]
+    sbn  [-a] [-c] [-v]
+    sbn [-v]
 
 
 **DESCRIPTION**
 
-    ``GENOCIDE`` holds evidence that king
+    ``SBN`` holds evidence that king
     netherlands is doing a genocide, a
     written response where king
     netherlands confirmed taking note
@@ -46,7 +53,7 @@
     torture and kills members of the
     victim groups :ref:`. <source>`
 
-    ``GENOCIDE`` contains :ref:`correspondence
+    ``SBN`` contains :ref:`correspondence
     <writings>` with the International Criminal
     Court, asking for arrest of the king of the
     netherlands, for the genocide he is committing
@@ -64,14 +71,14 @@
 
     ::
 
-        $ genocide
+        $ sbn
         $
 
     see list of commands
 
     ::
 
-        $ genocide cmd
+        $ sbn cmd
         cmd,dne,err,log,mod,req,tdo,thr,tmr
 
 
@@ -79,22 +86,22 @@
 
     ::
 
-        $ genocide -c 
+        $ sbn -c 
         >
 
     use -v for verbose
 
     ::
 
-        $ genocide -cv
-        May 12 05:51:49 2024 GENOCIDE CV CMD,ERR,LOG,MOD,REQ,TDO,THR,TMR
+        $ sbn -cv
+        May 12 05:51:49 2024 SBN CV CMD,ERR,LOG,MOD,REQ,TDO,THR,TMR
         >
 
     start daemon
 
     ::
 
-        $ genocided
+        $ sbnd
         $ 
 
 
@@ -102,7 +109,7 @@
 
     ::
 
-        $ genocide req
+        $ sbn req
         Information and Evidence Unit
         Office of the Prosecutor
         Post Office Box 19519
@@ -116,25 +123,25 @@
 
     ::
 
-        $ genocide cfg server=<server>
-        $ genocide cfg channel=<channel>
-        $ genocide cfg nick=<nick>
+        $ sbn cfg server=<server>
+        $ sbn cfg channel=<channel>
+        $ sbn cfg nick=<nick>
 
     sasl
 
     ::
 
-        $ genocide pwd <nsvnick> <nspass>
-        $ genocide cfg password=<frompwd>
+        $ sbn pwd <nsvnick> <nspass>
+        $ sbn cfg password=<frompwd>
 
     rss
 
     ::
 
-        $ genocide rss <url>
-        $ genocide dpl <url> <item1,item2>
-        $ genocide rem <url>
-        $ genocide nme <url> <name>
+        $ sbn rss <url>
+        $ sbn dpl <url> <item1,item2>
+        $ sbn rem <url>
+        $ sbn nme <url> <name>
 
 
 **COMMANDS**
@@ -144,21 +151,19 @@
         cfg - irc configuration
         cmd - commands
         mre - displays cached output
-        now - show genocide stats
         pwd - sasl nickserv name/pass
         req - reconsider
-        wsd - show wisdom
 
 
 **SYSTEMD**
 
-    save the following it in /etc/systemd/system/genocide.service
+    save the following it in /etc/systemd/system/sbn.service
     and replace "<user>" with the user running pipx
 
     ::
  
         [Unit]
-        Description=Reconsider OTP-CR-117/19.
+        Description=Skull Bones and Number (OTP-CR-117/19).
         Requires=network-online.target
         After=network-online.target
 
@@ -166,8 +171,8 @@
         Type=simple
         User=<user>
         Group=<user>
-        WorkingDirectory=/home/<user>/.genocide
-        ExecStart=/home/<user>/.local/pipx/venvs/genocide/bin/genocided
+        WorkingDirectory=/home/<user>/.sbn
+        ExecStart=/home/<user>/.local/pipx/venvs/sbn/bin/sbnd
         RemainAfterExit=yes
 
         [Install]
@@ -178,10 +183,10 @@
 
     ::
 
-        $ mkdir ~/.genocide
-        $ sudo systemctl enable genocide --now
+        $ mkdir ~/.sbn
+        $ sudo systemctl enable sbn --now
 
-    default channel/server is #genocide on localhost
+    default channel/server is #sbn on localhost
 
 
 **SOURCE**
@@ -193,10 +198,10 @@
 
     ::
 
-        ~/.genocide
-        ~/.local/bin/genocide
-        ~/.local/bin/genocided
-        ~/.local/pipx/venvs/genocide/
+        ~/.sbn
+        ~/.local/bin/sbn
+        ~/.local/bin/sbnd
+        ~/.local/pipx/venvs/sbn/*
 
 
 **AUTHOR**
@@ -210,4 +215,4 @@
 
     ::
 
-        GENOCIDE is Public Domain.
+        SBN is Public Domain.

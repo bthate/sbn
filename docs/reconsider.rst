@@ -2,7 +2,13 @@
 
 .. raw:: html
 
+    <br><br>
+
+.. raw:: html
+
+    <center><b>RECONSIDER</b></center>
     <br>
+
 
 .. title:: Reconsider
 

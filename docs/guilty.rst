@@ -3,9 +3,17 @@
 
 .. raw:: html
 
-    <br>
+    <br><br>
 
 .. title:: Guilty
+
+
+.. raw:: html
+
+    <center><b>GUILTY</b></center>
+    <br>
+
+
 
 
 .. _informed:
@@ -15,7 +23,6 @@
 
 
 .. image:: informed.jpg
-    :height: 8cm
 
 .. raw:: html
 
@@ -25,7 +32,7 @@
 
 **CHAMBER**
 
-.. image:: kamer.png
+.. image:: kamer2.png
 
 
 .. raw:: html

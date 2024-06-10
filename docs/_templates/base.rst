@@ -10,14 +10,17 @@
 .. raw:: html
 
     <center>
-    <h2>
+    <h3>
+    <b>
 
-{{ fullname }}
+{{ name }}
 
 .. raw:: html
 
-    </h2>
+    </b>
+    </h3>
     </center>
+    <br>
 
 .. auto{{ objtype }}:: {{ fullname }}
     :members:
