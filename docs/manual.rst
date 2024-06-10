@@ -34,7 +34,7 @@
 
     sbn  <cmd> [key=val] [key==val]
     sbn  [-a] [-c] [-v]
-    sbn [-v]
+    sbnd [-v]
 
 
 **DESCRIPTION**
