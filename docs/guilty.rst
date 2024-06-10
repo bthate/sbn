@@ -19,7 +19,12 @@
 **INFORMED**
 
 
+.. raw:: html
+
+    <br>
+
 .. image:: informed.jpg
+    :width: 100%
 
 .. raw:: html
 
@@ -29,8 +34,12 @@
 
 **CHAMBER**
 
-.. image:: kamer2.png
+.. raw:: html
 
+    <br>
+
+.. image:: kamer2.png
+    :width: 100%
 
 .. raw:: html
 
@@ -42,7 +51,12 @@
 **KING**
 
 
+.. raw:: html
+
+    <br>
+
 .. image:: bevestigd.jpg
+    :width: 100%
 
 .. raw:: html
 
