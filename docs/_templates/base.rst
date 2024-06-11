@@ -7,13 +7,15 @@
 
     <br>
     <center>
+    <b>
 
 **{{ fullname }}**
 
 .. raw:: html
 
-    <br>
+    </b>
     </center>
+    <br>
 
 .. auto{{ objtype }}:: {{ fullname }}
     :members:
