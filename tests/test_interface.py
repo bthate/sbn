@@ -1,0 +1,79 @@
+# This file is placed in the Public Domain.
+
+
+"interface"
+
+
+import logging
+import sys
+import unittest
+
+
+import sbn.object
+
+
+METHODS = [
+    "Object",
+    "construct",
+    "dump",
+    "dumps",
+    "edit",
+    "fmt",
+    "fqn",
+    "items",
+    "keys",
+    "load",
+    "loads",
+    "update",
+    "values",
+]
+
+
+
+DICT = {}
+
+
+DIFF = [
+    "__dict__",
+    "__module__",
+    "__slots__",
+]
+
+
+OBJECT = sbn.object
+
+
+class A(sbn.object.Object):
+
+    "A"
+
+    def a(self):
+        "test method."
+        return "b"
+
+
+class TestInterface(unittest.TestCase):
+
+    "TestInterface"
+
+    def test_methodinterface(self):
+        "test methods interface."
+        okd = True
+        for meth in METHODS:
+            func1 = getattr(OBJECT, meth)
+            if not func1:
+                continue
+            func2 = DICT.get(meth)
+            if not func2:
+                continue
+            if dir(func1) != dir(func2):
+                print(func1, func2)
+                okd = False
+            sys.stdout.flush()
+        self.assertTrue(okd)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(stream=sys.stderr)
+    logging.getLogger("SomeTest.testSomething").setLevel(logging.DEBUG)
+    unittest.main()
