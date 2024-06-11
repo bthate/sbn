@@ -5,7 +5,7 @@
 # ruff: noqa: E402, E501
 
 
-"Reconsider OTP-CR-117/19"
+"Skull, Bones and Number (OTP-CR-117/19)"
 
 
 NAME = "sbn"
@@ -112,7 +112,7 @@ intersphinx_cache_limit = 1
 rst_prolog = '''.. image:: genocide.png
     :width: 100%
     :height: 2.6cm
-    :target: index.html
+    :target: reconsider.html
 
 .. raw:: html
 
