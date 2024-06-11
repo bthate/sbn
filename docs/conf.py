@@ -67,10 +67,8 @@ html_css_files = ["sbn.css",]
 html_short_title = "%s %s" % (NAME, VERSION)
 html_sidebars = {
     '**': [
-        'about.html',
         'searchbox.html',
-        'navigation.html',
-        'relations.html',
+        'navigation.html'
     ]
 }
 html_theme = "alabaster"
@@ -82,21 +80,21 @@ html_theme_options = {
     'logo': 'skull3.png',
     'link': '#000',
     'link_hover': '#000',
-    'nosidebar': False,
+    'nosidebar': True,
     'show_powered_by': False,
-    'show_relbar_top': True,
-    'sidebar_width': 100,
+    'show_relbar_top': False,
+    'sidebar_width': '0px',
 }
 html_favicon = "skull3.png"
 html_extra_path = []
 html_last_updated_fmt = '%Y-%b-%d'
 html_additional_pages = {}
-html_domain_indices = False
-html_use_index = False
-html_split_index = False
+html_domain_indices = True
+html_use_index = True
+html_split_index = True
 html_show_sourcelink = False
 html_show_sphinx = False
-html_show_copyright = False
+html_show_copyright = True
 html_copy_source = False
 html_use_opensearch = 'http://%s.rtfd.io/' % NAME
 html_file_suffix = '.html'
@@ -129,7 +127,7 @@ rst_epilog = '''.. raw:: html
     <center>
     <b>
 
-:ref:`correspondence  <writings>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`reconsider <reconsider>`
+:ref:`home <home>` - :ref:`correspondence  <writings>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`reconsider <reconsider>`
 
 .. raw: html
 

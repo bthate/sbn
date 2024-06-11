@@ -10,9 +10,6 @@
 .. raw:: html
 
     <center><b>MANUAL</b></center>
-    <center>
-    <a href="source.html">source</a>
-    </center>
     <br>
 
 
@@ -53,7 +50,7 @@
     physical (contracted muscles) and
     mental (make people hallucinate)
     torture and kills members of the
-    victim groups :ref:`. <source>`
+    victim groups.
 
     ``SBN`` contains :ref:`correspondence
     <writings>` with the International Criminal
@@ -189,11 +186,6 @@
         $ sudo systemctl enable sbn --now
 
     default channel/server is #sbn on localhost
-
-
-**SOURCE**
-
-    source is :ref:`here <source>`
 
 
 **FILES**
