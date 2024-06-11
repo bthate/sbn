@@ -35,9 +35,6 @@ import termios
 import time
 
 
-sys.path.insert(0, os.getcwd())
-
-
 from sbn.client  import Client, cmnd, init, scan
 from sbn.default import Default
 from sbn.disk    import Workdir
@@ -54,9 +51,9 @@ from sbn import modules
 Cfg             = Default()
 Cfg.dis         = ""
 Cfg.mod         = "cmd,err,log,mod,req,slg,tdo,thr,tmr"
-Cfg.opts        = ""
 Cfg.name        = "sbn"
-Cfg.version     = "99"
+Cfg.opts        = ""
+Cfg.version     = "100"
 Cfg.wdr         = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile     = os.path.join(Cfg.wdr, f"{Cfg.name}.pid")
 
@@ -94,45 +91,6 @@ class Console(Client):
         print(txt)
 
 
-def daemon(pidfile, verbose=False):
-    "switch to background."
-    pid = os.fork()
-    if pid != 0:
-        os._exit(0)
-    os.setsid()
-    pid2 = os.fork()
-    if pid2 != 0:
-        os._exit(0)
-    if not verbose:
-        with open('/dev/null', 'r', encoding="utf-8") as sis:
-            os.dup2(sis.fileno(), sys.stdin.fileno())
-        with open('/dev/null', 'a+', encoding="utf-8") as sos:
-            os.dup2(sos.fileno(), sys.stdout.fileno())
-        with open('/dev/null', 'a+', encoding="utf-8") as ses:
-            os.dup2(ses.fileno(), sys.stderr.fileno())
-    os.umask(0)
-    os.chdir("/")
-    if os.path.exists(pidfile):
-        os.unlink(pidfile)
-    path = pathlib.Path(pidfile)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(pidfile, "w", encoding="utf-8") as fds:
-        fds.write(str(os.getpid()))
-
-
-def daemoned():
-    "run in background"
-    Cfg.opts += "d"
-    main()
-
-
-def privileges(username):
-    "drop privileges."
-    pwnam = pwd.getpwnam(username)
-    os.setgid(pwnam.pw_gid)
-    os.setuid(pwnam.pw_uid)
-
-
 def wrap(func):
     "restore console."
     old2 = None
@@ -147,11 +105,6 @@ def wrap(func):
     finally:
         if old2:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old2)
-
-
-def wrapped():
-    "plain wrap"
-    main()
     errors()
 
 
@@ -168,16 +121,6 @@ def main():
         debug(f'{dte} {Cfg.name.upper()} {Cfg.opts.upper()} {Cfg.mod.upper()}')
     if "h" in Cfg.opts:
         print(__doc__)
-    if "d" in Cfg.opts:
-        Cfg.mod  = ",".join(dir(modules))
-        Cfg.user = getpass.getuser()
-        daemon(Cfg.pidfile, "-v" in sys.argv)
-        privileges(Cfg.user)
-        scan(modules, Cfg.mod)
-        init(modules, Cfg.mod)
-        while 1:
-            time.sleep(1.0)
-        return
     scan(modules, Cfg.mod, Cfg.sets.dis)
     if "c" in Cfg.opts:
         init(modules, Cfg.mod, Cfg.sets.dis)
@@ -190,4 +133,4 @@ def main():
 
 
 if __name__ == "__main__":
-    wrap(wrapped)
+    wrap(main)
