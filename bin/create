@@ -8,6 +8,7 @@
 
 
 import os
+import subprocess
 import sys
 
 
@@ -15,44 +16,51 @@ NAME = "sbn"
 SKIP = ["env", ".git"]
 
 
-def loop(path, txt):
-    old = os.getcwd()
-    os.chdir(path)
-    for fnn in os.listdir(path):
-        if fnn in SKIP:
-            continue
-        old = os.getcwd()
-        fpath = os.path.abspath(os.path.join(path, fnn))
-        if os.path.isdir(fpath):
-            loop(fpath, txt)
-        if not os.path.isdir(fpath):
-            continue
-        os.chdir(fpath)
-        popen(txt)
-        os.chdir(old)
-        #os.chdir("..")
-    os.chdir(old)
+curdir = os.getcwd()
+
+
+os.environ["PATH"] = ":bin" + os.environ["PATH"]
 
 
 def popen(txt):
-    for line in os.popen(txt).readlines():
-        print(line.strip())
-        sys.stdout.flush()
+    "run commands"
+    with subprocess.Popen(
+                            txt.split(),
+                            stdin=sys.stdin,
+                            stdout=sys.stdout,
+                            stderr=sys.stderr,
+                            close_fds=False,
+                            text=True
+                           ) as proc:
+        proc.communicate()
+        proc.wait()
+
+
+def popen2(txt):
+    proc = subprocess.Popen(
+                            txt,
+                            stdin=sys.stdin,
+                            stdout=sys.stdout,
+                            stderr=sys.stderr,
+                            close_fds=False,
+                            shell=True,
+                            text=True
+                           )
+    proc.communicate()
+    proc.wait()
 
 
 
-popen("rm -fRv DEAD* build dist MANIFEST *.egg-info *.whl")
-popen("rm -fRv .pytest_cache .test __pycache__")
-popen("rm -fRv lib/*.egg-info")
-popen("rm -fRv .*~ *~")
-popen('rm -fRv docs/sbn*.rst')
-popen('rm -fRv html')
-if "-f" in sys.argv:
-    popen("rm -fRv store env .censor")
-loop(".", "rm -fRv *~")
-loop(".", "rm -fRv __pycache__")
+def main():
+    if "-f" in sys.argv:
+        print("cleaning")
+        popen("clean")
+    if not os.path.exists("dist"):
+        popen("python3 setup.py sdist")
+    print("creating env")
+    popen("python3 -mvirtualenv env")
+    print(f"installing {NAME}")
+    popen(f"env/bin/pip3 install {NAME} -f dist --upgrade --force")
 
 
-popen("python3 setup.py sdist")
-popen("python3 -mvirtualenv env")
-popen("./env/bin/pip3 install %s -f dist --upgrade" % NAME)
+main()

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sbn"
-description = "Reconsider OTP-CR-117/19"
-version = "99"
+description = "Skull, Bones and Number (OTP-CR-117/19)"
+version = "100"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -22,10 +22,6 @@ classifiers=[
 [project.optional-dependencies]
 dev = []
 
-[project.scripts]
-"sbn"  = "sbn.__main__:wrapped"
-"sbnd" = "sbn.__main__:daemoned"
-
 
 [project.urls]
 "home" = "https://pypi.org/project/sbn"
@@ -34,6 +30,10 @@ dev = []
 
 
 [tool.setuptools]
+script-files = [
+    "bin/sbn",
+    "bin/sbnd"
+]
 packages = [
    "sbn",
    "sbn.modules"
