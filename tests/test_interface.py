@@ -43,16 +43,7 @@ DIFF = [
 OBJECT = sbn.object
 
 
-class A(sbn.object.Object):
-
-    "A"
-
-    def a(self):
-        "test method."
-        return "b"
-
-
-class TestInterface(unittest.TestCase):
+class TestInterface(unittest.TestCase): # pylint: disable=R0903
 
     "TestInterface"
 

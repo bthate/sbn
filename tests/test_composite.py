@@ -18,5 +18,5 @@ class TestComposite(unittest.TestCase):
         "test composition."
         obj = Object()
         obj.obj = Object()
-        obj.obj.a = "test"
-        self.assertEqual(obj.obj.a, "test")
+        obj.obj.abc = "test"
+        self.assertEqual(obj.obj.abc, "test")
