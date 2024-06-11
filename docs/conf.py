@@ -9,7 +9,7 @@
 
 
 NAME = "sbn"
-VERSION = "99"
+VERSION = "100"
 
 
 import os
@@ -40,7 +40,7 @@ today_fmt = '%B %d, %Y'
 needs_sphinx = '1.7'
 exclude_patterns = ['_build', '_templates', '_source', 'Thumbs.db', '.DS_Store']
 source_suffix = '.rst'
-source_encoding = 'utf-8'
+source_encoding = 'utf-8-sig'
 modindex_common_prefix = [""]
 keep_warnings = False
 templates_path = ['_templates']
@@ -60,7 +60,7 @@ extensions = [
 # -- Options for HTML output -------------------------------------------------
 
 
-html_title = "Reconsider OTP-CR-117/19"
+html_title = "Skull, Bones and Number (OTP-CR-117/19)"
 html_style = 'sbn.css'
 html_static_path = ["_static"]
 html_css_files = ["sbn.css",]
@@ -79,13 +79,13 @@ html_theme_options = {
     'github_repo': NAME,
     'github_button': False,
     'github_banner': False,
-    'logo': 'skull.jpg',
+    'logo': 'skull3.png',
     'link': '#000',
     'link_hover': '#000',
-    'nosidebar': True,
+    'nosidebar': False,
     'show_powered_by': False,
-    'show_relbar_top': False,
-    'sidebar_width': 10,
+    'show_relbar_top': True,
+    'sidebar_width': 100,
 }
 html_favicon = "skull3.png"
 html_extra_path = []

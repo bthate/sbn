@@ -1,21 +1,28 @@
 .. _{{ fullname }}:
 
 
+.. raw:: html
+
+    <br>
+
 .. title:: {{ fullname }}
 
 .. raw:: html
 
-    <br>
-    <center>
-    <b>
+    <center><b>
+
+:ref:`home  <home>` - :ref:`manual <manual>` - :ref:`source <source>`
+
+.. raw: html
+    </b></center>
+    <br><br>
+    <center><b>
 
 **{{ fullname }}**
 
 .. raw:: html
 
-    </b>
-    </center>
-    <br>
+    </b></center>
 
 .. auto{{ objtype }}:: {{ fullname }}
     :members:
@@ -25,4 +32,4 @@
 .. raw:: html
 
     <br><br>
-
+'''

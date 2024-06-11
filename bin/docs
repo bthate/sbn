@@ -11,7 +11,7 @@ import sys
 
 
 NAME = "sbn"
-
+curdir = os.getcwd()
 
 TXT = '''
 #
@@ -72,7 +72,7 @@ os.environ["PATH"] = ":./bin" + os.environ["PATH"]
 
 
 def popen(txt):
-    "run commands"
+    "run commands on splitted string."
     with subprocess.Popen(
                             txt.split(),
                             stdin=sys.stdin,
@@ -86,6 +86,7 @@ def popen(txt):
 
 
 def popen2(txt):
+    "run commands on plain txt"
     proc = subprocess.Popen(
                             txt,
                             stdin=sys.stdin,
@@ -99,12 +100,4 @@ def popen2(txt):
     proc.wait()
 
 
-if not os.path.exists("dist") or "-f" in sys.argv:
-    popen('python3 setup.py sdist')
-if not os.path.exists("env") or "-f" in sys.argv:
-    popen("python3 -mvirtualenv --system-site-packages env")
-if not os.path.exists("env/bin/sbn") or "-f" in sys.argv:
-    popen("env/bin/pip3 install %s -f dist --upgrade" % NAME)
-if not os.path.exists("env/sphinx-build") or "-f" in sys.argv:
-    popen2("env/bin/python3 env/bin/pip3 install -I %s" % " ".join([f"{x}" for x in TXT.split("\n") if "#" not in x]))
-popen("env/bin/python3 env/bin/sphinx-build docs html")
+popen("env/bin/sphinx-build docs html")

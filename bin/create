@@ -22,6 +22,11 @@ curdir = os.getcwd()
 os.environ["PATH"] = ":bin" + os.environ["PATH"]
 
 
+def cprint(txt):
+    print(txt)
+    sys.stdout.flush()
+
+
 def popen(txt):
     "run commands"
     with subprocess.Popen(
@@ -53,13 +58,13 @@ def popen2(txt):
 
 def main():
     if "-f" in sys.argv:
-        print("cleaning")
-        popen("clean")
+        cprint("cleaning")
+        popen("clean -f")
     if not os.path.exists("dist"):
         popen("python3 setup.py sdist")
-    print("creating env")
+    cprint("creating env")
     popen("python3 -mvirtualenv env")
-    print(f"installing {NAME}")
+    cprint(f"installing {NAME}")
     popen(f"env/bin/pip3 install {NAME} -f dist --upgrade --force")
 
 

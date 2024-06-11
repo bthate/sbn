@@ -10,6 +10,9 @@
 .. raw:: html
 
     <center><b>MANUAL</b></center>
+    <center>
+    <a href="source.html">source</a>
+    </center>
     <br>
 
 

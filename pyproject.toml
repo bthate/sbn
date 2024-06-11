@@ -42,37 +42,41 @@ zip-safe = true
 
 
 [tool.setuptools.data-files]
-"share/doc/sbn" = [
+"share/doc/sbn/docs" = [
     "README.rst",
-    "docs/verbatim7.png",
-    "docs/genocide.png",
     "docs/about.rst",
-    "docs/conf.py",
-    "docs/ECHAhaldol.png",
-    "docs/evidence.rst",
-    "docs/informed.jpg",
-    "docs/OTP1.png",
-    "docs/source.rst",
-    "docs/ECHAabilify.png",
-    "docs/ECHAzyprexa.png",
-    "docs/guilty.rst",
-    "docs/kamer.png",
-    "docs/OTP2.png",
-    "docs/request.rst",
-    "docs/skull3.png",
-    "docs/writings.rst",
+    "docs/ack3.png",
     "docs/bevestigd.jpg",
+    "docs/bylaw.png",
+    "docs/conf.py",
+    "docs/ECHAabilify.png",
     "docs/ECHAclozapine.png",
+    "docs/ECHAhaldol.png",
+    "docs/ECHAzyprexa.png",
+    "docs/evidence.rst",
+    "docs/genocide.jpg",
+    "docs/genocide.png",
+    "docs/guilty.rst",
     "docs/index.rst",
+    "docs/informed.jpg",
+    "docs/kamer2.png",
     "docs/manual.rst",
-    "docs/robots.txt"
+    "docs/OTP111.png",
+    "docs/OTP222.png",
+    "docs/reconsider.rst",
+    "docs/request.rst",
+    "docs/robots.txt",
+    "docs/skull3.png",
+    "docs/source.rst",
+    "docs/verbatim7.png",
+    "docs/writings.rst"
 ]
 
-"share/doc/sbn/_static" = [
+"share/doc/sbn/docs/_static" = [
     "docs/_static/sbn.css",
 ]
 
-"share/doc/sbn/pdf" =  [
+"share/doc/sbn/docs/pdf" =  [
     "docs/pdf/bevestigd.pdf",
     "docs/pdf/EM_Ack_OTP-CR-117_19.pdf",
     "docs/pdf/EM_T04_OTP-CR-117_19.pdf",
@@ -81,7 +85,7 @@ zip-safe = true
     "docs/pdf/Rome-Statute.pdf"
 ]
 
-"share/doc/sbn/_templates" = [
+"share/doc/sbn/docs/_templates" = [
     "docs/_templates/base.rst",
     "docs/_templates/class.rst",
     "docs/_templates/mine.rst",
