@@ -53,7 +53,7 @@ from sbn import modules
 
 Cfg             = Default()
 Cfg.dis         = ""
-Cfg.mod         = "cmd,err,log,mod,req,tdo,thr,tmr"
+Cfg.mod         = "cmd,err,log,mod,req,slg,tdo,thr,tmr"
 Cfg.opts        = ""
 Cfg.name        = "sbn"
 Cfg.version     = "99"
