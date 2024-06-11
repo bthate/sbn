@@ -44,6 +44,7 @@ zip-safe = true
 [tool.setuptools.data-files]
 "share/doc/sbn/docs" = [
     "README.rst",
+    "docs/about.rst",
     "docs/ack3.png",
     "docs/bevestigd.jpg",
     "docs/bylaw.png",
@@ -62,7 +63,6 @@ zip-safe = true
     "docs/manual.rst",
     "docs/OTP111.png",
     "docs/OTP222.png",
-    "docs/reconsider.rst",
     "docs/request.rst",
     "docs/robots.txt",
     "docs/skull3.png",
