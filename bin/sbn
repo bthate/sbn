@@ -50,10 +50,10 @@ from sbn import modules
 
 Cfg             = Default()
 Cfg.dis         = ""
-Cfg.mod         = "cmd,err,log,mod,req,slg,tdo,thr,tmr"
+Cfg.mod         = "cmd,err,log,mod,req,rss,slg,tdo,thr,tmr"
 Cfg.name        = "sbn"
 Cfg.opts        = ""
-Cfg.version     = "100"
+Cfg.version     = "101"
 Cfg.wdr         = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile     = os.path.join(Cfg.wdr, f"{Cfg.name}.pid")
 
