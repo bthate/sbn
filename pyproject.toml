@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sbn"
-description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "101"
+description = "Skull, Bones and Number (SBN)"
+version = "102"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -37,7 +37,8 @@ script-files = [
 ]
 packages = [
    "sbn",
-   "sbn.modules"
+   "sbn.modules",
+   "sbn.user"
 ]
 zip-safe = true
 
@@ -71,9 +72,16 @@ zip-safe = true
     "docs/writings.rst"
 ]
 
+
 "share/doc/sbn/docs/_static" = [
     "docs/_static/sbn.css",
 ]
+
+
+"share/doc/sbn/docs/files" = [
+    "docs/files/sitemap.xml",
+]
+
 
 "share/doc/sbn/docs/pdf" =  [
     "docs/pdf/bevestigd.pdf",
@@ -84,12 +92,14 @@ zip-safe = true
     "docs/pdf/Rome-Statute.pdf"
 ]
 
+
 "share/doc/sbn/docs/_templates" = [
     "docs/_templates/base.rst",
     "docs/_templates/class.rst",
     "docs/_templates/mine.rst",
     "docs/_templates/module.rst"
 ]
+
 
 [tool.setuptools.exclude-package-data]
 "*" = [
