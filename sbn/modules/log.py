@@ -1,4 +1,5 @@
 # This file is placed in the Public Domain.
+# pylint: disable=R0903
 
 
 "log text"
@@ -7,13 +8,12 @@
 import time
 
 
-from ..disk   import sync
-from ..find   import find, fntime
 from ..object import Object
-from ..utils  import laps
+from ..disk   import find, sync
+from ..utils  import fntime, laps
 
 
-class Log(Object): # pylint: disable=R0903
+class Log(Object):
 
     "Log"
 

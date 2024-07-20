@@ -1,15 +1,17 @@
 # This file is placed in the Public Domain.
+# pylint: disable=R0911,C0415,W0212,E0401
 
 
 "utilities"
 
 
-import os
 import pathlib
 import time
 import types
-import uuid
 import _thread
+
+
+SEP = "/"
 
 
 def cdir(pth):
@@ -21,7 +23,7 @@ def cdir(pth):
 def fntime(daystr):
     "convert file name to it's saved time."
     daystr = daystr.replace('_', ':')
-    datestr = ' '.join(daystr.split(os.sep)[-2:])
+    datestr = ' '.join(daystr.split(SEP)[-2:])
     if '.' in datestr:
         datestr, rest = datestr.rsplit('.', 1)
     else:
@@ -33,11 +35,11 @@ def fntime(daystr):
 
 
 def forever():
-    "run forever."
+    "it doesn't stop, until ctrl-c"
     while True:
         try:
             time.sleep(1.0)
-        except Exception: # pylint: disable=W0718
+        except (KeyboardInterrupt, EOFError):
             _thread.interrupt_main()
 
 
@@ -81,12 +83,19 @@ def laps(seconds, short=True):
     return txt
 
 
+def modnames(*args):
+    "return module names."
+    res = []
+    for arg in args:
+        res.extend([x for x in dir(arg) if not x.startswith("__")])
+    return sorted(res)
+
+
 def named(obj):
     "return a full qualified name of an object/function/module."
-    # pylint: disable=R0911
-    typ = type(obj)
-    if isinstance(typ, types.ModuleType):
+    if isinstance(obj, types.ModuleType):
         return obj.__name__
+    typ = type(obj)
     if '__builtins__' in dir(typ):
         return obj.__name__
     if '__self__' in dir(obj):
@@ -100,20 +109,10 @@ def named(obj):
     return None
 
 
-def pjoin(*args):
-    "path join."
-    return "/".join(args)
-
-
-def shortid():
-    "create short id."
-    return str(uuid.uuid4())[:8]
-
-
-def skip(nme, skipp):
+def skip(name, skipp):
     "check for skipping"
     for skp in spl(skipp):
-        if skp in nme:
+        if skp in name:
             return True
     return False
 
@@ -129,18 +128,17 @@ def spl(txt):
 
 def strip(pth, nmr=3):
     "reduce to path with directory."
-    return os.sep.join(pth.split(os.sep)[-nmr:])
-
+    return SEP.join(pth.split(SEP)[-nmr:])
 
 
 def __dir__():
     return (
+        'cdir',
         'fntime',
         'forever',
         'laps',
-        'name',
-        'pjoin',
-        'shortid',
+        'modnames',
+        'named',
         'skip',
         'spl',
         'strip'

@@ -1,4 +1,5 @@
 # This file is placed in the Public Domain.
+# pylint: disable=R0902,R0903,R0912,R0915,W0718
 
 
 "internet relay chat"
@@ -15,23 +16,21 @@ import time
 import _thread
 
 
-from ..client  import Client, command
-from ..classes import Classes
-from ..default import Default
-from ..disk    import sync
-from ..event   import Event
-from ..find    import last
-from ..log     import Logging, debug
-from ..object  import Object, edit, fmt, keys, values
-from ..run     import broker
-from ..thread  import later, launch
-
-
-NAME    = __file__.split(os.sep)[-3]
-saylock = _thread.allocate_lock()
+from ..client import Client
+from ..cmds   import command
+from ..dft    import Default
+from ..errors import later
+from ..event  import Event
+from ..log    import Logging, debug
+from ..object import Object, edit, fmt, keys
+from ..disk   import last, sync
+from ..run    import fleet
+from ..thread import launch
 
 
 Logging.filter = ["PING", "PONG", "PRIVMSG"]
+NAME           = __file__.split(os.sep)[-3]
+saylock        = _thread.allocate_lock()
 
 
 def init():
@@ -39,22 +38,11 @@ def init():
     irc = IRC()
     irc.start()
     irc.events.joined.wait()
+    debug(f'started irc {fmt(irc.cfg, skip="password")}')
     return irc
 
 
-def shutdown():
-    "shutdown irc bot."
-    for bot in values(broker.objs):
-        if "irc" not in str(type(bot)).lower():
-            continue
-        debug(f"IRC stopping {repr(bot)}")
-        bot.state.pongcheck = True
-        bot.state.keeprunning = False
-        bot.events.connected.clear()
-        bot.stop()
-
-
-class Config(Default): # pylint: disable=R0902,R0903
+class Config(Default):
 
     "Config"
 
@@ -84,9 +72,6 @@ class Config(Default): # pylint: disable=R0902,R0903
         self.username = self.username or Config.username
 
 
-Classes.whitelist(Config)
-
-
 class TextWrap(textwrap.TextWrapper):
 
     "TextWrap"
@@ -104,7 +89,7 @@ class TextWrap(textwrap.TextWrapper):
 wrapper = TextWrap()
 
 
-class Output():
+class Output:
 
     "Output"
 
@@ -208,29 +193,12 @@ class IRC(Client, Output):
         self.register('PRIVMSG', cb_privmsg)
         self.register('QUIT', cb_quit)
         self.register("366", cb_ready)
-        broker.add(self)
+        fleet.register(self)
 
     def announce(self, txt):
         "announce on all channels."
         for channel in self.channels:
             self.oput(channel, txt)
-
-    def docommand(self, cmd, *args):
-        "send command to server."
-        with saylock:
-            if not args:
-                self.raw(cmd)
-            elif len(args) == 1:
-                self.raw(f'{cmd.upper()} {args[0]}')
-            elif len(args) == 2:
-                txt = ' '.join(args[1:])
-                self.raw(f'{cmd.upper()} {args[0]} :{txt}')
-            elif len(args) >= 3:
-                txt = ' '.join(args[2:])
-                self.raw("{cmd.upper()} {args[0]} {args[1]} :{txt}")
-            if (time.time() - self.state.last) < 5.0:
-                time.sleep(5.0)
-            self.state.last = time.time()
 
     def connect(self, server, port=6667):
         "connect to server."
@@ -275,8 +243,25 @@ class IRC(Client, Output):
                 BrokenPipeError
                ) as _ex:
             pass
-        except Exception as ex: # pylint: disable=W0718
+        except Exception as ex:
             later(ex)
+
+    def docommand(self, cmd, *args):
+        "send command to server."
+        with saylock:
+            if not args:
+                self.raw(cmd)
+            elif len(args) == 1:
+                self.raw(f'{cmd.upper()} {args[0]}')
+            elif len(args) == 2:
+                txt = ' '.join(args[1:])
+                self.raw(f'{cmd.upper()} {args[0]} :{txt}')
+            elif len(args) >= 3:
+                txt = ' '.join(args[2:])
+                self.raw("{cmd.upper()} {args[0]} {args[1]} :{txt}")
+            if (time.time() - self.state.last) < 5.0:
+                time.sleep(5.0)
+            self.state.last = time.time()
 
     def doconnect(self, server, nck, port=6667):
         "loop until connected."
@@ -294,6 +279,13 @@ class IRC(Client, Output):
             debug(f"sleeping {self.cfg.sleep} seconds")
             time.sleep(self.cfg.sleep)
         self.logon(server, nck)
+
+    def dosay(self, channel, txt):
+        "method for output cache."
+        self.events.joined.wait()
+        txt = str(txt).replace('\n', '')
+        txt = txt.replace('  ', ' ')
+        self.docommand('PRIVMSG', channel, txt)
 
     def event(self, txt):
         "create an event."
@@ -355,10 +347,8 @@ class IRC(Client, Output):
         self.direct(f'NICK {nck}')
         self.direct(f'USER {nck} {server} {server} {nck}')
 
-
     def parsing(self, txt):
         "parse text into an event."
-        # pylint: disable=R0912,R0915
         rawstr = str(txt)
         rawstr = rawstr.replace('\u0001', '')
         rawstr = rawstr.replace('\001', '')
@@ -480,13 +470,6 @@ class IRC(Client, Output):
         self.events.connected.clear()
         self.events.joined.clear()
         self.doconnect(self.cfg.server, self.cfg.nick, int(self.cfg.port))
-
-    def dosay(self, channel, txt):
-        "method for output cache."
-        self.events.joined.wait()
-        txt = str(txt).replace('\n', '')
-        txt = txt.replace('  ', ' ')
-        self.docommand('PRIVMSG', channel, txt)
 
     def say(self, channel, txt):
         "say text on channel."
@@ -624,7 +607,7 @@ def cb_quit(bot, evt):
 def cfg(event):
     "configure command."
     config = Config()
-    path = last(config)
+    last(config)
     if not event.sets:
         event.reply(
                     fmt(
@@ -635,7 +618,7 @@ def cfg(event):
                    )
     else:
         edit(config, event.sets)
-        sync(config, path)
+        sync(config)
         event.reply('ok')
 
 
@@ -644,7 +627,7 @@ def mre(event):
     if not event.channel:
         event.reply('channel is not set.')
         return
-    bot = broker.get(event.orig)
+    bot = fleet.get(event.orig)
     if 'cache' not in dir(bot):
         event.reply('bot is missing cache')
         return
