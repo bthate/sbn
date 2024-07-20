@@ -15,7 +15,7 @@ import sys
 from sbn.cfg    import Config
 from sbn.errors import errors, later
 from sbn.disk   import Persist, pidfile, skel
-from sbn.main   import enable, init
+from sbn.main   import enable, init, scan
 from sbn.utils  import forever
 
 
@@ -24,7 +24,7 @@ from sbn import modules, user
 
 Cfg         = Config()
 Cfg.dis     = ""
-Cfg.mod     = "irc,rss"
+Cfg.mod     = "cmd,irc,rss"
 Cfg.opts    = ""
 Cfg.name    = "sbn"
 Cfg.user    = getpass.getuser()
@@ -81,6 +81,7 @@ def main():
     privileges(Cfg.user)
     if "-v" in sys.argv:
         enable(print)
+    scan(Cfg.mod, modules, user)
     init(Cfg.mod, modules, user)
     forever()
 
