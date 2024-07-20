@@ -62,7 +62,7 @@ extensions = [
 
 html_title = "Skull, Bones and Number (OTP-CR-117/19)"
 html_style = 'sbn.css'
-html_static_path = ["_static"]
+html_static_path = ["_static", "files/sitemap.xml"]
 html_css_files = ["sbn.css",]
 html_short_title = "%s %s" % (NAME, VERSION)
 html_sidebars = {
