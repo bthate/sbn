@@ -32,6 +32,7 @@ dev = []
 [tool.setuptools]
 script-files = [
     "bin/sbn",
+    "bin/sbnc",
     "bin/sbnd"
 ]
 packages = [
