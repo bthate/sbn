@@ -15,15 +15,11 @@ import sbn.object
 METHODS = [
     "Object",
     "construct",
-    "dump",
-    "dumps",
     "edit",
     "fmt",
     "fqn",
     "items",
     "keys",
-    "load",
-    "loads",
     "update",
     "values",
 ]

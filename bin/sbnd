@@ -1,48 +1,49 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
+# pylint: disable=C0411,C0413,W0212,W0718,E0401
 
 
-"daemon"
+"main"
 
 
 import getpass
 import os
-import pathlib
 import pwd
 import sys
-import time
 
 
-from sbn.client  import init, scan
-from sbn.default import Default
-from sbn.disk    import Workdir
+from sbn.cfg    import Config
+from sbn.errors import errors, later
+from sbn.disk   import Persist, pidfile, skel
+from sbn.main   import enable, init
+from sbn.utils  import forever
 
 
-from sbn import modules
+from sbn import modules, user
 
 
-Cfg             = Default()
-Cfg.dis         = ""
-Cfg.mod         = "cmd,err,irc,log,mod,req,rss,tdo,thr,tmr"
-Cfg.opts        = ""
-Cfg.name        = "sbn"
-Cfg.version     = "101"
-Cfg.wdr         = os.path.expanduser(f"~/.{Cfg.name}")
-Cfg.pidfile     = os.path.join(Cfg.wdr, f"{Cfg.name}.pid")
+Cfg         = Config()
+Cfg.dis     = ""
+Cfg.mod     = "irc,rss"
+Cfg.opts    = ""
+Cfg.name    = "sbn"
+Cfg.user    = getpass.getuser()
+Cfg.wdr     = os.path.expanduser(f"~/.{Cfg.name}")
+Cfg.pidfile = os.path.join(Cfg.wdr, f"{Cfg.name}.pid")
 
 
-Workdir.workdir = Cfg.wdr
+Persist.workdir = Cfg.wdr
 
 
-def daemon(pidfile, verbose=False):
+def daemon(verbose=False):
     "switch to background."
     pid = os.fork()
     if pid != 0:
-        os._exit(0) # pylint: disable=W0212
+        os._exit(0)
     os.setsid()
     pid2 = os.fork()
     if pid2 != 0:
-        os._exit(0) # pylint: disable=W0212
+        os._exit(0)
     if not verbose:
         with open('/dev/null', 'r', encoding="utf-8") as sis:
             os.dup2(sis.fileno(), sys.stdin.fileno())
@@ -52,12 +53,6 @@ def daemon(pidfile, verbose=False):
             os.dup2(ses.fileno(), sys.stderr.fileno())
     os.umask(0)
     os.chdir("/")
-    if os.path.exists(pidfile):
-        os.unlink(pidfile)
-    path = pathlib.Path(pidfile)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(pidfile, "w", encoding="utf-8") as fds:
-        fds.write(str(os.getpid()))
 
 
 def privileges(username):
@@ -67,17 +62,28 @@ def privileges(username):
     os.setuid(pwnam.pw_uid)
 
 
+def wrap(func):
+    "catch exceptions"
+    try:
+        func()
+    except (KeyboardInterrupt, EOFError):
+        print("")
+    except Exception as ex:
+        later(ex)
+    errors()
+
+
 def main():
     "main"
-    Workdir.skel()
-    Cfg.user = getpass.getuser()
-    Cfg.mod  = ",".join(dir(modules))
-    daemon(Cfg.pidfile, "-v" in sys.argv)
+    daemon("-v" in sys.argv)
+    skel()
+    pidfile(Cfg.pidfile)
     privileges(Cfg.user)
-    scan(modules, Cfg.mod)
-    init(modules, Cfg.mod)
-    while 1:
-        time.sleep(1.0)
+    if "-v" in sys.argv:
+        enable(print)
+    init(Cfg.mod, modules, user)
+    forever()
 
 
-main()
+if __name__ == "__main__":
+    wrap(main)
