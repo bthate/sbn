@@ -12,4 +12,4 @@ import setuptools
 
 
 if __name__ == "__main__":
-    setuptools.setup(scripts=["bin/sbn", "bin/sbnd"])
+    setuptools.setup(scripts=["bin/sbn", "bin/sbnc", "bin/sbnd"])
