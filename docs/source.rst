@@ -3,15 +3,10 @@
 
 .. raw:: html
 
-     <br>
+     <br><br>
+
 
 .. title:: Source
-
-
-.. raw:: html
-
-    <center><h3><b>source</b></h3></center>
-    <br>
 
 
 **GENOCIDE**

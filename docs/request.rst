@@ -7,11 +7,6 @@
 .. title:: Request
 
 
-.. raw:: html
-
-    <center><h3><b>request</b></h3></center>
-    <br>
-
 
 | **Information and Evidence Unit**
 | **Office of the Prosecutor**

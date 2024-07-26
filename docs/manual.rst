@@ -2,21 +2,14 @@
 
 .. raw:: html
 
-    <br>
+    <br><br>
 
 .. title:: Manual
 
 
-.. raw:: html
-
-    <center><h3><b>manual</b></h3></center>
-    <br>
-
-
-
 **NAME**
 
-    ``GENOCIDE`` - Elderly, Wicked, Criminals, Handicapped `. <source.html>`_
+    ``GENOCIDE`` - Elderly, Handicapped, Criminals, Wicked
 
 
 **INSTALL**
@@ -186,6 +179,11 @@
         $ sudo systemctl enable genocide --now
 
     default channel/server is #genocide on localhost
+
+
+**SOURCE**
+
+    source is :ref:`here <source>`
 
 
 **FILES**
