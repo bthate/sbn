@@ -23,6 +23,11 @@ classifiers=[
 dev = []
 
 
+[project.scripts]
+"sbn"  = "sbn.__main__:wrapped"
+"sbnc" = "sbn.term:wrapped"
+"sbnd" = "sbn.daemon:wrapped"
+
 [project.urls]
 "home" = "https://pypi.org/project/sbn"
 "bugs" = "https://github.com/bthate/sbn/issues"
@@ -30,15 +35,9 @@ dev = []
 
 
 [tool.setuptools]
-script-files = [
-    "bin/sbn",
-    "bin/sbnc",
-    "bin/sbnd"
-]
 packages = [
    "sbn",
-   "sbn.modules",
-   "sbn.user"
+   "sbn.modules"
 ]
 zip-safe = true
 
