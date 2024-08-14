@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number (SBN)"
-version = "102"
+version = "103"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -44,8 +44,8 @@ zip-safe = true
 
 [tool.setuptools.data-files]
 "share/doc/sbn/docs" = [
-    "README.rst",
     "docs/about.rst",
+    "docs/ack.png",
     "docs/ack3.png",
     "docs/bevestigd.jpg",
     "docs/bylaw.png",
@@ -79,6 +79,8 @@ zip-safe = true
 
 "share/doc/sbn/docs/files" = [
     "docs/files/sitemap.xml",
+    "files/README.rst",
+    "files/MANUAL.rst"
 ]
 
 
