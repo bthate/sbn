@@ -16,16 +16,15 @@ import time
 import _thread
 
 
-from ..client import Client
-from ..cmds   import command
-from ..dft    import Default
-from ..errors import later
-from ..event  import Event
-from ..log    import Logging, debug
-from ..object import Object, edit, fmt, keys
-from ..disk   import last, sync
-from ..run    import fleet
-from ..thread import launch
+from ..client  import Client, command
+from ..default import Default
+from ..errors  import later
+from ..fleet   import Fleet
+from ..event   import Event
+from ..log     import Logging, debug
+from ..object  import Object, edit, fmt, keys
+from ..persist import last, sync
+from ..thread  import launch
 
 
 Logging.filter = ["PING", "PONG", "PRIVMSG"]
@@ -193,7 +192,6 @@ class IRC(Client, Output):
         self.register('PRIVMSG', cb_privmsg)
         self.register('QUIT', cb_quit)
         self.register("366", cb_ready)
-        fleet.register(self)
 
     def announce(self, txt):
         "announce on all channels."
@@ -627,18 +625,18 @@ def mre(event):
     if not event.channel:
         event.reply('channel is not set.')
         return
-    bot = fleet.get(event.orig)
+    bot = Fleet.get(event.orig)
     if 'cache' not in dir(bot):
         event.reply('bot is missing cache')
         return
-    if event.channel not in bot.cache:
+    if event.channel not in Output.cache:
         event.reply(f'no output in {event.channel} cache.')
         return
     for _x in range(3):
-        txt = bot.gettxt(event.channel)
+        txt = Output.gettxt(event.channel)
         if txt:
-            bot.say(event.channel, txt)
-    size = bot.size(event.channel)
+            event.reply(txt)
+    size = IRC.size(event.channel)
     event.reply(f'{size} more in cache')
 
 

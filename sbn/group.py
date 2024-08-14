@@ -9,7 +9,7 @@
 from .object import Object
 
 
-class OoL(Object):
+class Group(Object):
 
     "Object of Lists."
 

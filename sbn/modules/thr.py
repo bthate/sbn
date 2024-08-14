@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"show running threads"
+"show running threads."
 
 
 import threading
@@ -23,6 +23,8 @@ def thr(event):
             continue
         obj = Object()
         update(obj, vars(thread))
+        if getattr(obj, 'current', None):
+            thread.name = obj.current
         if getattr(obj, 'sleep', None):
             uptime = obj.sleep - int(time.time() - obj.state["latest"])
         elif getattr(obj, 'starttime', None):

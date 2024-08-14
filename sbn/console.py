@@ -6,7 +6,6 @@
 
 from .client import Client
 from .event  import Event
-from .run    import fleet
 
 
 class Console(Client):
@@ -17,7 +16,6 @@ class Console(Client):
         Client.__init__(self, outer)
         self.inner = inner
         self.prompt = prompt
-        fleet.register(self)
 
     def announce(self, txt):
         "echo text"

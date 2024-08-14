@@ -4,7 +4,7 @@
 "list of bots."
 
 
-from .object import Object, values
+from .object import Object
 
 
 rpr = object.__repr__
@@ -14,23 +14,45 @@ class Fleet(Object):
 
     "Fleet"
 
-    def all(self):
+    bots = []
+
+    @staticmethod
+    def all():
         "return all objects."
-        return values(self)
+        return Fleet.bots
 
-    def announce(self, txt):
+    @staticmethod
+    def announce(txt):
         "announce on all bots."
-        for bot in values(self):
-            if "announce" in dir(bot):
+        for bot in Fleet.bots:
+            try:
                 bot.announce(txt)
+            except AttributeError:
+                pass
 
-    def get(self, orig):
+    @staticmethod
+    def say(channel, txt):
+        "announce on all bots."
+        for bot in Fleet.bots:
+            try:
+                bot.say(channel, txt)
+            except AttributeError:
+                pass
+
+    @staticmethod
+    def get(orig):
         "return bot."
-        return getattr(self, orig, None)
+        res = None
+        for bot in Fleet.bots:
+            if rpr(bot) == orig:
+                res = bot
+                break
+        return res
 
-    def register(self, obj):
+    @staticmethod
+    def register(obj):
         "add bot."
-        setattr(self, rpr(obj), obj)
+        Fleet.bots.append(obj)
 
 
 def __dir__():

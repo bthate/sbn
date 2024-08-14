@@ -20,22 +20,22 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from ..dft    import Default
-from ..object import Object, construct, fmt, update
-from ..disk   import find, last, sync
-from ..ool    import OoL, append
-from ..repeat import Repeater
-from ..thread import launch
-from ..log    import debug
-from ..run    import fleet
-from ..utils  import fntime, laps, spl
+from ..default  import Default
+from ..fleet    import Fleet
+from ..object   import Object, construct, fmt, update
+from ..persist  import find, last, sync
+from ..group    import Group, append
+from ..repeater import Repeater
+from ..thread   import launch
+from ..log      import debug
+from ..utils    import fntime, laps, spl
 
 
 def init():
     "start fetcher."
     fetcher = Fetcher()
     fetcher.start()
-    debug(f'started rss {fmt(fetcher,skip="seen")}')
+    debug(f'started rss {fmt(fetcher,skip="seen,seenfn")}')
     return fetcher
 
 
@@ -44,10 +44,10 @@ DEBUG = False
 
 TEMPLATE = """<opml version="1.0">
     <head>
-        <title>rssbot opml</title>
+        <title>OPML</title>
     </head>
     <body>
-        <outline title="rssbot opml" text="24/7 feed fetcher">"""
+        <outline title="opml" text="rss feeds">"""
 
 
 
@@ -70,13 +70,14 @@ class Rss(Default):
         self.rss          = ''
 
 
-class Urls(OoL):
+class Urls(Group):
 
     "Seen"
 
     def __init__(self):
-        OoL.__init__(self)
+        Group.__init__(self)
         self.nrlinks = Object()
+
 
 def append_url(obj, url, item):
     "urls add."
@@ -151,7 +152,7 @@ class Fetcher(Object):
             txt = f'[{feedname}] '
         for obj in result:
             txt2 = txt + self.display(obj)
-            fleet.announce(txt2.rstrip())
+            Fleet.announce(txt2.rstrip())
         return counter
 
     def run(self, silent=False):
@@ -392,6 +393,9 @@ def syn(event):
         thr.join()
         nrs += 1
     event.reply(f"{nrs} feeds synced")
+
+
+syn.threaded = True
 
 
 "OPML"

@@ -5,15 +5,14 @@
 "main"
 
 
-from .client import Client
-from .cmds   import command
-from .cmds   import scancmd
-from .errors import Errors
-from .disk   import scancls
-from .event  import Event
-from .log    import Logging
-from .thread import launch
-from .utils  import skip, spl
+from .client  import Client, command
+from .cmds    import Commands
+from .errors  import Errors
+from .persist import Persist
+from .event   import Event
+from .log     import Logging
+from .thread  import launch
+from .utils   import skip, spl
 
 
 def cmnd(txt, outer):
@@ -60,8 +59,8 @@ def scan(modstr, *pkgs, disable=""):
             module = getattr(pkg, modname, None)
             if not module:
                 continue
-            scancmd(module)
-            scancls(module)
+            Commands.scan(module)
+            Persist.scan(module)
     return mds
 
 

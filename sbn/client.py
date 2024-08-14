@@ -5,9 +5,11 @@
 "client"
 
 
-from .cache  import Cache
-from .cmds   import command
-from .react  import Reactor
+from .cache   import Cache
+from .cmds    import Commands
+from .fleet   import Fleet
+from .parse   import parse
+from .reactor import Reactor
 
 
 class Client(Reactor):
@@ -21,13 +23,14 @@ class Client(Reactor):
         Reactor.__init__(self)
         self.register("command", command)
         self.out = outer
+        Fleet.register(self)
 
     def say(self, _channel, txt):
         "echo on verbose."
         self.raw(txt)
 
     def raw(self, txt):
-        "print to screen."
+        "echo to screen."
         if self.out:
             txt = txt.encode('utf-8', 'replace').decode()
             self.out(txt)
@@ -36,6 +39,16 @@ class Client(Reactor):
         "show results into a channel."
         for txt in evt.result:
             self.say(evt.channel, txt)
+
+
+def command(bot, evt):
+    "check for and run a command."
+    parse(evt)
+    func = getattr(Commands.cmds, evt.cmd, None)
+    if func:
+        func(evt)
+        bot.show(evt)
+    evt.ready()
 
 
 def __dir__():

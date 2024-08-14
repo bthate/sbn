@@ -8,27 +8,27 @@
 
 import getpass
 import os
-import pwd
 import sys
 
 
-from sbn.cfg    import Config
-from sbn.errors import errors, later
-from sbn.disk   import Persist, pidfile, skel
-from sbn.main   import enable, init, scan
-from sbn.utils  import forever
+sys.path.insert(0, os.getcwd())
 
 
-from sbn import modules, user
+from sbn.config  import Config
+from sbn.persist import Persist, skel
+from sbn.errors  import errors, later
+from sbn.main    import init, scan
+from sbn.utils   import forever, pidfile, privileges
+
+
+from sbn import modules
 
 
 Cfg         = Config()
-Cfg.dis     = ""
-Cfg.mod     = "cmd,irc,rss"
-Cfg.opts    = ""
-Cfg.name    = "sbn"
-Cfg.user    = getpass.getuser()
+Cfg.name    = Config.__module__.split(".")[-2]
+Cfg.mod     = "irc,rss"
 Cfg.wdr     = os.path.expanduser(f"~/.{Cfg.name}")
+Cfg.user    = getpass.getuser()
 Cfg.pidfile = os.path.join(Cfg.wdr, f"{Cfg.name}.pid")
 
 
@@ -53,13 +53,7 @@ def daemon(verbose=False):
             os.dup2(ses.fileno(), sys.stderr.fileno())
     os.umask(0)
     os.chdir("/")
-
-
-def privileges(username):
-    "drop privileges."
-    pwnam = pwd.getpwnam(username)
-    os.setgid(pwnam.pw_gid)
-    os.setuid(pwnam.pw_uid)
+    os.nice(10)
 
 
 def wrap(func):
@@ -73,18 +67,21 @@ def wrap(func):
     errors()
 
 
+def wrapped():
+    "wrap main function"
+    wrap(main)
+
+
 def main():
     "main"
-    daemon("-v" in sys.argv)
+    daemon()
+    privileges(Cfg.user)
     skel()
     pidfile(Cfg.pidfile)
-    privileges(Cfg.user)
-    if "-v" in sys.argv:
-        enable(print)
-    scan(Cfg.mod, modules, user)
-    init(Cfg.mod, modules, user)
+    scan(Cfg.mod, modules)
+    init(Cfg.mod, modules)
     forever()
 
 
 if __name__ == "__main__":
-    wrap(main)
+    wrapped()
