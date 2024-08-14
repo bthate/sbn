@@ -2,7 +2,7 @@
 
 .. raw:: html
 
-    <br>
+    <br><br>
 
 .. title:: Reconsider
 
@@ -65,5 +65,5 @@ prosecute the king for making the commiting of the above mentioned crimes
 p.s.
 
 
-1) entered in the Communications Register of the Office on 4 march 2019
-2) your reference ``OTP-CR-117/19`` `. <about.html>`_
+1) Entered in the Communications Register of the Office on 4 march 2019
+2) Your reference ``OTP-CR-117/19`` 

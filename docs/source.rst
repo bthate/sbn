@@ -9,7 +9,7 @@
 .. title:: Source
 
 
-**GENOCIDE**
+**SBN**
 
 .. raw:: html
 
@@ -21,24 +21,24 @@
     :template: base.rst
 
     sbn.cache
+    sbn.config
     sbn.client
     sbn.cmds
-    sbn.cfg
-    sbn.decode
-    sbn.disk
+    sbn.console
+    sbn.decoder
+    sbn.default
+    sbn.encoder
     sbn.errors
-    sbn.dft
-    sbn.encode
     sbn.event
-    sbn.face
-    sbn.lock
+    sbn.fleet
+    sbn.group
     sbn.log
     sbn.main
     sbn.object
     sbn.parse
-    sbn.react
-    sbn.repeat
-    sbn.run
+    sbn.persist
+    sbn.reactor
+    sbn.repeater
     sbn.thread
     sbn.timer
     sbn.utils
@@ -69,4 +69,3 @@
     sbn.modules.rss
     sbn.modules.tdo
     sbn.modules.thr
-    sbn.modules.upt

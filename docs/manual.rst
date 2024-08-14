@@ -9,24 +9,16 @@
 
 **NAME**
 
-    ``GENOCIDE`` - Elderly, Handicapped, Criminals, Wicked
-
-
-**INSTALL**
-
-
-::
-
-    $ pipx install genocide
-    $ pipx ensurepath
+    **GENOCIDE** - Elderly, Handicapped, Criminals, Wicked `! <source.html>`_
 
 
 **SYNOPSIS**
 
-::
+    ::
 
-    genocide <cmd> [key=val] [key==val]
-    genocide [-a] [-c] [-d] [-h] [-i] [-v]
+        genocide  <cmd> [key=val] [key==val]
+        genocidec [-i] [-v]
+        genocided 
 
 
 **DESCRIPTION**
@@ -53,8 +45,22 @@
 
     Current status is a :ref:`"no basis to proceed"
     <writings>` judgement of the prosecutor which
-    requires a :ref:`"basis to prosecute" <reconsider>`
+    requires a :ref:`"basis to prosecute" <home>`
     to have the king actually arrested.
+
+
+**INSTALL**
+
+    ::
+
+        $ pipx install genocide
+        $ pipx ensurepath
+
+        $ genocide srv > genocide.service
+        # mv *.service /etc/systemd/system/
+        # systemctl enable genocide --now
+
+        joins #genocide on localhost
 
 
 **USAGE**
@@ -71,22 +77,14 @@
     ::
 
         $ genocide cmd
-        cmd,dne,err,log,mod,req,tdo,thr,tmr
+        cmd,req,skl,srv
 
 
     start a console
 
     ::
 
-        $ genocide -c 
-        >
-
-    use -v for verbose
-
-    ::
-
-        $ genocide -cv
-        May 12 05:51:49 2024 GENOCIDE CV CMD,ERR,LOG,MOD,REQ,TDO,THR,TMR
+        $ genocidec
         >
 
     start daemon
@@ -123,17 +121,17 @@
 
     ::
 
-        $ genocide pwd <nsvnick> <nspass>
-        $ genocide cfg password=<frompwd>
+        $  genocide pwd <nsvnick> <nspass>
+        $  genocide cfg password=<frompwd>
 
     rss
 
     ::
 
-        $ genocide rss <url>
-        $ genocide dpl <url> <item1,item2>
-        $ genocide rem <url>
-        $ genocide nme <url> <name>
+        $  genocide rss <url>
+        $  genocide dpl <url> <item1,item2>
+        $  genocide rem <url>
+        $  genocide nme <url> <name>
 
 
 **COMMANDS**
@@ -147,41 +145,8 @@
         req - reconsider
 
 
-**SYSTEMD**
-
-    save the following it in /etc/systemd/system/genocide.service
-    and replace "<user>" with the user running pipx
-
-    ::
- 
-        [Unit]
-        Description=Elderly, Wicked, Criminals, Handicapped.
-        Requires=network-online.target
-        After=network-online.target
-
-        [Service]
-        Type=simple
-        User=<user>
-        Group=<user>
-        WorkingDirectory=/home/<user>/.genocide
-        ExecStart=/home/<user>/.local/pipx/venvs/genocide/bin/genocide -d
-        RemainAfterExit=yes
-
-        [Install]
-        WantedBy=default.target
-
-
-    then run this
-
-    ::
-
-        $ mkdir ~/.genocide
-        $ sudo systemctl enable genocide --now
-
-    default channel/server is #genocide on localhost
-
-
 **SOURCE**
+
 
     source is :ref:`here <source>`
 
@@ -190,8 +155,10 @@
 
     ::
 
-        ~/.genocide
+        ~/.genocide 
         ~/.local/bin/genocide
+        ~/.local/bin/genocidec
+        ~/.local/bin/genocided
         ~/.local/pipx/venvs/genocide/*
 
 

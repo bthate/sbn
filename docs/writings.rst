@@ -33,7 +33,7 @@ see :ref:`reconsider <reconsider>` for content.
 
     <br>
 
-.. image:: ack3.png
+.. image:: ack.png
     :width: 100%
 
 
