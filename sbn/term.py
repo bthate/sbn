@@ -17,7 +17,6 @@ sys.path.insert(0, os.getcwd())
 from .config  import Config
 from .console import Console
 from .errors  import errors
-from .fleet   import Fleet
 from .persist import Persist, skel
 from .main    import cmnd, enable, init, scan
 from .parse   import parse
