@@ -7,9 +7,9 @@
 import unittest
 
 
-from sbn.decode import loads
-from sbn.encode import dumps
-from sbn.object import Object
+from sbn.decoder import loads
+from sbn.encoder import dumps
+from sbn.object  import Object
 
 
 VALIDJSON = "{'test': 'bla'}"
