@@ -5,11 +5,11 @@
 # ruff: noqa: E402, E501
 
 
-"Skull, Bones and Number (OTP-CR-117/19)"
+"Office of the Prosecutor's Communication Record 117 of the year 2019."
 
 
 NAME = "sbn"
-VERSION = "100"
+VERSION = "103"
 
 
 import os
@@ -60,23 +60,13 @@ extensions = [
 # -- Options for HTML output -------------------------------------------------
 
 
-html_title = "Skull, Bones and Number (OTP-CR-117/19)"
+html_title = "Office of the Prosecutor's Communication Record 117 of the year 2019."
 html_style = 'sbn.css'
-html_static_path = ["_static", "files/sitemap.xml"]
+html_static_path = ["_static", "_static/sbn.css", "files/sitemap.xml"]
 html_css_files = ["sbn.css",]
 html_short_title = "%s %s" % (NAME, VERSION)
-html_sidebars = {
-    '**': [
-        'searchbox.html',
-        'navigation.html'
-    ]
-}
 html_theme = "alabaster"
 html_theme_options = {
-    'github_user': 'bthate',
-    'github_repo': NAME,
-    'github_button': False,
-    'github_banner': False,
     'logo': 'skull3.png',
     'link': '#000',
     'link_hover': '#000',
@@ -86,7 +76,7 @@ html_theme_options = {
     'sidebar_width': '0px',
 }
 html_favicon = "skull3.png"
-html_extra_path = []
+html_extra_path = ["robots.txt"]
 html_last_updated_fmt = '%Y-%b-%d'
 html_additional_pages = {}
 html_domain_indices = True
@@ -110,15 +100,16 @@ intersphinx_cache_limit = 1
 rst_prolog = '''.. image:: genocide.png
     :width: 100%
     :height: 2.6cm
-    :target: index.html
+    :target: about.html
 
 .. raw:: html
 
     <center>
     <i>
-    By law, with the use of poison,
+    Elderly, Handicapped, Criminals, Wicked
     </i>
     </center>
+
 '''
 
 rst_epilog = '''.. raw:: html
@@ -127,7 +118,8 @@ rst_epilog = '''.. raw:: html
     <center>
     <b>
 
-:ref:`reconsider <home>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`correspondence  <writings>`
+:ref:`reconsider <home>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>`
+
 
 .. raw: html
 
@@ -139,8 +131,13 @@ rst_epilog = '''.. raw:: html
 autosummary_generate = True
 autodoc_default_flags = ['members', 'undoc-members', 'private-members', "imported-members"]
 autodoc_member_order = 'groupwise'
-autodoc_docstring_signature = True
+autodoc_docstring_signature = False
 autoclass_content = "class"
 nitpick_ignore = [
                   ('py:class', 'builtins.BaseException'),
                  ]
+
+
+def setup(app):
+    app.add_css_file("custom.css")
+    app.add_css_file("otpcr.css")
