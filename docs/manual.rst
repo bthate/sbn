@@ -9,7 +9,7 @@
 
 **NAME**
 
-    **SBN** - Skull, Bones and Number (SBN) `! <source.html>`_
+    ``SBN`` - Skull, Bones and Number (``OTP-CR-117/19``)
 
 
 **SYNOPSIS**
@@ -65,12 +65,6 @@
         Post Office Box 19519
         2500 CM The Hague
         The Netherlands
-
-
-**SOURCE**
-
-
-    source is :ref:`here <source>`
 
 
 **FILES**
