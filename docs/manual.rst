@@ -9,21 +9,19 @@
 
 **NAME**
 
-    **GENOCIDE** - Elderly, Handicapped, Criminals, Wicked `! <source.html>`_
+    **SBN** - Skull, Bones and Number (SBN) `! <source.html>`_
 
 
 **SYNOPSIS**
 
     ::
 
-        genocide  <cmd> [key=val] [key==val]
-        genocidec [-i] [-v]
-        genocided 
+        python3 -m sbn req
 
 
 **DESCRIPTION**
 
-    ``GENOCIDE`` holds evidence that king
+    ``SBN`` holds evidence that king
     netherlands is doing a genocide, a
     written response where king
     netherlands confirmed taking note
@@ -37,7 +35,7 @@
     torture and kills members of the
     victim groups.
 
-    ``GENOCIDE`` contains :ref:`correspondence
+    ``SBN`` contains :ref:`correspondence
     <writings>` with the International Criminal
     Court, asking for arrest of the king of the
     netherlands, for the genocide he is committing
@@ -53,96 +51,20 @@
 
     ::
 
-        $ pipx install genocide
+        $ pipx install sbn
         $ pipx ensurepath
-
-        $ genocide srv > genocide.service
-        # mv *.service /etc/systemd/system/
-        # systemctl enable genocide --now
-
-        joins #genocide on localhost
 
 
 **USAGE**
 
-    without any argument the bot does nothing
-
     ::
 
-        $ genocide
-        $
-
-    see list of commands
-
-    ::
-
-        $ genocide cmd
-        cmd,req,skl,srv
-
-
-    start a console
-
-    ::
-
-        $ genocidec
-        >
-
-    start daemon
-
-    ::
-
-        $ genocided
-        $ 
-
-
-    show request to the prosecutor
-
-    ::
-
-        $ genocide req
+        $ python3 -m sbn req
         Information and Evidence Unit
         Office of the Prosecutor
         Post Office Box 19519
         2500 CM The Hague
         The Netherlands
-
-
-**CONFIGURATION**
-
-    irc
-
-    ::
-
-        $ genocide cfg server=<server>
-        $ genocide cfg channel=<channel>
-        $ genocide cfg nick=<nick>
-
-    sasl
-
-    ::
-
-        $  genocide pwd <nsvnick> <nspass>
-        $  genocide cfg password=<frompwd>
-
-    rss
-
-    ::
-
-        $  genocide rss <url>
-        $  genocide dpl <url> <item1,item2>
-        $  genocide rem <url>
-        $  genocide nme <url> <name>
-
-
-**COMMANDS**
-
-    ::
-
-        cfg - irc configuration
-        cmd - commands
-        mre - displays cached output
-        pwd - sasl nickserv name/pass
-        req - reconsider
 
 
 **SOURCE**
@@ -155,11 +77,8 @@
 
     ::
 
-        ~/.genocide 
-        ~/.local/bin/genocide
-        ~/.local/bin/genocidec
-        ~/.local/bin/genocided
-        ~/.local/pipx/venvs/genocide/*
+        ~/.sbn
+        ~/.local/pipx/venvs/sbn/*
 
 
 **AUTHOR**
@@ -169,4 +88,4 @@
 
 **COPYRIGHT**
 
-    ``GENOCIDE`` is Public Domain.
+    ``SBN`` is Public Domain.

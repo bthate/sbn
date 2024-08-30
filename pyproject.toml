@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sbn"
-description = "Skull, Bones and Number (SBN)"
-version = "103"
+description = "Skull, Bones and Number (OTP-CR-117/19)"
+version = "105"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -19,14 +19,13 @@ classifiers=[
     'Topic :: Utilities'
 ]
 
+
 [project.optional-dependencies]
 dev = []
 
 
 [project.scripts]
 "sbn"  = "sbn.__main__:wrapped"
-"sbnc" = "sbn.term:wrapped"
-"sbnd" = "sbn.daemon:wrapped"
 
 [project.urls]
 "home" = "https://pypi.org/project/sbn"
@@ -79,12 +78,11 @@ zip-safe = true
 
 "share/doc/sbn/docs/files" = [
     "docs/files/sitemap.xml",
-    "files/README.rst",
-    "files/MANUAL.rst"
+    "README.rst",
 ]
 
 
-"share/doc/sbn/docs/pdf" =  [
+"share/doc/sbn/pdf" =  [
     "docs/pdf/bevestigd.pdf",
     "docs/pdf/EM_Ack_OTP-CR-117_19.pdf",
     "docs/pdf/EM_T04_OTP-CR-117_19.pdf",

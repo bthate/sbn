@@ -5,9 +5,6 @@
 "stub"
 
 
-__author__ = "Bart Thate <bthate@dds.nl>"
-
-
 import setuptools
 
 
