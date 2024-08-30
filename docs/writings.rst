@@ -19,7 +19,7 @@
 | **Date**: Mon, 21 Jan 2019 16:17:13 +0100
 |
 
-see :ref:`reconsider <reconsider>` for content.
+see :ref:`reconsider <home>` for content.
 
 
 .. raw:: html

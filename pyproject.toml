@@ -78,7 +78,8 @@ zip-safe = true
 
 "share/doc/sbn/docs/files" = [
     "docs/files/sitemap.xml",
-    "README.rst",
+    "docs/files/genocide.png",
+    "README.rst"
 ]
 
 

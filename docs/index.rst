@@ -76,3 +76,4 @@ p.s.
     :glob:
 
     *
+    files/*

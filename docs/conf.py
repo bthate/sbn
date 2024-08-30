@@ -5,11 +5,11 @@
 # ruff: noqa: E402, E501
 
 
-"Office of the Prosecutor's Communication Record 117 of the year 2019."
+"Skull, Bones and Number (OTP-CR-117/19)"
 
 
 NAME = "sbn"
-VERSION = "103"
+VERSION = "105"
 
 
 import os
@@ -60,7 +60,7 @@ extensions = [
 # -- Options for HTML output -------------------------------------------------
 
 
-html_title = "Office of the Prosecutor's Communication Record 117 of the year 2019."
+html_title = "Skull, Bones and Number (OTP-CR-117/19)"
 html_style = 'sbn.css'
 html_static_path = ["_static", "_static/sbn.css", "files/sitemap.xml"]
 html_css_files = ["sbn.css",]
