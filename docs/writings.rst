@@ -3,9 +3,26 @@
 
 .. raw:: html
 
-    <br><br>
+  <br><br>
+
 
 .. title:: Writings
+
+
+.. raw:: html
+
+    <center><b>WRITINGS</b></center><br>
+
+
+**ACK**
+
+
+.. raw:: html
+
+    <br>
+
+.. image:: ack3.png
+    :width: 100%
 
 
 **EMAIL 1**
@@ -18,23 +35,9 @@
 | **Message-ID**: <e49d02a2-6a8e-ad64-6c8d-9abd45cf5c0e@dds.nl>
 | **Date**: Mon, 21 Jan 2019 16:17:13 +0100
 |
+|
 
-see :ref:`reconsider <home>` for content.
-
-
-.. raw:: html
-
-    <br>
-
-**ACK**
-
-
-.. raw:: html
-
-    <br>
-
-.. image:: ack3.png
-    :width: 100%
+.. include:: reconsider.rst
 
 
 .. raw:: html
@@ -68,8 +71,11 @@ see :ref:`reconsider <home>` for content.
 | **Message-ID:** <33777b52-6be9-72b2-f756-d5482d32f03d@dds.nl>
 | **Date:** Wed, 26 Jun 2019 21:05:13 +0200
 |
+|
 
-see :ref:`request <request>` for content.
+
+.. include:: request.rst
+
 
 .. raw:: html
 
@@ -78,12 +84,15 @@ see :ref:`request <request>` for content.
 
 **OTP-CR-117/19/001**
 
+
 .. raw:: html
 
     <br>
 
+
 .. image:: OTP222.png
     :width: 100%
+
 
 .. raw:: html
 

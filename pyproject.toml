@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sbn"
-description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "105"
+description = "Skull, Bones and Number"
+version = "110"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -25,7 +25,11 @@ dev = []
 
 
 [project.scripts]
-"sbn"  = "sbn.__main__:wrapped"
+"sbn"    = "sbn.console:wrapped"
+"sbnctl" = "sbn.cli:wrapped"
+"sbnd"   = "sbn.daemon:main"
+"sbns"   = "sbn.service:wrapped"
+
 
 [project.urls]
 "home" = "https://pypi.org/project/sbn"
@@ -38,7 +42,6 @@ packages = [
    "sbn",
    "sbn.modules"
 ]
-zip-safe = true
 
 
 [tool.setuptools.data-files]
@@ -63,6 +66,7 @@ zip-safe = true
     "docs/manual.rst",
     "docs/OTP111.png",
     "docs/OTP222.png",
+    "docs/reconsider.rst",
     "docs/request.rst",
     "docs/robots.txt",
     "docs/skull3.png",
@@ -78,8 +82,7 @@ zip-safe = true
 
 "share/doc/sbn/docs/files" = [
     "docs/files/sitemap.xml",
-    "docs/files/genocide.png",
-    "README.rst"
+    "docs/files/genocide.png"
 ]
 
 

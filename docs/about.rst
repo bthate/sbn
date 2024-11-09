@@ -10,7 +10,7 @@
 
 .. raw:: html
 
-    <center><b>OTP-CR-117/19</b></center><br>
+    <center><b>ABOUT</b></center><br>
 
 In 2018 i informed the king of the netherlands that what he calls
 medicine in his "care" laws are not medicine but poison. Proof of
@@ -32,7 +32,7 @@ stop), the prosecutor decided to call it a "no basis to proceed".
     <center>
     <b>
 
-It requires a :ref:`basis to prosecute <home>` of the prosecutor
+It requires a :ref:`basis to prosecute <reconsider>` of the prosecutor
 to get the king in his cell and his genocide, thereby, stopped.
 
 .. raw:: html

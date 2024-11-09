@@ -9,7 +9,7 @@
 
 
 NAME = "sbn"
-VERSION = "105"
+VERSION = "110"
 
 
 import os
@@ -60,7 +60,7 @@ extensions = [
 # -- Options for HTML output -------------------------------------------------
 
 
-html_title = "Skull, Bones and Number (OTP-CR-117/19)"
+html_title = "Skull, Bones and Number"
 html_style = 'sbn.css'
 html_static_path = ["_static", "_static/sbn.css", "files/sitemap.xml"]
 html_css_files = ["sbn.css",]
@@ -97,6 +97,7 @@ intersphinx_mapping = {
 intersphinx_cache_limit = 1
 
 
+
 rst_prolog = '''.. image:: genocide.png
     :width: 100%
     :height: 2.6cm
@@ -105,9 +106,7 @@ rst_prolog = '''.. image:: genocide.png
 .. raw:: html
 
     <center>
-    <i>
     Elderly, Handicapped, Criminals, Wicked
-    </i>
     </center>
 
 '''
@@ -120,11 +119,11 @@ rst_epilog = '''.. raw:: html
 
 :ref:`reconsider <home>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>`
 
-
-.. raw: html
+.. raw:: html
 
     </b>
     </center>
+    <br>
 
 '''
 
