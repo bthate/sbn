@@ -31,13 +31,7 @@ class CLI(Client):
 def srv(event):
     import getpass
     name  = getpass.getuser()
-    txt = TXT % (NAME.upper(), name, name, name, NAME)
-    path = os.path.join(os.path.expanduser(f"/etc/systemd/system/{NAME}.service"))
-    print(path)
-    if not os.path.exists(path):
-        with open(path, "w") as file:
-            file.write(txt)
-        event.reply(f"created {path}")
+    event.reply(TXT % (NAME.upper(), name, name, name, NAME))
     
 
 def wrapped():

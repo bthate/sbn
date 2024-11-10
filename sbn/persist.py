@@ -98,7 +98,6 @@ def find(mtc, selector=None, index=None, deleted=False, matching=False):
             continue
         obj = Object()
         read(obj, fnm)
-        Cache.add(fnm, obj)
         if not deleted and '__deleted__' in dir(obj) and obj.__deleted__:
             continue
         if selector and not search(obj, selector, matching):
@@ -106,6 +105,7 @@ def find(mtc, selector=None, index=None, deleted=False, matching=False):
         nrs += 1
         if index is not None and nrs != int(index):
             continue
+        Cache.add(fnm, obj)
         yield (fnm, obj)
 
 
