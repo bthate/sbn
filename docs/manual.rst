@@ -3,41 +3,37 @@
 
 .. raw:: html
 
-    <br><br>
+   <br><br>
 
 
 .. title:: Manual
 
 
-.. raw:: html
-
-    <center><b>MANUAL</b></center><br>
-
 
 **NAME**
 
 
-    ``OTPCR`` - Office of the Prosecutor's 117th communication of the year 2019.
+    ``GENOCIDE`` - Since 4 march 2019
 
 
 **SYNOPSIS**
 
 
-    | ``otpcr  <cmd> [key=val] [key==val]``
-    | ``otpcrd`` 
-    | ``otpcrs``
+    | ``genocide  <cmd> [key=val] [key==val]``
+    | ``genocided`` 
+    | ``genocides``
 
 
 **DESCRIPTION**
 
 
-    ``OTPCR`` holds evidence that king
+    ``GENOCIDE`` holds evidence that king
     netherlands is doing a genocide, a
     written response where king
     netherlands confirmed taking note
     of “what i have written”, namely
     :ref:`proof  <evidence>` that medicine
-    he uses in treatement laws like zyprexa,
+    he uses in treatment laws like zyprexa,
     haldol, abilify and clozapine are
     poison that make impotent, is both
     physical (contracted muscles) and
@@ -45,11 +41,11 @@
     torture and kills members of the
     victim groups.
 
-    ``OTPCR`` contains :ref:`correspondence
+    ``GENOCIDE`` contains :ref:`correspondence
     <writings>` with the International Criminal
     Court, asking for arrest of the king of the
     netherlands, for the genocide he is committing
-    with his new treatement laws.
+    with his new treatment laws.
 
     Current status is a :ref:`"no basis to proceed"
     <writings>` judgement of the prosecutor which
@@ -57,57 +53,61 @@
     to have the king actually arrested.
 
 
-    ``OTP-CR-117/19`` entered Communications Register on ``4 march 2019``
-
-
 **INSTALL**
 
-    installation is done with pipx
-
-    | ``$ pipx install otpcr``
-    | ``$ pipx ensurepath``
+    | ``pipx install genocide``
+    | ``pipx ensurepath``
 
     <new terminal>
 
-    | ``$ otpcr srv > otpcr.service``
-    | ``$ sudo mv otpcr.service /etc/systemd/system/``
-    | ``$ sudo systemctl enable otpcr --now``
+    | ``$ genocide srv > genocide.service``
+    | ``$ sudo mv genocide.service /etc/systemd/system/``
+    | ``$ sudo systemctl enable genocide --now``
     |
-    | joins ``#otpcr`` on localhost
-
+    | joins ``#genocide`` on localhost
 
 **USAGE**
 
     without any argument the bot does nothing
 
-    | ``$ otpcr``
+    | ``$ genocide``
     | ``$``
 
     see list of commands
 
-    | ``$ otpcr cmd``
+    | ``$ genocide cmd``
     | ``cfg,cmd,dne,dpl,err,exp,imp,log,mod,mre,nme,``
-    | ``now,pwd,rem,req,res,rss,srv,syn,tdo,thr,upt``
+    | ``pwd,rem,req,res,rss,srv,syn,tdo,thr,upt``
+
+    start a console
+
+    | ``$ genocidec``
+    | ``>``
+
+    use -i to init modules
+
+    | ``$ genocidec -i``
+    | ``>``
 
     start daemon
 
-    | ``$ otpcrd``
+    | ``$ genocided``
     | ``$``
 
     start service
 
-    | ``$ otpcrs``
+    | ``$ genocides``
+    |
     | ``<runs until ctrl-c>``
 
     show request to the prosecutor
 
-    | $ ``otpcr req``
+    | $ ``genocide req``
     | Information and Evidence Unit
     | Office of the Prosecutor
     | Post Office Box 19519
     | 2500 CM The Hague
     | The Netherlands
-
 
 **COMMANDS**
 
@@ -121,7 +121,6 @@
     | ``imp`` - import opml
     | ``log`` - log text
     | ``mre`` - display cached output
-    | ``now`` - show genocide stats
     | ``pwd`` - sasl nickserv name/pass
     | ``rem`` - removes a rss feed
     | ``res`` - restore deleted feeds
@@ -132,52 +131,49 @@
     | ``thr`` - show running threads
     | ``upt`` - show uptime
 
-
 **CONFIGURATION**
 
     irc
 
-    | ``$ otpcr cfg server=<server>``
-    | ``$ otpcr cfg channel=<channel>``
-    | ``$ otpcr cfg nick=<nick>``
+    | ``$ genocide cfg server=<server>``
+    | ``$ genocide cfg channel=<channel>``
+    | ``$ genocide cfg nick=<nick>``
 
     sasl
 
-    | ``$ otpcr pwd <nsvnick> <nspass>``
-    | ``$ otpcr cfg password=<frompwd>``
+    | ``$ genocide pwd <nsvnick> <nspass>``
+    | ``$ genocide cfg password=<frompwd>``
 
     rss
 
-    | ``$ otpcr rss <url>``
-    | ``$ otpcr dpl <url> <item1,item2>``
-    | ``$ otpcr rem <url>``
-    | ``$ otpcr nme <url> <name>``
+    | ``$ genocide rss <url>``
+    | ``$ genocide dpl <url> <item1,item2>``
+    | ``$ genocide rem <url>``
+    | ``$ genocide nme <url> <name>``
 
     opml
 
-    | ``$ otpcr exp``
-    | ``$ otpcr imp <filename>``
+    | ``$ genocide exp``
+    | ``$ genocide imp <filename>``
 
 
 **SOURCE**
 
-    source is `here <https://github.com/otpcr/otpcr>`_
-
+    source is at `https://github.com/bthate/genocide <https://github.com/bthate/genocide>`_
 
 **FILES**
 
-    | ``~/.otpcr``
-    | ``~/.local/bin/otpcr``
-    | ``~/.local/bin/otpcrd``
-    | ``~/.local/bin/otpcrs``
-    | ``~/.local/pipx/venvs/otpcr/*``
-
+    | ``~/.genocide``
+    | ``~/.local/bin/genocide``
+    | ``~/.local/bin/genocided``
+    | ``~/.local/bin/genocides``
+    | ``~/.local/pipx/venvs/genocide/*``
 
 **AUTHOR**
 
-    | Bart Thate <``bthate@dds.nl``>
-
+    | Bart Thate <bthate@dds.nl>
 
 **COPYRIGHT**
 
-    | ``OTPCR`` is Public Domain.
+    | ``GENOCIDE`` is Public Domain.
+    |

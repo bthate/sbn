@@ -100,8 +100,8 @@ intersphinx_cache_limit = 1
 
 rst_prolog = '''.. image:: genocide.png
     :width: 100%
-    :height: 2.6cm
-    :target: about.html
+    :height: 2.4cm
+    :target: manual.html
 
 .. raw:: html
 
@@ -117,7 +117,7 @@ rst_epilog = '''.. raw:: html
     <center>
     <b>
 
-:ref:`reconsider <home>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>`
+:ref:`reconsider <reconsider>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>`
 
 .. raw:: html
 
