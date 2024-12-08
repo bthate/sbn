@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number"
-version = "110"
+version = "112"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -20,15 +20,11 @@ classifiers=[
 ]
 
 
-[project.optional-dependencies]
-dev = []
-
-
 [project.scripts]
-"sbn"    = "sbn.console:wrapped"
-"sbnctl" = "sbn.cli:wrapped"
-"sbnd"   = "sbn.daemon:main"
-"sbns"   = "sbn.service:wrapped"
+"sbn"  = "sbn.control:wrapped"
+"sbnc" = "sbn.console:wrapped"
+"sbnd" = "sbn.daemon:main"
+"sbns" = "sbn.service:wrapped"
 
 
 [project.urls]
@@ -100,12 +96,4 @@ packages = [
     "docs/_templates/class.rst",
     "docs/_templates/mine.rst",
     "docs/_templates/module.rst"
-]
-
-
-[tool.setuptools.exclude-package-data]
-"*" = [
-    "env*",
-    "html*",
-    "test*"
 ]
