@@ -5,11 +5,11 @@
 # ruff: noqa: E402, E501
 
 
-"Skull, Bones and Number (OTP-CR-117/19)"
+"Skull, Bones and Number"
 
 
 NAME = "sbn"
-VERSION = "110"
+VERSION = "113"
 
 
 import os

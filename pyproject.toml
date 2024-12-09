@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Skull, Bones and Number"
-version = "112"
+version = "113"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
