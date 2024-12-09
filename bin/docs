@@ -10,9 +10,8 @@ import subprocess
 import sys
 
 
-NAME = "sbn"
+NAME = "genocide"
 curdir = os.getcwd()
-
 
 TXT = '''
 #
@@ -88,7 +87,7 @@ def popen(txt):
 
 def popen2(txt):
     "run commands on plain txt"
-    proc = subprocess.Popen(
+    with subprocess.Popen(
                             txt,
                             stdin=sys.stdin,
                             stdout=sys.stdout,
@@ -96,17 +95,18 @@ def popen2(txt):
                             close_fds=False,
                             shell=True,
                             text=True
-                           )
-    proc.communicate()
-    proc.wait()
+                           ) as proc:
+        proc.communicate()
+        proc.wait()
 
 
-if not os.path.exists("dist"):
-    popen("python3 setup.py sdist")
+#if not os.path.exists("dist"):
+#    popen("python3 setup.py sdist")
 if not os.path.exists("env"):
     popen("python3 -mvirtualenv env")
-    popen(f"env/bin/pip3 install {NAME} -f dist --upgrade --force")
-    popen2("env/bin/python3 env/bin/pip3 install -I %s" % " ".join([f"{x}" for x in TXT.split("\n") if "#" not in x]))
+    #popen(f"env/bin/pip3 install {NAME} -f dist --upgrade --force")
+    TEXT = " ".join([f"{x}" for x in TXT.split("\n") if "#" not in x])
+    popen2(f"env/bin/python3 env/bin/pip3 install -I {TEXT}")
 
 
 popen("env/bin/sphinx-build docs html")

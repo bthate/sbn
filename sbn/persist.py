@@ -17,11 +17,16 @@ import _thread
 from .object import Object, dump, load, search, update
 
 
+NAME = "sbn"
+
+
 cachelock = _thread.allocate_lock()
 disklock  = _thread.allocate_lock()
 findlock  = _thread.allocate_lock()
 lock      = _thread.allocate_lock()
 p         = os.path.join
+
+
 
 
 class Obj(Object):
@@ -33,8 +38,8 @@ class Obj(Object):
 class Config(Obj):
 
     fqns = []
-    name = "obz"
-    wdr  = os.path.expanduser("~/.{Config.name}")
+    name = NAME
+    wdr  = os.path.expanduser(f"~/.{NAME}")
 
 
 def long(name):

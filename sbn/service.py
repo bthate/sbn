@@ -5,6 +5,9 @@
 "service"
 
 
+import os
+
+
 from .persist import Config, pidfile, pidname
 from .runtime import errors, forever, privileges, scan, wrap
 

@@ -9,39 +9,47 @@
 .. title:: Manual
 
 
+.. raw:: html
+
+    <center><b>MANUAL</b></center><br>
+
 
 **NAME**
 
 
-    ``GENOCIDE`` - Since 4 march 2019
+    ``SBN`` - Skull, Bones and Number
 
 
 **SYNOPSIS**
 
 
-    | ``genocide  <cmd> [key=val] [key==val]``
-    | ``genocided`` 
-    | ``genocides``
+    | ``sbn  <cmd> [key=val] [key==val]``
+    | ``sbnc``
+    | ``sbnd`` 
+    | ``sbns``
 
 
 **DESCRIPTION**
 
 
-    ``GENOCIDE`` holds evidence that king
+    ``SBN`` holds evidence that king
     netherlands is doing a genocide, a
-    written response where king
+    :ref:`written response <king>` where king
     netherlands confirmed taking note
     of “what i have written”, namely
     :ref:`proof  <evidence>` that medicine
     he uses in treatment laws like zyprexa,
     haldol, abilify and clozapine are
-    poison that make impotent, is both
+    poison.
+
+    Poison that makes impotent, is both
     physical (contracted muscles) and
     mental (make people hallucinate)
     torture and kills members of the
-    victim groups.
+    victim groups: Elderly, Handicapped, Criminals
+    and Psychiatric patients.
 
-    ``GENOCIDE`` contains :ref:`correspondence
+    ``SBN`` contains :ref:`correspondence
     <writings>` with the International Criminal
     Court, asking for arrest of the king of the
     netherlands, for the genocide he is committing
@@ -55,54 +63,54 @@
 
 **INSTALL**
 
-    | ``pipx install genocide``
+    | ``pipx install sbn``
     | ``pipx ensurepath``
 
     <new terminal>
 
-    | ``$ genocide srv > genocide.service``
-    | ``$ sudo mv genocide.service /etc/systemd/system/``
-    | ``$ sudo systemctl enable genocide --now``
+    | ``$ sbn srv > genocide.service``
+    | ``$ sudo mv sbn.service /etc/systemd/system/``
+    | ``$ sudo systemctl enable sbn --now``
     |
-    | joins ``#genocide`` on localhost
+    | joins ``#sbn`` on localhost
 
 **USAGE**
 
     without any argument the bot does nothing
 
-    | ``$ genocide``
+    | ``$ sbn``
     | ``$``
 
     see list of commands
 
-    | ``$ genocide cmd``
+    | ``$ sbn cmd``
     | ``cfg,cmd,dne,dpl,err,exp,imp,log,mod,mre,nme,``
     | ``pwd,rem,req,res,rss,srv,syn,tdo,thr,upt``
 
     start a console
 
-    | ``$ genocidec``
+    | ``$ sbnc``
     | ``>``
 
     use -i to init modules
 
-    | ``$ genocidec -i``
+    | ``$ sbnc -i``
     | ``>``
 
     start daemon
 
-    | ``$ genocided``
+    | ``$ sbnd``
     | ``$``
 
     start service
 
-    | ``$ genocides``
+    | ``$ sbns``
     |
     | ``<runs until ctrl-c>``
 
     show request to the prosecutor
 
-    | $ ``genocide req``
+    | $ ``sbn req``
     | Information and Evidence Unit
     | Office of the Prosecutor
     | Post Office Box 19519
@@ -135,39 +143,39 @@
 
     irc
 
-    | ``$ genocide cfg server=<server>``
-    | ``$ genocide cfg channel=<channel>``
-    | ``$ genocide cfg nick=<nick>``
+    | ``$ sbn cfg server=<server>``
+    | ``$ sbn cfg channel=<channel>``
+    | ``$ sbn cfg nick=<nick>``
 
     sasl
 
-    | ``$ genocide pwd <nsvnick> <nspass>``
-    | ``$ genocide cfg password=<frompwd>``
+    | ``$ sbn pwd <nsvnick> <nspass>``
+    | ``$ sbn cfg password=<frompwd>``
 
     rss
 
-    | ``$ genocide rss <url>``
-    | ``$ genocide dpl <url> <item1,item2>``
-    | ``$ genocide rem <url>``
-    | ``$ genocide nme <url> <name>``
+    | ``$ sbn rss <url>``
+    | ``$ sbn dpl <url> <item1,item2>``
+    | ``$ sbn rem <url>``
+    | ``$ sbn nme <url> <name>``
 
     opml
 
-    | ``$ genocide exp``
-    | ``$ genocide imp <filename>``
+    | ``$ sbn exp``
+    | ``$ sbn imp <filename>``
 
 
 **SOURCE**
 
-    source is at `https://github.com/bthate/genocide <https://github.com/bthate/genocide>`_
+    source is at `https://github.com/bthate/sbn <https://github.com/bthate/sbn>`_
 
 **FILES**
 
-    | ``~/.genocide``
-    | ``~/.local/bin/genocide``
-    | ``~/.local/bin/genocided``
-    | ``~/.local/bin/genocides``
-    | ``~/.local/pipx/venvs/genocide/*``
+    | ``~/.sbn``
+    | ``~/.local/bin/sbn``
+    | ``~/.local/bin/sbnd``
+    | ``~/.local/bin/sbns``
+    | ``~/.local/pipx/venvs/sbn/*``
 
 **AUTHOR**
 
@@ -175,5 +183,5 @@
 
 **COPYRIGHT**
 
-    | ``GENOCIDE`` is Public Domain.
+    | ``SBN`` is Public Domain.
     |
