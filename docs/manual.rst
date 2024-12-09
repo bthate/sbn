@@ -68,7 +68,7 @@
 
     <new terminal>
 
-    | ``$ sbn srv > genocide.service``
+    | ``$ sbn srv > sbn.service``
     | ``$ sudo mv sbn.service /etc/systemd/system/``
     | ``$ sudo systemctl enable sbn --now``
     |
