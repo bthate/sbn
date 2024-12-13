@@ -1,5 +1,5 @@
 # This file is placed in the Public Domain.
-# pylint: disable=C0209,E0402
+# pylint: disable=C0116,C0209,W0622,E0402
 
 
 "Genocide model of the Netherlands since 4 March 2019"
@@ -22,7 +22,6 @@ STARTTIME = time.mktime(time.strptime(STARTDATE, "%Y-%m-%d %H:%M:%S"))
 
 
 def init():
-    "start repeaters"
     for key in keys(oorzaken):
         if "Psych" not in key:
             continue
@@ -273,7 +272,6 @@ oorzaken = Object()
 
 
 def getalias(txt):
-    "return value of alias."
     result = ""
     for key, value in aliases.items():
         if txt.lower() in key.lower():
@@ -282,14 +280,12 @@ def getalias(txt):
     return result
 
 def getday():
-    "timestamp of current day."
     day = datetime.datetime.now()
     day = day.replace(hour=0, minute=0, second=0, microsecond=0)
     return day.timestamp()
 
 
 def getnr(nme):
-    "fetch mortality number."
     for k in keys(oorzaken):
         if nme.lower() in k.lower():
             return int(getattr(oorzaken, k))
@@ -297,14 +293,12 @@ def getnr(nme):
 
 
 def seconds(nrs):
-    "convert nr/years to seconds."
     if not nrs:
         return nrs
     return 60*60*24*365 / float(nrs)
 
 
 def iswanted(k, line):
-    "see whether filtered or not."
     for word in line:
         if word in k:
             return True
@@ -312,7 +306,6 @@ def iswanted(k, line):
 
 
 def daily():
-    "daily job"
     while 1:
         time.sleep(24*60*60)
         evt = Event()
@@ -320,7 +313,6 @@ def daily():
 
 
 def hourly():
-    "hourly job"
     while 1:
         time.sleep(60*60)
         evt = Event()
@@ -328,7 +320,6 @@ def hourly():
 
 
 def cbnow(_evt):
-    "now callback"
     delta = time.time() - STARTTIME
     txt = laps(delta) + " "
     for nme in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
@@ -343,7 +334,6 @@ def cbnow(_evt):
 
 
 def cbstats(evt):
-    "stats callback."
     nme = evt.rest or "Psych"
     needed = seconds(getnr(nme))
     if needed:
@@ -366,8 +356,20 @@ def cbstats(evt):
             obj.announce(txt)
 
 
+def all(event):
+    delta = time.time() - STARTTIME
+    txt = laps(delta) + " "
+    for nme in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
+        needed = seconds(getnr(nme))
+        if needed > 60*60:
+            continue
+        nrtimes = int(delta/needed)
+        txt += f"{getalias(nme)} {nrtimes} | "
+    txt += " https://pypi.org/project/genocide"
+    event.reply(txt)
+
+
 def now(event):
-    "now command."
     nme = event.rest or "Psych"
     needed = seconds(getnr(nme))
     if needed:
@@ -378,7 +380,7 @@ def now(event):
         thisday = int(DAY % needed)
         txt = "%s %s #%s (%s/%s/%s) every %s" % (
             laps(delta),
-            getalias(nme).upper(),
+            getalias(nme),
             nrtimes,
             thisday,
             nrday,
@@ -389,7 +391,6 @@ def now(event):
 
 
 def boot():
-    "construct model"
     _nr = -1
     for key in keys(oorzaak):
         _nr += 1
@@ -422,6 +423,7 @@ def boot():
 def __dir__():
     return (
             'init',
+            'all',
             'now'
            )
 
