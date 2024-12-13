@@ -2,19 +2,25 @@
 # pylint: disable=C0115,C0116,C0415,R0903,R0912,R0915,W0105,W0718,E0402
 
 
-"main"
+"console"
 
 
+import os
 import sys
 import termios
 import time
+
 
 from .persist import Config
 from .runtime import Client, Event
 from .runtime import errors, forever, later, parse, scan
 
 
-cfg = Config()
+Config.name = "genocide"
+Config.wdr  = os.path.expanduser(f"~/.{Config.name}")
+
+
+cfg      = Config()
 
 
 class Console(Client):

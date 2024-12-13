@@ -12,6 +12,10 @@ from .persist import Config, pidfile, pidname
 from .runtime import errors, forever, privileges, scan, wrap
 
 
+Config.name = "genocide"
+Config.wdr  = os.path.expanduser(f"~/.{Config.name}")
+
+
 def service():
     privileges()
     pidfile(pidname(Config.name))

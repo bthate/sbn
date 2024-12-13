@@ -13,6 +13,10 @@ from .persist import Config, pidfile, pidname
 from .runtime import errors, forever, privileges, scan, wrap
 
 
+Config.name = "genocide"
+Config.wdr  = os.path.expanduser(f"~/.{Config.name}")
+
+
 def daemon(verbose=False):
     pid = os.fork()
     if pid != 0:

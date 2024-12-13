@@ -9,7 +9,7 @@ import os
 import sys
 
 
-NAME = "genocide"
+NAME = "sbn"
 
 
 def popen(txt):
@@ -22,4 +22,4 @@ if os.path.exists("bin/clean"):
     popen("bin/clean")
 
 
-popen(f"pylint genocide bin tests")
+popen(f"pylint {NAME} bin/clean bin/docs bin/profile bin/tinder tests")

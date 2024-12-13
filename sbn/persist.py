@@ -14,10 +14,7 @@ import uuid
 import _thread
 
 
-from .object import Object, dump, load, search, update
-
-
-NAME = "sbn"
+from .object import Object, dumps, loads, search, update
 
 
 cachelock = _thread.allocate_lock()
@@ -25,8 +22,6 @@ disklock  = _thread.allocate_lock()
 findlock  = _thread.allocate_lock()
 lock      = _thread.allocate_lock()
 p         = os.path.join
-
-
 
 
 class Obj(Object):
@@ -38,8 +33,8 @@ class Obj(Object):
 class Config(Obj):
 
     fqns = []
-    name = NAME
-    wdr  = os.path.expanduser(f"~/.{NAME}")
+    name = "obz"
+    wdr  = os.path.expanduser("~/.{Config.name}")
 
 
 def long(name):
@@ -261,7 +256,8 @@ def fetch(obj, pth):
     with lock:
         with open(pth, 'r', encoding='utf-8') as ofile:
             try:
-                update(obj, load(ofile))
+                obj2 = loads(ofile.read())
+                update(obj, obj2)
             except json.decoder.JSONDecodeError as ex:
                 raise Exception(pth) from ex
 
@@ -278,9 +274,9 @@ def write(obj, pth=None):
 def sync(obj, pth):
     with lock:
         cdir(pth)
+        txt = dumps(obj, indent=4)
         with open(pth, 'w', encoding='utf-8') as ofile:
-            dump(obj, ofile, indent=4)
-
+            ofile.write(txt)
 
 "interface"
 

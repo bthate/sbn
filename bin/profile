@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
+# pylint: disable=W0406
 
 
 "profiler"
@@ -16,10 +17,10 @@ def main():
         print("profile <filename>")
         return
     fnm = sys.argv[1]
-    SRC = ""
-    with open(sys.argv[1], "r") as src:
-        SRC = src.read()
-    code = compile(SRC, fnm, "exec")
+    txt = ""
+    with open(sys.argv[1], "r", encoding="utf-8") as src:
+        txt = src.read()
+    code = compile(txt, fnm, "exec")
     profile.runctx(code, __main__.__dict__, __main__.__dict__)
 
 
