@@ -12,7 +12,7 @@
 **NAME**
 
 
-    ``SBN`` - Skull, Bones and Number
+    ``SBN`` - since 4 march 2019
 
 
 **SYNOPSIS**
@@ -34,8 +34,8 @@
     of “what i have written”, namely
     :ref:`proof  <evidence>` that medicine
     he uses in treatment laws like zyprexa,
-    haldol, abilify and clozapine are
-    poison.
+    haldol, abilify and clozapine are not medicine
+    but poison.
 
     Poison that makes impotent, is both
     physical (contracted muscles) and
