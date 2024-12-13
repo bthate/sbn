@@ -2,13 +2,7 @@
 
 .. raw:: html
 
-    <br><br>
-
-    <center><b><i>Elderly, Handicapped, Criminals, Wicked</i></b></center>
-
-.. raw:: html
-
-    <br><br>
+    <br>
 
 .. title:: Reconsider
 
