@@ -9,7 +9,7 @@ import os
 import sys
 
 
-IGNORE = ["control", "console", "daemon", "service", "modules/srv"]
+IGNORE = ["control", "console", "daemon", "service"]
 NAME = "sbn"
 
 
