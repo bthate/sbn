@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sbn"
-description = "Since 4 march 2019"
+description = "Since 4 March 2019"
 version = "113"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
