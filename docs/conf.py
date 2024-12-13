@@ -5,11 +5,11 @@
 # ruff: noqa: E402, E501
 
 
-"Skull, Bones and Number"
+"Since 4 March 2019"
 
 
 NAME = "sbn"
-VERSION = "113"
+VERSION = "114"
 
 
 import os
@@ -25,9 +25,6 @@ curdir = os.getcwd()
 sys.path.insert(0, os.path.join(curdir, "..", ".."))
 sys.path.insert(0, os.path.join(curdir, ".."))
 sys.path.insert(0, os.path.join(curdir))
-
-
-# -- Options for GENERIC output ---------------------------------------------
 
 
 project = NAME
@@ -55,9 +52,6 @@ extensions = [
               'sphinx.ext.todo',
               'sphinx.ext.githubpages'
              ]
-
-
-# -- Options for HTML output -------------------------------------------------
 
 
 html_title = "Skull, Bones and Number"
@@ -132,8 +126,3 @@ autoclass_content = "class"
 nitpick_ignore = [
                   ('py:class', 'builtins.BaseException'),
                  ]
-
-
-def setup(app):
-    app.add_css_file("custom.css")
-    app.add_css_file("otpcr.css")

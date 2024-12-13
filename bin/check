@@ -9,8 +9,8 @@ import os
 import sys
 
 
-IGNORE = ["cli", "console", "daemon", "service", "modules/srv"]
-NAME = "genocide"
+IGNORE = ["control", "console", "daemon", "service", "modules/srv"]
+NAME = "sbn"
 
 
 def ignore(txt):
