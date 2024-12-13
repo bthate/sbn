@@ -19,7 +19,7 @@
 
 
     | ``sbn  <cmd> [key=val] [key==val]``
-    | ``sbnc``
+    | ``sbnc [-ivw]``
     | ``sbnd`` 
     | ``sbns``
 
