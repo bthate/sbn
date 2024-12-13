@@ -13,7 +13,7 @@ from .persist import Config, pidfile, pidname
 from .runtime import errors, forever, privileges, scan, wrap
 
 
-Config.name = "genocide"
+Config.name = "sbn"
 Config.wdr  = os.path.expanduser(f"~/.{Config.name}")
 
 

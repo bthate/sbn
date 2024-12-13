@@ -328,7 +328,7 @@ def cbnow(_evt):
             continue
         nrtimes = int(delta/needed)
         txt += f"{getalias(nme)} {nrtimes} | "
-    txt += " https://pypi.org/project/genocide"
+    txt += "https://pypi.org/project/genocide"
     for obj in Cache.typed("IRC"):
         obj.announce(txt)
 
@@ -365,7 +365,7 @@ def all(event):
             continue
         nrtimes = int(delta/needed)
         txt += f"{getalias(nme)} {nrtimes} | "
-    txt += " https://pypi.org/project/genocide"
+    txt += "https://pypi.org/project/genocide"
     event.reply(txt)
 
 

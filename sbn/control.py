@@ -14,7 +14,7 @@ from .runtime import Client, Commands, Event
 from .runtime import command, errors, parse, scan, wrap
 
 
-Config.name = "genocide"
+Config.name = "sbn"
 Config.wdr  = os.path.expanduser(f"~/.{Config.name}")
 
 
