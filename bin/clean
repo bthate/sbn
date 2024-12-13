@@ -44,6 +44,7 @@ def main():
     if "-f" not in sys.argv:
         popen("rm -fR store .venv uv.lock")
         popen("rm -fR env html")
+        popen('rm -fR docs/sbn*.rst')
         popen("rm -fR .python-version")
     loop(".", "rm -fR *~")
     loop(".", "rm -fR __pycache__")

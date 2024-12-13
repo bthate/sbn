@@ -10,7 +10,7 @@ import subprocess
 import sys
 
 
-NAME = "genocide"
+NAME = "sbn"
 curdir = os.getcwd()
 
 TXT = '''

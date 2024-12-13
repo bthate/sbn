@@ -48,13 +48,14 @@ pygments_style = 'colorful'
 extensions = [
               'sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
-              'sphinx.ext.viewcode',
+              'sphinx.ext.duration',
+              'sphinx.ext.doctest',
+              'sphinx.ext.githubpages',
               'sphinx.ext.todo',
-              'sphinx.ext.githubpages'
+              'sphinx.ext.viewcode'
              ]
 
-
-html_title = "Skull, Bones and Number"
+html_title = "Skull, Bones and Number (SBN)"
 html_style = 'sbn.css'
 html_static_path = ["_static", "_static/sbn.css", "files/sitemap.xml"]
 html_css_files = ["sbn.css",]
@@ -95,26 +96,25 @@ intersphinx_cache_limit = 1
 rst_prolog = '''.. image:: genocide.png
     :width: 100%
     :height: 2.4cm
-    :target: manual.html
+    :target: index.html
+
 
 .. raw:: html
-
-    <center><i>Elderly, Handicapped, Criminals, Wicked</i></center>
-
-'''
-
-rst_epilog = '''.. raw:: html
 
     <br>
     <center>
     <b>
 
-:ref:`reconsider <reconsider>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>`
+:ref:`manual <manual>` - :ref:`reconsider <reconsider>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>` - :ref:`source <source>`
 
 .. raw:: html
 
     </b>
     </center>
+
+'''
+
+rst_epilog = '''
 
 '''
 
