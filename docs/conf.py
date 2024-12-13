@@ -112,6 +112,22 @@ rst_prolog = '''.. image:: genocide.png
 
 '''
 
+rst_epilog = '''.. raw:: html
+
+    <br><br>
+    <center>
+    <b>
+
+:ref:`manual <manual>` - :ref:`reconsider <reconsider>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>` - :ref:`source <source>`
+
+.. raw:: html
+
+    </b>
+    </center>
+    
+'''
+
+
 autosummary_generate = True
 autodoc_default_flags = ['members', 'undoc-members', 'private-members', "imported-members"]
 autodoc_member_order = 'groupwise'
