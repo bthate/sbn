@@ -12,7 +12,7 @@
 **NAME**
 
 
-    ``SBN`` - Since 4 March 2019
+    ``SBN`` - Since 4 March 2019.
 
 
 **SYNOPSIS**

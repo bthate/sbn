@@ -5,7 +5,7 @@
 # ruff: noqa: E402, E501
 
 
-"Since 4 March 2019"
+"Since 4 March 2019."
 
 
 NAME = "sbn"
@@ -55,7 +55,7 @@ extensions = [
               'sphinx.ext.viewcode'
              ]
 
-html_title = "Skull, Bones and Number (SBN)"
+html_title = "Since 4 March 2019."
 html_style = 'sbn.css'
 html_static_path = ["_static", "_static/sbn.css", "files/sitemap.xml"]
 html_css_files = ["sbn.css",]
@@ -92,7 +92,6 @@ intersphinx_mapping = {
 intersphinx_cache_limit = 1
 
 
-
 rst_prolog = '''.. image:: genocide.png
     :width: 100%
     :height: 2.4cm
@@ -101,7 +100,6 @@ rst_prolog = '''.. image:: genocide.png
 
 .. raw:: html
 
-    <br>
     <center>
     <b>
 
@@ -111,10 +109,6 @@ rst_prolog = '''.. image:: genocide.png
 
     </b>
     </center>
-
-'''
-
-rst_epilog = '''
 
 '''
 
