@@ -100,7 +100,6 @@ rst_prolog = '''.. image:: genocide.png
 
 .. raw:: html
 
-    <br>
     <center>
     <b>
 
