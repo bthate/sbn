@@ -97,19 +97,6 @@ rst_prolog = '''.. image:: genocide.png
     :height: 2.4cm
     :target: index.html
 
-
-.. raw:: html
-
-    <center>
-    <b>
-
-:ref:`reconsider <reconsider>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>`
-
-.. raw:: html
-
-    </b>
-    </center>
-  
 '''
 
 rst_epilog = '''.. raw:: html
