@@ -6,7 +6,7 @@
 
 .. raw:: html
 
-    <center><b>RECONSIDER</b></center>
+    <center><b>RECONSIDER</b></center><br>
 
 
 .. title:: Reconsider
