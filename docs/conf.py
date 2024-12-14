@@ -123,3 +123,7 @@ autoclass_content = "class"
 nitpick_ignore = [
                   ('py:class', 'builtins.BaseException'),
                  ]
+
+
+def setup(app):
+    app.add_css_file('_static/sbn.css')

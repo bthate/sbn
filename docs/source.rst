@@ -2,10 +2,14 @@
 
 .. raw:: html
 
-    <br>
+    <br><br>
+
+.. raw:: html
+
+    <center><b>SOURCE</b></center></center><br>
 
 
-**SOURCE**
+**SBN**
 
 .. raw:: html
 
@@ -23,6 +27,21 @@
     sbn.persist
     sbn.runtime
     sbn.service
+
+
+.. raw:: html
+
+    <br>
+
+**MODULES**
+
+.. raw:: html
+
+    <br>
+
+.. autosummary::
+    :template: base.rst
+    :toctree:
 
     sbn.modules.cmd
     sbn.modules.err
