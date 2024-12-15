@@ -42,6 +42,7 @@ packages = [
 
 [tool.setuptools.data-files]
 "share/doc/sbn/docs" = [
+    "docs/about.rst",
     "docs/ack.png",
     "docs/ack3.png",
     "docs/bevestigd.jpg",
