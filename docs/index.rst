@@ -4,12 +4,12 @@
 
     <br><br>
 
+
+.. title:: Reconsider
+
 .. raw:: html
 
     <center><b>RECONSIDER</b></center><br>
-
-
-.. title:: Reconsider
 
 |
 | **Information and Evidence Unit**
@@ -78,4 +78,3 @@ prosecute the king for making the commiting of the above mentioned crimes
     guilty
     request
     manual
-    source
