@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
-# pylint: disable=C,R0903,W0105,W0201,W0212,W0613, W0718,E0401
+# pylint: disable=C,R0903,W0105,W0201,W0212,W0603,W0613,W0718,E0401
 
 
 "tinder"
@@ -119,7 +119,6 @@ def wrap(function):
 def main():
     global nrs
     global nrcommand
-    global percall
     Config.wdr = ".test"
     parse(cfg, " ".join(sys.argv[1:]))
     face.rss.DEBUG = True
