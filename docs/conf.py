@@ -5,11 +5,11 @@
 # ruff: noqa: E402, E501
 
 
-"Since 4 March 2019."
+"Since 4 March 2019"
 
 
 NAME = "sbn"
-VERSION = "114"
+VERSION = "115"
 
 
 import os
@@ -55,7 +55,7 @@ extensions = [
               'sphinx.ext.viewcode'
              ]
 
-html_title = "Since 4 March 2019."
+html_title = "Since 4 March 2019"
 html_style = 'sbn.css'
 html_static_path = ["_static", "_static/sbn.css", "files/sitemap.xml"]
 html_css_files = ["sbn.css",]
