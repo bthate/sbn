@@ -562,7 +562,6 @@ def cb_privmsg(bot, evt):
             evt.txt = evt.txt[0].lower() + evt.txt[1:]
         if evt.txt:
             command(bot, evt)
-            bot.display(evt)
 
 
 def cb_quit(bot, evt):

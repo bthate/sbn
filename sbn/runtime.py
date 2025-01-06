@@ -71,9 +71,9 @@ def command(bot, evt):
     if func:
         try:
             func(evt)
+            bot.display(evt)
         except Exception as ex:
             later(ex)
-    bot.display(evt)
     evt.ready()
 
 
@@ -263,10 +263,6 @@ class Reactor:
             evt._ex = ex
             later(ex)
             evt.ready()
-
-    def display(self, evt):
-        for txt in evt.result:
-            self.raw(txt)
 
     def loop(self):
         while not self.stopped.is_set():

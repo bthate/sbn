@@ -2,6 +2,7 @@
 requires = ["setuptools>=43.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+
 [project]
 name = "sbn"
 description = "Since 4 March 2019."
@@ -20,13 +21,6 @@ classifiers=[
 ]
 
 
-[project.scripts]
-"sbn"  = "sbn.control:wrapped"
-"sbnc" = "sbn.console:wrapped"
-"sbnd" = "sbn.daemon:main"
-"sbns" = "sbn.service:wrapped"
-
-
 [project.urls]
 "home" = "https://pypi.org/project/sbn"
 "bugs" = "https://github.com/bthate/sbn/issues"
@@ -34,6 +28,9 @@ classifiers=[
 
 
 [tool.setuptools]
+script-files = [
+    "bin/sbn",
+]
 packages = [
    "sbn",
    "sbn.modules"
@@ -104,4 +101,3 @@ packages = [
     "docs/_templates/mine.rst",
     "docs/_templates/module.rst"
 ]
-

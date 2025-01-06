@@ -106,7 +106,6 @@ def control():
     for txt in evt.result:
         print(txt)
 
-
 def daemon(verbose=False):
     pid = os.fork()
     if pid != 0:
