@@ -23,10 +23,10 @@
 **SYNOPSIS**
 
 
-    | ``sbn  <cmd> [key=val] [key==val]``
-    | ``sbnc [-ivw]``
-    | ``sbnd`` 
-    | ``sbns``
+    | ``sbn <cmd> [key=val] [key==val]``
+    | ``sbn -c [-ivw]``
+    | ``sbn -d`` 
+    | ``sbn -s``
 
 
 **DESCRIPTION**
@@ -89,22 +89,22 @@
 
     start a console
 
-    | ``$ sbnc``
+    | ``$ sbn -c``
     | ``>``
 
     use -i to init modules
 
-    | ``$ sbnc -i``
+    | ``$ sbn -ci``
     | ``>``
 
     start daemon
 
-    | ``$ sbnd``
+    | ``$ sbn -d``
     | ``$``
 
     start service
 
-    | ``$ sbns``
+    | ``$ sbn -s``
     |
     | ``<runs until ctrl-c>``
 
@@ -129,6 +129,7 @@
     | ``imp`` - import opml
     | ``log`` - log text
     | ``mre`` - display cached output
+    | ``now`` - show genocide stats
     | ``pwd`` - sasl nickserv name/pass
     | ``rem`` - removes a rss feed
     | ``res`` - restore deleted feeds
@@ -173,8 +174,6 @@
 
     | ``~/.sbn``
     | ``~/.local/bin/sbn``
-    | ``~/.local/bin/sbnd``
-    | ``~/.local/bin/sbns``
     | ``~/.local/pipx/venvs/sbn/*``
 
 **AUTHOR**
