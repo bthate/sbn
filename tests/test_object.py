@@ -8,7 +8,8 @@
 import unittest
 
 
-from sbn.object import Object, format, items, keys, update, values
+from sbn.find   import format
+from sbn.object import Object, items, keys, update, values
 
 
 import sbn

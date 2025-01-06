@@ -24,18 +24,13 @@ PACKAGE = [
 
 MODULE = [
     'Object',
-    'ObjectDecoder',
-    'ObjectEncoder',
     'construct',
     'dumps',
     'edit',
-    'format',
     'hook',
     'items',
     'keys',
     'loads',
-    'match',
-    'search',
     'update',
     'values'
 ]
