@@ -1,5 +1,5 @@
 # This file is placed in the Public Domain.
-# pylint: disable=C,E0402
+# pylint: disable=E0402
 
 
 "errors"
@@ -9,6 +9,7 @@ from ..runtime import Errors
 
 
 def err(event):
+    """ raised errors. """
     nmr = 0
     for exc in Errors.errors:
         for line in exc:

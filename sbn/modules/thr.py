@@ -1,22 +1,23 @@
 # This file is placed in the Public Domain.
-# pylint: disable=C,E0402
+# pylint:: disable=E0402
 
 
-"running threads."
+"running threads"
 
 
 import threading
 import time
 
 
-from ..find   import laps
-from ..object import Object, update
+from ..objects import Object, update
+from ..persist import elapsed
 
 
 STARTTIME = time.time()
 
 
 def thr(event):
+    """ show running threads. """
     result = []
     for thread in sorted(threading.enumerate(), key=lambda x: x.name):
         if str(thread).startswith('<_'):
@@ -34,7 +35,7 @@ def thr(event):
         result.append((uptime, thread.name))
     res = []
     for uptime, txt in sorted(result, key=lambda x: x[0]):
-        lap = laps(uptime)
+        lap = elapsed(uptime)
         res.append(f'{txt}/{lap}')
     if res:
         event.reply(' '.join(res))

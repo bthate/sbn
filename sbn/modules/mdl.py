@@ -1,27 +1,25 @@
 # This file is placed in the Public Domain.
-# pylint: disable=C0116,C0209,W0622,E0402
+# pylint: disable=W0105,E0402
 
 
-"**Genocide** model of the Netherlands since **4 March 2019**"
+"Genocide model of the Netherlands since 4 March 2019"
 
 
 import datetime
 import time
 
 
-from ..find    import laps
-from ..object  import Object, construct, keys
-from ..runtime import Cache, Event, Repeater
+from ..clients import Event
+from ..objects import Object, construct, keys
+from ..persist import Cache, elapsed
+from ..runtime import Repeater
 
 
-DAY = 24*60*60
-YEAR = 365*DAY
-SOURCE = "https://github.com/bthate/genocide"
-STARTDATE = "2019-03-04 00:00:00"
-STARTTIME = time.mktime(time.strptime(STARTDATE, "%Y-%m-%d %H:%M:%S"))
+"init"
 
 
 def init():
+    """ init model module."""
     for key in keys(oorzaken):
         if "Psych" not in key:
             continue
@@ -33,6 +31,190 @@ def init():
             sec = seconds(val)
             repeater = Repeater(sec, cbstats, evt, thrname=aliases.get(key))
             repeater.start()
+
+
+"defines"
+
+
+DAY = 24*60*60
+YEAR = 365*DAY
+SOURCE = "https://github.com/bthate/genocide"
+STARTDATE = "2019-03-04 00:00:00"
+STARTTIME = time.mktime(time.strptime(STARTDATE, "%Y-%m-%d %H:%M:%S"))
+
+
+aliases = {}
+aliases["Nieuwvormingen"] = "cancer"
+aliases["Hart en vaatstelsel"] = "hart"
+aliases["Psychische en gedragsstoornissen"] = "mental"
+aliases["Ademhalingsorganen"] = "breathing"
+aliases["Uitwendige doodsoorzaken"] = "externals"
+aliases["Zenuwstelsel en zintuigen"] = "nerves"
+aliases["Afwijkende klinische bevindingen"] = "NOS"
+aliases["Spijsverteringsorganen"] = "stomach"
+aliases["Endocriene, voedings-, stofwisseling"] = "metabolism"
+aliases["Urogenitaal stelsel"] = "kidney"
+aliases["Infectieuze en parasitaire ziekten"] = "infectious"
+aliases["Botspierstelsel en bindweefsel"] = "muscle"
+aliases["Bloed, bloedvormende organen"] = "blood"
+aliases["Aangeboren afwijkingen"] = "birth"
+aliases["Huid en subcutis"] = "skin"
+aliases["Zwangerschap"] = "pregnancy"
+aliases["Suicide"] = "suicide"
+
+
+demo = Object()
+demo.gehandicapten = 2000000
+demo.ggz = 800000
+demo.population = 17440000
+demo.part = 7000000000 / demo.population
+
+
+jaar = {}
+jaar["WvGGZ"] = 14206
+jaar["Pvp"] = 20088
+jaar["Wzd"] = 25000
+jaar["Wfz"] = 23820
+jaar["totaal"] = 168678
+
+
+
+
+"utilities"
+
+
+def getalias(txt):
+    """ return alias."""
+    result = ""
+    for key, value in aliases.items():
+        if txt.lower() in key.lower():
+            result = value
+            break
+    return result
+
+def getday():
+    """ get current day timestamp. """
+    day = datetime.datetime.now()
+    day = day.replace(hour=0, minute=0, second=0, microsecond=0)
+    return day.timestamp()
+
+
+def getnr(nme):
+    """ return number. """
+    for k in keys(oorzaken):
+        if nme.lower() in k.lower():
+            return int(getattr(oorzaken, k))
+    return 0
+
+
+def seconds(nrs):
+    """ return seconds. """
+    if not nrs:
+        return nrs
+    return 60*60*24*365 / float(nrs)
+
+
+def iswanted(k, line):
+    """ check whether wanted. """
+    for word in line:
+        if word in k:
+            return True
+    return False
+
+
+def daily():
+    """ run daily. """
+    while 1:
+        time.sleep(24*60*60)
+        evt = Event()
+        cbnow(evt)
+
+
+def hourly():
+    """ run hourly. """
+    while 1:
+        time.sleep(60*60)
+        evt = Event()
+        cbnow(evt)
+
+
+def cbnow(_evt):
+    """ now callback. """
+    delta = time.time() - STARTTIME
+    txt = elapsed(delta) + " "
+    for nme in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
+        needed = seconds(getnr(nme))
+        if needed > 60*60:
+            continue
+        nrtimes = int(delta/needed)
+        txt += f"{getalias(nme)} {nrtimes} | "
+    txt += "https://pypi.org/project/genocide"
+    Fleet.announce(txt)
+
+
+def cbstats(evt):
+    """ stats callback. """
+    nme = evt.rest or "Psych"
+    needed = seconds(getnr(nme))
+    if needed:
+        delta = time.time() - STARTTIME
+        nrtimes = int(delta/needed)
+        nryear = int(YEAR/needed)
+        nrday = int(DAY/needed)
+        delta2 = time.time() - getday()
+        thisday = int(delta2/needed)
+        txt = "%s %s #%s (%s/%s/%s) every %s" % (
+            elapsed(delta),
+            getalias(nme).upper(),
+            nrtimes,
+            thisday,
+            nrday,
+            nryear,
+            elapsed(needed)
+        )
+        Fleet.announce(txt)
+
+
+"commands"
+
+
+def all(event):
+    """ show all mortality causes. """
+    delta = time.time() - STARTTIME
+    txt = elapsed(delta) + " "
+    for nme in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
+        needed = seconds(getnr(nme))
+        if needed > 60*60:
+            continue
+        nrtimes = int(delta/needed)
+        txt += f"{getalias(nme)} {nrtimes} | "
+    txt += "https://pypi.org/project/genocide"
+    event.reply(txt)
+
+
+def now(event):
+    """ show current state of affairs. """
+    nme = event.rest or "Psych"
+    needed = seconds(getnr(nme))
+    if needed:
+        delta = time.time() - STARTTIME
+        nrtimes = int(delta/needed)
+        nryear = int(YEAR/needed)
+        nrday = int(DAY/needed)
+        thisday = int(DAY % needed)
+        txt = "%s %s #%s (%s/%s/%s) every %s" % (
+            elapsed(delta),
+            getalias(nme),
+            nrtimes,
+            thisday,
+            nrday,
+            nryear,
+            elapsed(needed)
+        )
+        event.reply(txt)
+
+
+"data"
 
 
 oor = """"Totaal onderliggende doodsoorzaken (aantal)";
@@ -231,166 +413,16 @@ aantal = """
          """.split(";")
 
 
-aliases = {}
-aliases["Nieuwvormingen"] = "cancer"
-aliases["Hart en vaatstelsel"] = "hart"
-aliases["Psychische en gedragsstoornissen"] = "mental"
-aliases["Ademhalingsorganen"] = "breathing"
-aliases["Uitwendige doodsoorzaken"] = "externals"
-aliases["Zenuwstelsel en zintuigen"] = "nerves"
-aliases["Afwijkende klinische bevindingen"] = "NOS"
-aliases["Spijsverteringsorganen"] = "stomach"
-aliases["Endocriene, voedings-, stofwisseling"] = "metabolism"
-aliases["Urogenitaal stelsel"] = "kidney"
-aliases["Infectieuze en parasitaire ziekten"] = "infectious"
-aliases["Botspierstelsel en bindweefsel"] = "muscle"
-aliases["Bloed, bloedvormende organen"] = "blood"
-aliases["Aangeboren afwijkingen"] = "birth"
-aliases["Huid en subcutis"] = "skin"
-aliases["Zwangerschap"] = "pregnancy"
-aliases["Suicide"] = "suicide"
-
-
-demo = Object()
-demo.gehandicapten = 2000000
-demo.ggz = 800000
-demo.population = 17440000
-demo.part = 7000000000 / demo.population
-
-
-jaar = {}
-jaar["WvGGZ"] = 14206
-jaar["Pvp"] = 20088
-jaar["Wzd"] = 25000
-jaar["Wfz"] = 23820
-jaar["totaal"] = 168678
-
-
 oorzaak = Object()
 construct(oorzaak, zip(oor, aantal))
 oorzaken = Object()
 
 
-def getalias(txt):
-    result = ""
-    for key, value in aliases.items():
-        if txt.lower() in key.lower():
-            result = value
-            break
-    return result
-
-def getday():
-    day = datetime.datetime.now()
-    day = day.replace(hour=0, minute=0, second=0, microsecond=0)
-    return day.timestamp()
-
-
-def getnr(nme):
-    for k in keys(oorzaken):
-        if nme.lower() in k.lower():
-            return int(getattr(oorzaken, k))
-    return 0
-
-
-def seconds(nrs):
-    if not nrs:
-        return nrs
-    return 60*60*24*365 / float(nrs)
-
-
-def iswanted(k, line):
-    for word in line:
-        if word in k:
-            return True
-    return False
-
-
-def daily():
-    while 1:
-        time.sleep(24*60*60)
-        evt = Event()
-        cbnow(evt)
-
-
-def hourly():
-    while 1:
-        time.sleep(60*60)
-        evt = Event()
-        cbnow(evt)
-
-
-def cbnow(_evt):
-    delta = time.time() - STARTTIME
-    txt = laps(delta) + " "
-    for nme in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
-        needed = seconds(getnr(nme))
-        if needed > 60*60:
-            continue
-        nrtimes = int(delta/needed)
-        txt += f"{getalias(nme)} {nrtimes} | "
-    txt += "https://pypi.org/project/genocide"
-    for obj in Cache.typed("IRC"):
-        obj.announce(txt)
-
-
-def cbstats(evt):
-    nme = evt.rest or "Psych"
-    needed = seconds(getnr(nme))
-    if needed:
-        delta = time.time() - STARTTIME
-        nrtimes = int(delta/needed)
-        nryear = int(YEAR/needed)
-        nrday = int(DAY/needed)
-        delta2 = time.time() - getday()
-        thisday = int(delta2/needed)
-        txt = "%s %s #%s (%s/%s/%s) every %s" % (
-            laps(delta),
-            getalias(nme).upper(),
-            nrtimes,
-            thisday,
-            nrday,
-            nryear,
-            laps(needed)
-        )
-        for obj in Cache.typed("IRC"):
-            obj.announce(txt)
-
-
-def all(event):
-    delta = time.time() - STARTTIME
-    txt = laps(delta) + " "
-    for nme in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
-        needed = seconds(getnr(nme))
-        if needed > 60*60:
-            continue
-        nrtimes = int(delta/needed)
-        txt += f"{getalias(nme)} {nrtimes} | "
-    txt += "https://pypi.org/project/genocide"
-    event.reply(txt)
-
-
-def now(event):
-    nme = event.rest or "Psych"
-    needed = seconds(getnr(nme))
-    if needed:
-        delta = time.time() - STARTTIME
-        nrtimes = int(delta/needed)
-        nryear = int(YEAR/needed)
-        nrday = int(DAY/needed)
-        thisday = int(DAY % needed)
-        txt = "%s %s #%s (%s/%s/%s) every %s" % (
-            laps(delta),
-            getalias(nme),
-            nrtimes,
-            thisday,
-            nrday,
-            nryear,
-            laps(needed)
-        )
-        event.reply(txt)
+"boot"
 
 
 def boot():
+    """ reconstruct data. """
     _nr = -1
     for key in keys(oorzaak):
         _nr += 1
@@ -418,14 +450,6 @@ def boot():
         nms = " ".join(atl.split()[1:]).capitalize()
         nms = nms.strip()
         setattr(oorzaken, nms, aantal[_nr])
-
-
-def __dir__():
-    return (
-            'init',
-            'all',
-            'now'
-           )
 
 
 boot()
