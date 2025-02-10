@@ -1,8 +1,7 @@
 # This file is placed in the Public Domain.
-# pylint:: disable=E0402
 
 
-"running threads"
+"show running threads."
 
 
 import threading
@@ -10,10 +9,8 @@ import time
 
 
 from ..objects import Object, update
-from ..persist import elapsed
-
-
-STARTTIME = time.time()
+from ..threads import STARTTIME
+from ..utility import elapsed
 
 
 def thr(event):

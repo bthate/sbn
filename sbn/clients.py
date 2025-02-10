@@ -1,20 +1,28 @@
 # This file is placed in the Public Domain.
-# pylint: disable=W0105,E0402
+# pylint: disable=R0903,W0613
 
 
 "clients"
 
 
+import os
 import queue
 import threading
-import time
 
 
-from .command import Default, command
-from .runtime import Reactor, launch
+from .default import Default
+from .reactor import Fleet, Reactor
+from .threads import launch
 
 
-"client"
+class Config(Default):
+
+    """ Config """
+
+    init    = ""
+    name    = __file__.rsplit(os.sep, maxsplit=2)[-2]
+    opts    = Default()
+    version = 170
 
 
 class Client(Reactor):
@@ -23,144 +31,101 @@ class Client(Reactor):
 
     def __init__(self):
         Reactor.__init__(self)
-        self.register("command", command)
         Fleet.add(self)
 
-    def raw(self, txt):
-        """ echo text. """
+    def raw(self, txt) -> None:
+        """ text to screen. """
         raise NotImplementedError("raw")
 
-    def say(self, _channel, txt):
-        """ relay to raw. """
+    def say(self, channel, txt) -> None:
+        """ text to channel. """
         self.raw(txt)
-
-
-"event"
-
-
-class Event(Default):
-
-    """ Event """
-
-    def __init__(self):
-        Default.__init__(self)
-        self._ready = threading.Event()
-        self.thrs   = []
-        self.ctime  = time.time()
-        self.result = []
-        self.type   = "event"
-        self.txt    = ""
-
-    def display(self):
-        """ display result."""
-        for txt in self.result:
-            Fleet.say(self.orig, self.channel, txt)
-
-    def done(self):
-        """ signal done."""
-        self.reply("ok")
-
-    def ready(self):
-        """ signal ready."""
-        self._ready.set()
-
-    def reply(self, txt):
-        """ add text to result. """
-        self.result.append(txt)
-
-    def wait(self):
-        """ wait for finished. """
-        self._ready.wait()
-        for thr in  self.thrs:
-            thr.join()
-
-
-"fleet"
-
-
-class Fleet:
-
-    """ Fleet. """
-
-    bots = {}
-
-    @staticmethod
-    def add(bot):
-        """ add to fleet."""
-        Fleet.bots[repr(bot)] = bot
-
-    @staticmethod
-    def announce(txt):
-        """ announce on fleet."""
-        for bot in Fleet.bots:
-            bot.announce(txt)
-
-    @staticmethod
-    def get(orig):
-        """get by origin."""
-        return Fleet.bots.get(orig, None)
-
-    @staticmethod
-    def say(orig, channel, txt):
-        """ say text on channel on specific bot."""
-        bot = Fleet.bots.get(orig, None)
-        if bot:
-            bot.say(channel, txt)
-
-
-"output"
 
 
 class Output:
 
     """ Output """
 
-    cache = {}
-
     def __init__(self):
-        self.oqueue = queue.Queue()
-        self.dostop = threading.Event()
+        self.oqueue   = queue.Queue()
+        self.running = threading.Event()
 
-    def dosay(self, channel, txt):
-        """ inherit this. """
-        raise NotImplementedError("dosay")
-
-    def oput(self, channel, txt):
-        """ put output to outqueue. """
-        self.oqueue.put((channel, txt))
-
-    def output(self):
+    def loop(self) -> None:
         """ output loop. """
-        while not self.dostop.is_set():
-            (channel, txt) = self.oqueue.get()
-            if channel is None and txt is None:
+        self.running.set()
+        while self.running.is_set():
+            evt = self.oqueue.get()
+            if evt is None:
                 self.oqueue.task_done()
                 break
-            self.dosay(channel, txt)
+            Fleet.display(evt)
             self.oqueue.task_done()
 
-    def start(self):
-        """ start loop."""
-        launch(self.output)
+    def oput(self,evt) -> None:
+        """ put event into output queue. """
+        if not self.running.is_set():
+            Fleet.display(evt)
+        self.oqueue.put(evt)
 
-    def stop(self):
-        """ stop loop."""
+    def start(self) -> None:
+        """ start output loop. """
+        if not self.running.is_set():
+            self.running.set()
+            launch(self.loop)
+
+    def stop(self) -> None:
+        """ stop output loop. """
+        self.running.clear()
+        self.oqueue.put(None)
+
+    def wait(self) -> None:
+        """ wait for loop to finish, """
         self.oqueue.join()
-        self.dostop.set()
-        self.oqueue.put((None, None))
-
-    def wait(self):
-        """ wait for stop."""
-        self.dostop.wait()
+        self.running.wait()
 
 
-"interface"
+class Buffered(Client, Output):
+
+    """ Buffered """
+
+    def __init__(self):
+        Client.__init__(self)
+        Output.__init__(self)
+
+    def raw(self, txt) -> None:
+        """ text to screen. """
+        raise NotImplementedError("raw")
+
+    def start(self) -> None:
+        """ start client. """
+        Output.start(self)
+        Client.start(self)
+
+    def stop(self) -> None:
+        """ stop client. """
+        Output.stop(self)
+        Client.stop(self)
+
+    def wait(self) -> None:
+        """ wait for client to finish. """
+        Output.wait(self)
+        Client.wait(self)
+
+
+def debug(txt) -> None:
+    """ text to screen if verbose is enabled. """
+    if "v" in Config.opts:
+        output(txt)
+
+
+def output(txt) -> None:
+    """ text to screen. """
 
 
 def __dir__():
     return (
+        'Default',
         'Client',
-        'Event',
         'Fleet',
-        'Output'
+        'debug'
     )
