@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sbn"
-description = "Since 4 March 2019"
+description = "Since 4 March 2019."
 version = "121"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
@@ -21,6 +21,10 @@ classifiers=[
 ]
 
 
+[project.scripts]
+"sbn" = "sbn.__main__:main"
+
+
 [project.urls]
 "home" = "https://pypi.org/project/sbn"
 "bugs" = "https://github.com/bthate/sbn/issues"
@@ -28,9 +32,6 @@ classifiers=[
 
 
 [tool.setuptools]
-script-files = [
-    "bin/sbn",
-]
 packages = [
    "sbn",
    "sbn.modules"
