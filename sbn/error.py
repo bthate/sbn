@@ -9,25 +9,24 @@ import traceback
 
 class Errors:
 
-    """ Errors """
-
-    name = __file__.rsplit(".", maxsplit=2)[-2]
+    name = __file__.rsplit("/", maxsplit=2)[-2]
     errors = []
 
     @staticmethod
     def format(exc) -> str:
-        """ format exception into a string. """
         exctype, excvalue, trb = type(exc), exc, exc.__traceback__
         trace = traceback.extract_tb(trb)
         result = ""
         for i in trace:
             fname = i[0]
+            if fname.endswith(".py"):
+                fname = fname[:-3]
             linenr = i[1]
-            plugfile = fname[:-3].split("/")
+            plugfile = fname.split("/")
             mod = []
             for i in plugfile[::-1]:
                 mod.append(i)
-                if Errors.name in i:
+                if Errors.name in i or "bin" in i:
                     break
             ownname = '.'.join(mod[::-1])
             if ownname.endswith("__"):
@@ -37,11 +36,13 @@ class Errors:
             result += f"{ownname}:{linenr} "
         del trace
         res = f"{exctype} {result[:-1]} {excvalue}"
+        if "__notes__" in dir(exc):
+            for note in exc.__notes__:
+                res += f" {note}"
         return res
 
     @staticmethod
     def full(exc) -> str:
-        """ print full exception trace. """
         return traceback.format_exception(
             type(exc),
             exc,
@@ -49,22 +50,12 @@ class Errors:
         )
 
 
-def errors() -> []:
-    """ return list of errors. """
-    return Errors.errors
-
-
-def later(exc) -> None:
-    """ defer an exception for later handling. """
-    excp = exc.with_traceback(exc.__traceback__)
-    fmt = Errors.format(excp)
-    if fmt not in Errors.errors:
-        Errors.errors.append(fmt)
+def later(exc, txt="") -> None:
+    Errors.errors.append(exc)
 
 
 def __dir__():
     return (
         'Errors',
-        'errors',
-        'jater'
+        'later'
     )
