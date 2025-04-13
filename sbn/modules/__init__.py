@@ -4,50 +4,36 @@
 "modules"
 
 
+import hashlib
 import importlib
 import importlib.util
 import inspect
 import os
 import sys
 import threading
-import time
-import types
 import typing
+import types
+import _thread
 
 
-from ..fleet  import Fleet
-from ..object import Default
-from ..utils  import debug, md5sum, spl
+from ..client import Default, Fleet
+from ..object import Object as Object
+from ..object import items, keys
+from ..thread import later, launch
 
 
-checksum = "64878c531bcee4980eae300e23323de4"
-checksum = ""
-
-path = f"{os.path.dirname(__file__)}"
-pname = f"{__package__}"
-
-
-NAMES = MD5 = {}
+CHECKSUM = "7b3aa07511d3d882d07a62bd8c3b6239"
+CHECKSUM = ""
+MD5      = {}
+NAMES    = {}
 
 
-try:
-    pth = os.path.join(path, "tbl.py")
-    if not checksum or (md5sum(pth) == checksum):
-        from .tbl import NAMES, MD5
-except ImportError:
-     pass
-
-
-STARTTIME = time.time()
-
-
+lock     = threading.RLock()
 initlock = threading.RLock()
 loadlock = threading.RLock()
 
 
-class MD5Error(Exception):
-
-    pass
+path = os.path.dirname(__file__)
 
 
 class Main(Default):
@@ -55,16 +41,18 @@ class Main(Default):
     debug   = False
     ignore  = ''
     init    = ""
-    md5     = True
-    name    = __package__.split(".")[0]
+    md5     = False
+    name    = __name__.split(".", maxsplit=1)[0]
     opts    = Default()
     verbose = False
+    version = 3
 
 
 class Commands:
 
-    cmds = {}
-    names = NAMES or {} 
+    cmds  = {}
+    md5   = {}
+    names = {}
 
     @staticmethod
     def add(func, mod=None) -> None:
@@ -79,7 +67,7 @@ class Commands:
             name = Commands.names.get(cmd, None)
             if not name:
                 return
-            if not check(name):
+            if Main.md5 and not check(name):
                 return
             mod = load(name)
             if mod:
@@ -95,6 +83,29 @@ def command(evt) -> None:
         func(evt)
         Fleet.display(evt)
     evt.ready()
+
+
+def debug(*args):
+    for arg in args:
+        sys.stderr.write(str(arg))
+        sys.stderr.write("\n")
+        sys.stderr.flush()
+
+
+def inits(names) -> [types.ModuleType]:
+    modz = []
+    for name in spl(names):
+        try:
+            mod = load(name)
+            if not mod:
+                continue
+            if "init" in dir(mod):
+                thr = launch(mod.init)
+                modz.append((mod, thr))
+        except Exception as ex:
+            later(ex)
+            _thread.interrupt_main()
+    return modz
 
 
 def parse(obj, txt=None) -> None:
@@ -128,7 +139,7 @@ def parse(obj, txt=None) -> None:
             setattr(obj.silent, key, value)
             setattr(obj.gets, key, value)
             continue
-        elif "==" in spli:
+        if "==" in spli:
             key, value = spli.split("==", maxsplit=1)
             setattr(obj.gets, key, value)
             continue
@@ -164,21 +175,55 @@ def scan(mod) -> None:
             Commands.add(cmdz, mod)
 
 
-"utilities"
+def settable():
+    Commands.names.update(table())
 
 
-def check(name, sum=""):
-    if not checksum:
-        return True
-    mname = f"{pname}.{name}"
-    spec = importlib.util.find_spec(mname)
+"imports"
+
+
+def check(name, md5=""):
+    mname = f"{__name__}.{name}"
+    pth = os.path.join(path, name + ".py")
+    spec = importlib.util.spec_from_file_location(mname, pth)
     if not spec:
         return False
-    path = spec.origin
-    if md5sum(path) == (sum or MD5.get(name, None)):
+    if md5sum(pth) == (md5 or MD5.get(name, None)):
         return True
-    debug(f"{name} failed md5sum check")
+    if CHECKSUM and Main.md5:
+        debug(f"{name} failed md5sum check")
     return False
+
+
+def getmod(name):
+    mname = f"{__name__}.{name}"
+    mod = sys.modules.get(mname, None)
+    if mod:
+        return mod
+    pth = os.path.join(path, name + ".py")
+    spec = importlib.util.spec_from_file_location(mname, pth)
+    if not spec:
+        return None
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    sys.modules[mname] = mod
+    return mod
+
+
+def gettbl(name):
+    pth = os.path.join(path, "tbl.py")
+    if not os.path.exists(pth):
+        debug("tbl.py is not there")
+        return {}
+    if CHECKSUM and (md5sum(pth) != CHECKSUM):
+        debug("table checksum doesn't match")
+        return {}
+    try:
+        mod = getmod("tbl")
+    except FileNotFoundError:
+        debug("tbl module not found")
+        return
+    return getattr(mod, name, {})
 
 
 def load(name) -> types.ModuleType:
@@ -186,7 +231,7 @@ def load(name) -> types.ModuleType:
         if name in Main.ignore:
             return
         module = None
-        mname = f"{pname}.{name}"
+        mname = f"{__name__}.{name}"
         module = sys.modules.get(mname, None)
         if not module:
             pth = os.path.join(path, f"{name}.py")
@@ -201,13 +246,21 @@ def load(name) -> types.ModuleType:
         return module
 
 
-def mods(names="") -> [types.ModuleType]:
+def md5sum(modpath):
+    with open(modpath, "r", encoding="utf-8") as file:
+        txt = file.read().encode("utf-8")
+        return str(hashlib.md5(txt).hexdigest())
+
+
+def mods(names="", empty=False) -> [types.ModuleType]:
     res = []
+    if empty:
+        try:
+            from . import tbl
+            tbl.NAMES = {}
+        except ImportError:
+            pass
     for nme in sorted(modules(path)):
-        if nme in spl(Main.ignore):
-            continue
-        if "__" in nme:
-            continue
         if names and nme not in spl(names):
             continue
         mod = load(nme)
@@ -221,21 +274,120 @@ def modules(mdir="") -> [str]:
     return [
             x[:-3] for x in os.listdir(mdir or path)
             if x.endswith(".py") and not x.startswith("__") and
-            x not in Main.ignore
+            x[:-3] not in Main.ignore
            ]
 
 
+def table():
+    md5s = gettbl("MD5")
+    if md5s:
+        MD5.update(md5s)
+    names = gettbl("NAMES")
+    if names:
+        NAMES.update(names)
+    return NAMES
+
+
+"utilities"
+
+
+def elapsed(seconds, short=True) -> str:
+    txt = ""
+    nsec = float(seconds)
+    if nsec < 1:
+        return f"{nsec:.2f}s"
+    yea = 365*24*60*60
+    week = 7*24*60*60
+    nday = 24*60*60
+    hour = 60*60
+    minute = 60
+    yeas = int(nsec/yea)
+    nsec -= yeas*yea
+    weeks = int(nsec/week)
+    nsec -= weeks*week
+    nrdays = int(nsec/nday)
+    nsec -= nrdays*nday
+    hours = int(nsec/hour)
+    nsec -= hours*hour
+    minutes = int(nsec/minute)
+    nsec -= int(minute*minutes)
+    sec = int(nsec)
+    if yeas:
+        txt += f"{yeas}y"
+    if weeks:
+        nrdays += weeks * 7
+    if nrdays:
+        txt += f"{nrdays}d"
+    if short and txt:
+        return txt.strip()
+    if hours:
+        txt += f"{hours}h"
+    if minutes:
+        txt += f"{minutes}m"
+    if sec:
+        txt += f"{sec}s"
+    txt = txt.strip()
+    return txt
+
+
+def spl(txt) -> str:
+    try:
+        result = txt.split(',')
+    except (TypeError, ValueError):
+        result = txt
+    return [x for x in result if x]
+
+
+"methods"
+
+
+def edit(obj, setter, skip=False) -> None:
+    for key, val in items(setter):
+        if skip and val == "":
+            continue
+        try:
+            setattr(obj, key, int(val))
+            continue
+        except ValueError:
+            pass
+        try:
+            setattr(obj, key, float(val))
+            continue
+        except ValueError:
+            pass
+        if val in ["True", "true"]:
+            setattr(obj, key, True)
+        elif val in ["False", "false"]:
+            setattr(obj, key, False)
+        else:
+            setattr(obj, key, val)
+
+
+def fmt(obj, args=None, skip=None, plain=False) -> str:
+    if args is None:
+        args = keys(obj)
+    if skip is None:
+        skip = []
+    txt = ""
+    for key in args:
+        if key.startswith("__"):
+            continue
+        if key in skip:
+            continue
+        value = getattr(obj, key, None)
+        if value is None:
+            continue
+        if plain:
+            txt += f"{value} "
+        elif isinstance(value, str) and len(value.split()) >= 2:
+            txt += f'{key}="{value}" '
+        else:
+            txt += f'{key}={value} '
+    return txt.strip()
+
+
+"interface"
+
+
 def __dir__():
-    return (
-        'STARTTIME',
-        'Commands',
-        'check',
-        'command',
-        'inits',
-        'load',
-        'modules',
-        'mods',
-        'md5',
-        'parse',
-        'scan'
-    )
+    return modules()

@@ -1,15 +1,31 @@
 # This file is placed in the Public Domain.
 
 
-"utilities"
+"timers"
 
 
 import datetime
-import hashlib
-import os
 import re
-import sys
 import time
+
+
+from ..disk   import write
+from ..store  import find, ident, store
+from ..thread import Timer, launch
+from .           import Fleet, elapsed
+
+
+def init():
+    for fnm, obj in find("timer"):
+        if "time" not in dir(obj):
+            continue
+        diff = float(obj.time) - time.time()
+        if diff > 0:
+            timer = Timer(diff, Fleet.announce, obj.txt)
+            timer.start()
+        else:
+            obj.__deleted__ = True
+            write(obj, fnm)
 
 
 class NoDate(Exception):
@@ -17,75 +33,7 @@ class NoDate(Exception):
     pass
 
 
-def elapsed(seconds, short=True) -> str:
-    txt = ""
-    nsec = float(seconds)
-    if nsec < 1:
-        return f"{nsec:.2f}s"
-    yea = 365*24*60*60
-    week = 7*24*60*60
-    nday = 24*60*60
-    hour = 60*60
-    minute = 60
-    yeas = int(nsec/yea)
-    nsec -= yeas*yea
-    weeks = int(nsec/week)
-    nsec -= weeks*week
-    nrdays = int(nsec/nday)
-    nsec -= nrdays*nday
-    hours = int(nsec/hour)
-    nsec -= hours*hour
-    minutes = int(nsec/minute)
-    nsec -= int(minute*minutes)
-    sec = int(nsec)
-    if yeas:
-        txt += f"{yeas}y"
-    if weeks:
-        nrdays += weeks * 7
-    if nrdays:
-        txt += f"{nrdays}d"
-    if short and txt:
-        return txt.strip()
-    if hours:
-        txt += f"{hours}h"
-    if minutes:
-        txt += f"{minutes}m"
-    if sec:
-        txt += f"{sec}s"
-    txt = txt.strip()
-    return txt
-
-
-def md5sum(path):
-    with open(path, "r", encoding="utf-8") as file:
-        txt = file.read().encode("utf-8")
-        return str(hashlib.md5(txt).hexdigest())
-
-
-def spl(txt) -> str:
-    try:
-        result = txt.split(',')
-    except (TypeError, ValueError):
-        result = txt
-    return [x for x in result if x]
-
-
-"debug"
-
-
-def debug(*args):
-    for arg in args:
-        sys.stderr.write(str(arg))
-        sys.stderr.write("\n")
-        sys.stderr.flush()
-
-
-def nodebug():
-    with open('/dev/null', 'a+', encoding="utf-8") as ses:
-        os.dup2(ses.fileno(), sys.stderr.fileno())
-
-
-"time related"
+"utilities"
 
 
 def extract_date(daystr):
@@ -200,6 +148,9 @@ def today():
     return str(datetime.datetime.today()).split()[0]
 
 
+"data"
+
+
 MONTHS = [
     'Bo',
     'Jan',
@@ -227,18 +178,54 @@ FORMATS = [
 ]
 
 
-def __dir__():
-    return (
-        'debug',
-        'elapsed',
-        'extract_date',
-        'get_day',
-        'get_hour',
-        'get_time',
-        'md5sum',
-        'nodebug',
-        'parse_time',
-        'to_day',
-        'today',
-        'spl'
-    )
+"commands"
+
+
+def tmr(event):
+    result = ""
+    if not event.rest:
+        nmr = 0
+        for _fn, obj in find('timer'):
+            if "time" not in dir(obj):
+                continue
+            lap = float(obj.time) - time.time()
+            if lap > 0:
+                event.reply(f'{nmr} {obj.txt} {elapsed(lap)}')
+                nmr += 1
+        if not nmr:
+            event.reply("no timers.")
+        return result
+    seconds = 0
+    line = ""
+    for word in event.args:
+        if word.startswith("+"):
+            try:
+                seconds = int(word[1:])
+            except (ValueError, IndexError):
+                event.reply(f"{seconds} is not an integer")
+                return result
+        else:
+            line += word + " "
+    if seconds:
+        target = time.time() + seconds
+    else:
+        try:
+            target = get_day(event.rest)
+        except NoDate:
+            target = to_day(today())
+        hour =  get_hour(event.rest)
+        if hour:
+            target += hour
+    if not target or time.time() > target:
+        event.reply("already passed given time.")
+        return result
+    diff = target - time.time()
+    txt = " ".join(event.args[1:])
+    timer = Timer(diff, Fleet.say, event.orig, event.channel, txt)
+    timer.channel = event.channel
+    timer.orig = event.orig
+    timer.time = target
+    timer.txt = txt
+    write(timer, store(ident(timer)))
+    launch(timer.start)
+    event.reply("ok " +  elapsed(diff))
