@@ -176,8 +176,6 @@ def md5(event):
     event.reply(md5sum(table.__file__))
 
 
-
-
 def srv(event):
     import getpass
     name = getpass.getuser()
@@ -269,7 +267,6 @@ def service():
     Commands.add(cmd)
     inits(Main.init or "irc,rss")
     forever()
-
 
 
 "runtime"
