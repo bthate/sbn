@@ -39,7 +39,7 @@ path = os.path.dirname(__file__)
 class Main(Default):
 
     debug   = False
-    ignore  = ''
+    ignore  = 'dbg,rst,udp,web,wsd'
     init    = ""
     md5     = False
     name    = __name__.split(".", maxsplit=1)[0]

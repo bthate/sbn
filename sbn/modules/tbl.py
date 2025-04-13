@@ -6,9 +6,7 @@
 
 NAMES = {
     "ask": "llm",
-    "brk": "dbg",
     "cfg": "irc",
-    "dbg": "dbg",
     "dis": "mdl",
     "dne": "tdo",
     "dpl": "rss",
@@ -35,15 +33,12 @@ NAMES = {
     "tdo": "tdo",
     "thr": "thr",
     "tmr": "tmr",
-    "udp": "udp",
     "upt": "upt",
-    "ver": "ver",
-    "wsd": "wsd"
+    "ver": "ver"
 }
 
 
 MD5 = {
-    "dbg": "c04d16252fd6cd98a85d214ca929f7b6",
     "err": "2aca6bd937ceb5aa2b4233f1700804b1",
     "flt": "69a8c602654724e861032e5dc2c05a87",
     "fnd": "f686cf8b8c991b8dcb486ac521122002",
@@ -56,15 +51,11 @@ MD5 = {
     "mod": "82d9b50b3a2a446fbb857de7192b8f28",
     "req": "a0013d5e8582b1cb56854d17e9c66a95",
     "rss": "265cffcb39756c18e66668f742b91e1c",
-    "rst": "8a7215ca2a7d1017ccf270b63a1b8f0c",
     "slg": "6c4f3517e9fe4a5588dbda062712a2eb",
     "tbl": "d41d8cd98f00b204e9800998ecf8427e",
     "tdo": "a130b6179582f4ab1a4332a23a5f0793",
     "thr": "8ea9ef69861963041ed322f69e4eddce",
     "tmr": "10c42fa2203bca164d2708b1fec4cda0",
-    "udp": "0a14a64ed847a3e0a2d583dcec819661",
     "upt": "bf1b33068a95071b05dac0f37766967c",
     "ver": "ba6cfe6e26cbaff110fb7afa356c5a7f",
-    "web": "e20e6049e5bce68ef2f252c0c0b335c7",
-    "wsd": "7bb44c895580b00d0f6bf083e0881267",
 }
