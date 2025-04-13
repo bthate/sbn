@@ -45,7 +45,7 @@ class Main(Default):
     name    = __name__.split(".", maxsplit=1)[0]
     opts    = Default()
     verbose = False
-    version = 130
+    version = 131
 
 
 class Commands:
