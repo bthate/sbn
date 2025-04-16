@@ -1,4 +1,6 @@
 # This file is placed in the Public Domain.
+# pylint: disable=C,R,W1503
+
 
 
 "no tests"
@@ -7,10 +9,8 @@
 import unittest
 
 
+
 class TestNone(unittest.TestCase):
 
-    """ TestNone """
-
     def test_nope(self):
-        """ nope """
-        self.assertTrue(True and True)
+        self.assertTrue(True)
