@@ -41,3 +41,10 @@ packages = [
     'sbn.modules'
 ]
 include-package-data = true
+
+
+[tool.setuptools.package-data]
+"sbn.pdf"          = ["*"]
+"sbn.html"         = ["*"]
+"sbn.html._images" = ["*"]
+"sbn.html._static" = ["*"]

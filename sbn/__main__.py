@@ -208,7 +208,7 @@ def background():
     pidfile(pidname(Main.name))
     settable()
     Commands.add(cmd)
-    inits(Main.init or "irc,rss")
+    inits(Main.init or "irc,mdl,rss")
     forever()
 
 
@@ -260,7 +260,7 @@ def service():
     privileges()
     pidfile(pidname(Main.name))
     Commands.add(cmd)
-    inits(Main.init or "irc,rss")
+    inits(Main.init or "irc,mdl,rss")
     forever()
 
 
