@@ -1,15 +1,15 @@
-.. _evidence:
+.. _pubchem:
 
 .. raw:: html
 
     <br><br>
 
-.. title:: Evidence
+.. title:: PubChem
 
 
 .. raw:: html
 
-    <center><b>EVIDENCE</b></center><br>
+    <center><b>PUBCHEM</b></center><br>
 
 
 .. _haldol:
@@ -22,7 +22,7 @@
   <br>
 
 
-.. image:: ECHAhaldol.png
+.. image:: haldolpubchem.png
     :width: 100%
 
 .. raw:: html
@@ -40,7 +40,7 @@
   <br>
 
 
-.. image:: ECHAclozapine.png
+.. image:: clozapinepubchem.png
     :width: 100%
 
 
@@ -58,7 +58,7 @@
 
   <br>
 
-.. image:: ECHAzyprexa.png
+.. image:: zyprexapubchem.png
     :width: 100%
 
 .. raw:: html
@@ -75,8 +75,10 @@
 
   <br>
 
-.. image:: ECHAabilify.png
+.. image:: abilifypubchem.png
      :width: 100%
 
 
-the same skull and bones can be found on :ref:`PUBCHEM <pubchem>`
+.. raw:: html
+
+    <br><br>
