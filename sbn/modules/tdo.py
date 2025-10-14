@@ -7,8 +7,9 @@
 import time
 
 
-from .. import Object, find, fntime, ident, store, write
-from .  import elapsed
+from ..caching import find, write
+from ..objects import Object
+from ..utility import elapsed, fntime
 
 
 class Todo(Object):
@@ -28,7 +29,7 @@ def dne(event):
         nmr += 1
         obj.__deleted__ = True
         write(obj, fnm)
-        event.done()
+        event.reply("ok")
         break
     if not nmr:
         event.reply("nothing todo")
@@ -46,5 +47,5 @@ def tdo(event):
         return
     obj = Todo()
     obj.txt = event.rest
-    write(obj, store(ident(obj)))
-    event.done()
+    write(obj)
+    event.reply("ok")

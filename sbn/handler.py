@@ -1,77 +1,90 @@
 # This file is placed in the Public Domain.
 
 
-"handler"
+"handle events"
 
 
 import queue
 import threading
+import time
 import _thread
 
 
-from .errors import later
-from .thread import launch, name
-
-
-lock = threading.RLock()
+from .threads import launch
 
 
 class Handler:
 
     def __init__(self):
-        self.cbs     = {}
-        self.queue   = queue.Queue()
-        self.ready   = threading.Event()
-        self.stopped = threading.Event()
+        self.cbs = {}
+        self.queue = queue.Queue()
 
-    def callback(self, evt) -> None:
-        with lock:
-            func = self.cbs.get(evt.type, None)
-            if not func:
-                evt.ready()
-                return
-            if evt.txt:
-                cmd = evt.txt.split(maxsplit=1)[0]
-            else:
-                cmd = name(func)
-            evt._thr = launch(func, evt, name=cmd)
+    def callback(self, event):
+        func = self.cbs.get(event.type, None)
+        if func:
+            name = event.txt and event.txt.split()[0]
+            event._thr = launch(func, event, name=name)
+        else:
+            event.ready()
 
-    def loop(self) -> None:
-        while not self.stopped.is_set():
-            evt = self.poll()
-            if evt is None:
-                break
-            evt.orig = repr(self)
+    def loop(self):
+        while True:
             try:
-                self.callback(evt)
-            except Exception as ex:
-                later(ex)
+                event = self.poll()
+                if event is None:
+                    break
+                event.orig = repr(self)
+                self.callback(event)
+            except (KeyboardInterrupt, EOFError):
                 _thread.interrupt_main()
-        self.ready.set()
 
     def poll(self):
         return self.queue.get()
 
-    def put(self, evt) -> None:
-        self.queue.put(evt)
+    def put(self, event):
+        self.queue.put(event)
 
-    def register(self, typ, cbs) -> None:
-        self.cbs[typ] = cbs
+    def register(self, type, callback):
+        self.cbs[type] = callback
 
-    def start(self) -> None:
-        self.stopped.clear()
-        self.ready.clear()
+    def start(self):
         launch(self.loop)
 
-    def stop(self) -> None:
-        self.stopped.set()
+    def stop(self):
         self.queue.put(None)
 
-    def wait(self) -> None:
-        self.ready.wait()
+
+class Event:
+
+    def __init__(self):
+        self._ready = threading.Event()
+        self._thr = None
+        self.args = []
+        self.channel = ""
+        self.ctime = time.time()
+        self.orig = ""
+        self.rest = ""
+        self.result = {}
+        self.txt = ""
+        self.type = "event"
+
+    def ready(self):
+        self._ready.set()
+
+    def reply(self, txt):
+        self.result[time.time()] = txt
+
+    def wait(self, timeout=None):
+        try:
+            self._ready.wait()
+            if self._thr:
+                self._thr.join(timeout)
+        except (KeyboardInterrupt, EOFError):
+            _thread.interrupt_main()
 
 
 def __dir__():
     return (
-        'Handler',
-    )
+        'Event',
+        'Handler'
+   )

@@ -9,7 +9,7 @@
 |
 
 
-Hello Office of the Prosecutor, 
+Hello Office of the Prosecutor,
 
 i write you in the context of communications and claims under art.15 of
 the Rome Statute. i want to inform the prosecutor that the king of the
@@ -64,8 +64,7 @@ Since the members of the chamber and the king were aware that these
 medicine are poison at the time they voted for this law and the day the
 Wfz law took effect (1-1-2019), i ask the prosecutor to prosecute the
 king for making the commiting of the above mentioned crimes (killing,
-torture and impotent making) possible.
-"""
+torture and impotent making) possible."""
 
 
 def req(event):
