@@ -32,7 +32,7 @@ def md5sum(path):
         return hashlib.md5(txt, usedforsecurity=False).hexdigest()
 
 
-def package(pkg):
+def pkgdir(pkg):
     "return path to package"
     return os.path.dirname(inspect.getfile(pkg))
 

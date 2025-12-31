@@ -5,8 +5,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sbn"
-description = "Since 4 March 2019."
-version = "143"
+description = "Since 4 March 2019"
+version = "150"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -14,15 +14,11 @@ readme = "README.rst"
 license = { text="Public Domain"}
 classifiers=[
     'Development Status :: 3 - Alpha',
-    'License :: Public Domain',
+    'License :: Unlicense',
     'Operating System :: Unix',
     'Programming Language :: Python',
     'Topic :: Utilities'
 ]
-
-
-[project.scripts]
-"sbn" = "sbn.__main__:main"
 
 
 [project.urls]
@@ -34,17 +30,18 @@ classifiers=[
 [tool.setuptools]
 packages = [
     'sbn',
-    'sbn.pdf',
-    'sbn.html',
-    'sbn.html._static',
-    'sbn.html._images',
-    'sbn.modules'
+    'sbn.modules',
+    'sbn.network',
+    'sbn.nucleus',
+    'sbn.nucleus.pdf',
+    'sbn.nucleus._static',
+    'sbn.nucleus._images',
 ]
 include-package-data = true
 
 
 [tool.setuptools.package-data]
-"sbn.pdf"          = ["*"]
-"sbn.html"         = ["*"]
-"sbn.html._images" = ["*"]
-"sbn.html._static" = ["*"]
+"sbn.nucleus"         = ["*"]
+"sbn.nucleus.pdf"     = ["*"]
+"sbn.nucleus._images" = ["*"]
+"sbn.nucleus._static" = ["*"]

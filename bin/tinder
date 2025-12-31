@@ -2,67 +2,43 @@
 # This file is placed in the Public Domain.
 
 
-"simulate clients"
-
-
+import importlib.util
 import os
-import random
 import queue
 import shutil
 import sys
-import termios
 import threading
 import time
-import _thread
 
 
 sys.path.insert(0, os.getcwd())
 
 
-from sbn.brokers import Fleet
-from sbn.clients import Client, Output
-from sbn.command import command, scanner
-from sbn.handler import Event
-from sbn.methods import parse
-from sbn.objects import Object, keys
-from sbn.package import NAME, Mods
-from sbn.threads import launch
-from sbn.utility import elapsed, level
-from sbn.workdir import Workdir, skel
+from sbn.defines import Config, Default, Message, Output, Workdir
+from sbn.defines import command, elapsed, fmt, launch, package, parse
+from sbn.defines import scan, scanner, skel, spl 
 
 
-CHECKSUM = ""
-STARTTIME = time.time()
+import sbn.modules as MODS
 
 
-Mods.dir("mods", "mods")
-Mods.dir("modules")
-Mods.dir("network")
-Mods.debug = True
+Config.debug = True
+Config.gets = Default()
+Config.ignore = "man,mbx,rst,udp,web"
+Config.init = ""
+Config.level = "info"
+Config.name = "sbn"
+Config.opts = ""
+Config.path = package(MODS)
+Config.sets = Default()
+Config.txt = " ".join(sys.argv[1:])
+Config.version = 150
 
 
 Workdir.wdr = ".test"
 
 
-events  = queue.Queue()
-paylock = _thread.allocate_lock()
-rand    = random.SystemRandom()
-
-
-class Config:
-
-    debug    = False
-    gets     = {}
-    index    = None
-    init     = ""
-    level    = "warn"
-    md5      = True
-    moddir   = "mods"
-    opts     = ""
-    otxt     = ""
-    sets     = {}
-    verbose  = False
-    version  = 153
+events = queue.Queue()
 
 
 class CLI(Output):
@@ -70,9 +46,6 @@ class CLI(Output):
     def __init__(self):
         Output.__init__(self)
         self.register("command", command)
-
-    def dosay(self, channel, txt):
-        self.raw(txt)
 
     def raw(self, txt):
         if "v" in Config.opts:
@@ -87,33 +60,114 @@ class Pool:
     nrlast = 0
 
     @staticmethod
-    def add(clt):
-        "add client to pool."
-        Pool.clients.append(clt)
+    def add(client):
+        Pool.clients.append(client)
 
     @staticmethod
-    def init(clz, nr=None):
-        "initialize client pool."
-        Pool.nrcpu = nr or os.cpu_count()
+    def init(clz, nr):
+        Pool.nrcpu = nr
         for _x in range(Pool.nrcpu):
             clt = clz()
             clt.start()
             Pool.add(clt)
 
     @staticmethod
-    def put(evt):
-        "dispatch to client."
+    def put(event):
         with Pool.lock:
             if Pool.nrlast >= Pool.nrcpu-1:
                 Pool.nrlast = 0
             clt = Pool.clients[Pool.nrlast]
-            clt.put(evt)
+            clt.put(event)
             Pool.nrlast += 1
 
 
-def banner():
+class Mods:
+
+    dirs = {}
+    modules = {}
+
+
+def configure():
+    dirs(f"{Config.name}.modules", Config.path)
+
+
+def dirs(name: str, path):
+    "add module directory."
+    Mods.dirs[name] = path
+
+
+def importer(name, pth=""):
+    "import module by path."
+    if pth and os.path.exists(pth):
+        spec = importlib.util.spec_from_file_location(name, pth)
+    else:
+        spec = importlib.util.find_spec(name)
+    if not spec or not spec.loader:
+        return None
+    mod = importlib.util.module_from_spec(spec)
+    if not mod:
+        return None
+    Mods.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def getmod(name):
+    "import module by name." 
+    if name in spl(Config.ignore):
+        return None
+    if name in Mods.modules:
+        return Mods.modules[name]
+    mname = ""
+    pth = ""
+    for packname, path in Mods.dirs.items():
+        modpath = os.path.join(path, name + ".py")
+        if os.path.exists(modpath):
+            pth = modpath
+            mname = f"{packname}.{name}"
+            break
+    return importer(mname, pth)
+
+
+def mods(names):
+    "list of named modules."
+    return [
+        getmod(x) for x in sorted(spl(names))
+        if x not in spl(Config.ignore)
+        or x in spl(Config.sets.init)
+    ]
+
+
+def modules():
+    "comma seperated list of available modules."
+    mods = []
+    for name, path in Mods.dirs.items():
+        if name in spl(Config.ignore):
+            continue
+        if not os.path.exists(path):
+            continue
+        mods.extend([
+            x[:-3] for x in os.listdir(path)
+            if x.endswith(".py") and not x.startswith("__") and x not in spl(Config.ignore)
+        ])
+    return ",".join(sorted(mods))
+
+
+def banner(name, version):
     tme = time.ctime(time.time()).replace("  ", " ")
-    print(f"{NAME[::-1].upper()} {Config.version} TINDER since {tme} ({Config.level.upper()})")
+    print(f"{name.upper()} {version} since {tme} ({Config.level})")
+    sys.stdout.flush()
+
+
+def check(text):
+    args = sys.argv[1:]
+    for arg in args:
+        if not arg.startswith("-"):
+            continue
+        for char in text:
+            if char in arg:
+                return True
+    return False
 
 
 def consume():
@@ -126,134 +180,110 @@ def consume():
             os._exit(0)
 
 
-def payload(cmds):
-    with paylock:
-        nmr = 0
-        cmdz = sorted(keys(cmds))
-        if "s" in Config.opts:
-            rand.shuffle(cmdz)
-        todo = []
-        for cmd in cmdz:
-            examples = getattr(cmds, cmd)
-            for example in examples:
-                event = Event()
-                event.txt = cmd + " " + example
-                event.type = "command"
-                todo.append(event)
-        for event in todo:
-            Pool.put(event)
-            events.put(event)
-            nmr += 1
-        return nmr
+def payload(todo):
+    for cmd, example in todo.items():
+        for ex in example:
+            evt = Message()
+            evt.text = f"{cmd} {ex}"
+            evt.kind = "command"
+            Pool.put(evt)
+            events.put(evt)
 
 
-def wrap(function):
-    old3 = None
-    try:
-        old3 = termios.tcgetattr(sys.stdin.fileno())
-    except termios.error:
-        pass
-    res = None, None
-    try:
-        res = function()
-    except (KeyboardInterrupt, EOFError):
-        pass
-    finally:
-        if old3:
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old3)
-    return res
+def scanner(names=None):
+    "scan named modules for commands."
+    if names is None:
+        names = modules()
+    mods = []
+    for name in spl(names):
+        module = getmod(name)
+        if not module:
+            continue
+        scan(module)
+    return mods
+
+
+examples = {
+    "cmd": [""],
+    "dis": [""],
+    "dne": ["", "bla"],
+    "dpl": ["hnrss title,url", ""],
+    "flt": [""],
+    "fnd": ["", "log", "rss", "config", "todo"],
+    "man": [""],
+    "mod": [""],
+    "mre": [""],
+    "nme": ["", "hnrss hackernews"],
+    "now": [""],
+    "pwd": ["", "bla mekker"],
+    "req": [""],
+    "res": ["", "hnrss"],
+    "srv": [""],
+    "thr": [""],
+    "upt": [""]
+}
+
+pre = {
+    "cfg": ["", "nick=mekker"],
+    "imp": ["", "testing/feeds.opml"],
+    "log": ["", "log add"],
+    "rss": ["", "http://hnrss.org/newest"],
+    "tdo": ["", "todo add"]
+}
+
+post = {
+    "dbg": [""],
+    "dne": ["", "mekker"],
+    "exp": [""],
+    "rem": ["", "hnrss"]
+}
+
 
 
 def main():
-    nrcommand = 0
-    parse(Config, " ".join(sys.argv[1:]))
-    if "v" in Config.opts:
-        banner()
-    if "f" not in Config.opts:
-        if os.path.exists(Workdir.wdr):
-            shutil.rmtree(Workdir.wdr)
-    level(Config.level)
+    if os.path.exists(Workdir.wdr):
+        shutil.rmtree(Workdir.wdr)
     skel()
-    for mod in scanner():
-        mod.DEBUG = True
-    nrs = Config.index or 1
-    thrs = []
+    parse(Config, " ".join(sys.argv[1:]))
+    configure()
+    scanner()
+    if "v" in Config.opts:
+        banner(Config.name, Config.version)
     if "z" in Config.opts:
-        Pool.init(CLI)
+        Pool.init(CLI, os.cpu_count())
     else:
         Pool.init(CLI, 1)
-    for _nr in range(nrs):
+    starttime = time.time()
+    thrs = []
+    nrs = Config.index or 1
+    for _x in range(nrs):
         thrs.append(launch(payload, pre))
     for thr in thrs:
-        nr = thr.join()
-        if nr:
-            nrcommand += nr
-    thrs = []
-    for _nr in range(nrs):
-        thrs.append(launch(payload, param))
+        thr.join()
+    for _x in range(nrs):
+        thrs.append(launch(payload, examples))
     for thr in thrs:
-        nr = thr.join()
-        if nr:
-            nrcommand += nr
-    thrs = []
-    for _nr in range(nrs):
-        thrs.append(launch(payload,  post))
+        thr.join()
+    for _x in range(nrs):
+        thrs.append(launch(payload, post))
     for thr in thrs:
-        nr = thr.join()
-        if nr:
-            nrcommand += nr
+        thr.join()
     launch(consume)
-    events.join()
-    Fleet.shutdown()
-    return nrs, nrcommand
-
-
-param = Object()
-param.cmd = [""]
-param.dis = [""]
-param.dpl = ["hnrss title,url", ""]
-param.flt = [""]
-param.fnd = ["log", "rss", "config", "todo", ""]
-param.man = [""]
-param.mod = [""]
-param.mre = [""]
-param.nme = ["hnrss hackernews", ""]
-param.now = [""]
-param.pwd = ["bla mekker", ""]
-param.req = [""]
-param.res = ["hnrss", ""]
-param.srv = [""]
-param.thr = [""]
-param.upt = [""]
-param.ver = [""]
-
-
-pre = Object()
-pre.cfg = ["nick=mekker", ""]
-pre.imp = ["testing/feeds.opml", ""]
-pre.log = ["bla", ""]
-pre.rss = ["http://hnrss.org/newest", ""]
-pre.tdo = ["mekker", ""]
-
-
-post = Object()
-post.dne = ["hnrss", ""]
-post.exp = ['']
-post.rem = ["hnrss", ""]
-
+    nrevents = events.qsize()
+    try:
+        events.join()
+    except (KeyboardInterrupt, EOFError):
+        os._exit(0)
+    endtime = time.time()
+    lap = elapsed(endtime-starttime)
+    percall = (endtime-starttime)/nrevents
+    nrs = events.qsize()
+    if "v" in Config.opts:
+        print(f"{fmt(Config)}")
+        print(f"{nrs} events left.")
+        print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
+    os._exit(0)
 
 
 if __name__ == "__main__":
-    nrz, commandz = wrap(main)
-    if nrz is None and commandz is None:
-        os._exit(1)
-    endtime = time.time()
-    lap = elapsed(endtime-STARTTIME)
-    nrevents = events.qsize()
-    percall = (endtime-STARTTIME)/(commandz)
-    if "v" in Config.opts:
-        print(f"debug is {Mods.debug}")
-        print(f"{Pool.nrcpu} cpu's used")
-        print(f"{nrevents} events left.")
-        print(f"total: {lap} nrs: {nrz} cmds: {commandz} call: %.6fs" % percall)
-    sys.exit()
+    main()
