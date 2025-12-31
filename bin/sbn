@@ -20,7 +20,7 @@ from sbn.defines import SYSTEMD, CLI
 from sbn.defines import Commands, Config, Default, Message, Workdir
 from sbn.defines import command, enable, parse, launch, level, scan, spl
 from sbn.defines import moddir, pidname, pkgdir, scanner, skel, where
-from sbn.defines import modules,  wrapped
+from sbn.defines import wrapped
 
 
 import sbn.modules as MODS
@@ -31,10 +31,10 @@ class Mods:
     mods = {}
 
     def add(*pkgs):
+        "add modules from  package."
         for pkg in pkgs:
             for name in pkg.__all__:
                 Mods.mods[name.split(".")[-1]] = Mods.importer(".".join((MODS.__name__, name)))
-        print(Mods.mods)
 
     def importer(name, pth=""):
         "import module by path."
@@ -47,7 +47,6 @@ class Mods:
         mod = importlib.util.module_from_spec(spec)
         if not mod:
             return None
-        #Mods.mods[name] = mod
         spec.loader.exec_module(mod)
         return mod
 

@@ -14,7 +14,6 @@ from .message import Message
 from .methods import deleted, edit, fmt, fqn, parse, search
 from .objects import Default, Object
 from .objects import asdict , construct, items, keys, update, values
-from .package import modules
 from .persist import attrs, cache, last, find, put, read, sync, write
 from .repeats import Repeater, Timed
 from .serials import dump, dumps, load, loads
@@ -76,7 +75,6 @@ def __dir__():
         'loads',
         'long',
         'moddir',
-        'modules',
         'md5sum',
         'objs',
         'package',
