@@ -15,8 +15,8 @@ sys.path.insert(0, os.getcwd())
 
 
 from sbn.defines import Config, Default, Message, Output, Workdir
-from sbn.defines import command, elapsed, fmt, launch, package, parse
-from sbn.defines import scan, scanner, skel, spl 
+from sbn.defines import command, elapsed, fmt, launch, pkgdir, parse
+from sbn.defines import scan, skel, spl 
 
 
 import sbn.modules as MODS
@@ -29,7 +29,6 @@ Config.init = ""
 Config.level = "info"
 Config.name = "sbn"
 Config.opts = ""
-Config.path = package(MODS)
 Config.sets = Default()
 Config.txt = " ".join(sys.argv[1:])
 Config.version = 150
@@ -87,8 +86,10 @@ class Mods:
     modules = {}
 
 
-def configure():
-    dirs(f"{Config.name}.modules", Config.path)
+def configure(*pkgs):
+    "add directory from package."
+    for pkg in pkgs:
+        dirs(pkg.__name__, pkgdir(pkg))
 
 
 def dirs(name: str, path):
@@ -151,6 +152,19 @@ def modules():
             if x.endswith(".py") and not x.startswith("__") and x not in spl(Config.ignore)
         ])
     return ",".join(sorted(mods))
+
+
+def scanner(names):
+    "scan named modules for commands."
+    if names is None:
+        names = modules()
+    mods = []
+    for name in spl(names):
+        module = getmod(name)
+        if not module:
+            continue
+        scan(module)
+    return mods
 
 
 def banner(name, version):
@@ -245,7 +259,7 @@ def main():
         shutil.rmtree(Workdir.wdr)
     skel()
     parse(Config, " ".join(sys.argv[1:]))
-    configure()
+    configure(MODS)
     scanner()
     if "v" in Config.opts:
         banner(Config.name, Config.version)

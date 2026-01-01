@@ -6,7 +6,7 @@
 
 from .brokers import broker, add, like, objs
 from .clients import Client, CLI, Output
-from .command import Commands, cmds, command, enable, scan, scanner
+from .command import Commands, cmds, command, enable, scan
 from .configs import Config
 from .handler import Handler
 from .loggers import level
@@ -84,7 +84,6 @@ def __dir__():
         'put',
         'read',
         'scan',
-        'scanner',
         'search',
         'skel',
         'storage',
