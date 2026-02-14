@@ -31,7 +31,6 @@ classifiers=[
 packages = [
     'sbn',
     'sbn.modules',
-    'sbn.network',
     'sbn.nucleus',
     'sbn.nucleus.pdf',
     'sbn.nucleus._static',

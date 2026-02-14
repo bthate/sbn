@@ -6,8 +6,12 @@ import os
 import time
 
 
-from sbn.defines import MONTH, Object, date, elapsed, find, keys, update
-from sbn.defines import fmt, write
+from sbn.objects import Dict, Methods, Object
+from sbn.persist import Disk, Locate
+from sbn.utility import MONTH, Time
+
+
+"email"
 
 
 class Email(Object):
@@ -15,6 +19,9 @@ class Email(Object):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.text = ""
+
+
+"utility"
 
 
 def todate(date):
@@ -53,32 +60,35 @@ def todate(date):
     return ddd
 
 
+"commands"
+
+
 def eml(event):
     nrs = -1
     args = ["From", "Subject"]
     if len(event.args) > 1:
         args.extend(event.args[1:])
     if event.gets:
-        args.extend(keys(event.gets))
+        args.extend(Dict.keys(event.gets))
     for key in event.silent:
         if key in args:
             args.remove(key)
     args = set(args)
     result = sorted(
-                    find("email", event.gets),
-                    key=lambda x: date(todate(getattr(x[1], "Date", "")))
+                    Locate.find("email", event.gets),
+                    key=lambda x: Time.date(Time.todate(getattr(x[1], "Date", "")))
                    )
     if event.index:
         obj = result[event.index]
         if obj:
             obj = obj[-1]
             tme = getattr(obj, "Date", "")
-            event.reply(f'{event.index} {fmt(obj, args, plain=True)} {elapsed(time.time() - date(todate(tme)))}')
+            event.reply(f'{event.index} {Methods.fmt(obj, args, plain=True)} {Time.elapsed(time.time() - Time.date(Time.todate(tme)))}')
     else:
         for _fn, obj in result:
             nrs += 1
             tme = getattr(obj, "Date", "")
-            event.reply(f'{nrs} {fmt(obj, args, plain=True)} {elapsed(time.time() - date(todate(tme)))}')
+            event.reply(f'{nrs} {Methods.fmt(obj, args, plain=True)} {Time.elapsed(time.time() - Time.date(Time.todate(tme)))}')
     if not result:
         event.reply("no emails found.")
 
@@ -102,13 +112,13 @@ def mbx(event):
     nrs = 0
     for mail in thing:
         obj = Email()
-        update(obj, dict(mail._headers))
+        Dict.update(obj, dict(mail._headers))
         obj.text = ""
         for payload in mail.walk():
             if payload.get_content_type() == 'text/plain':
                 obj.text += payload.get_payload()
         obj.text = obj.text.replace("\\n", "\n")
-        write(obj)
+        Disk.write(obj)
         nrs += 1
     if nrs:
         event.reply("ok %s" % nrs)

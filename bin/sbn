@@ -2,389 +2,314 @@
 # This file is placed in the Public Domain.
 
 
-"runtime"
+"main program"
 
 
-import importlib.util
-import inspect
+import argparse
+import logging
 import os
-import pathlib
-import time
 import sys
+import time
 
 
 sys.path.insert(0, os.getcwd())
 
 
-from sbn.defines import SYSTEMD, CLI
-from sbn.defines import Commands, Config, Default, Message, Workdir
-from sbn.defines import command, enable, parse, launch, level, scan, spl
-from sbn.defines import moddir, pidname, pkgdir, skel, where
-from sbn.defines import wrapped
+from sbn.command import Cfg, Commands
+from sbn.clients import Console
+from sbn.message import Message
+from sbn.package import Mods
+from sbn.utility import Utils
+from sbn.persist import Workdir
+from sbn.utility import Log
 
 
-import sbn.modules as MODS
+from sbn import modules as MODS
 
 
 "config"
 
 
-Config.debug = False
-Config.gets = Default()
-Config.ignore = "man,mbx,rst,udp,web"
-Config.init = ""
-Config.level = "info"
-Config.name = "sbn"
-Config.opts = ""
-Config.sets = Default()
-Config.txt = " ".join(sys.argv[1:])
-Config.version = 111
+Cfg.commands = True
+Cfg.ignore = "rst,udp,web"
+Cfg.level = "info"
+Cfg.modules = ""
+Cfg.name = Utils.pkgname(Commands)
+Cfg.poll = 300
+Cfg.port = 6667
+Cfg.room = f"#{Cfg.name}"
+Cfg.txt = " ".join(sys.argv[1:])
+Cfg.version = 150
+Cfg.wdr = os.path.expanduser(f"~/.{Cfg.name}")
 
 
 "clients"
 
 
-class Line(CLI):
+class Line(Console):
+
+    def __init__(self):
+        super().__init__()
+        self.register("command", Commands.command)
 
     def raw(self, text):
         "write to console."
         print(text.encode('utf-8', 'replace').decode("utf-8"))
 
 
-class Console(Line):
+class Csl(Line):
 
     def callback(self, event):
         "wait for callback result."
         if not event.text:
+            event.ready()
             return
         super().callback(event)
         event.wait()
 
     def poll(self):
-        "poll for inpput."
+        "poll for an event."
         evt = Message()
         evt.text = input("> ")
         evt.kind = "command"
         return evt
 
 
+"scripts"
+
+
+class Scripts:
+
+    @staticmethod
+    def background(args):
+        "background script."
+        Runtime.daemon()
+        Runtime.privileges()
+        Runtime.boot(args)
+        Workdir.pidfile(Cfg.name)
+        Mods.scanner(Mods.list(), Cfg.ignore)
+        Commands.add(Cmd.cmd, Cmd.mod, Cmd.ver)
+        Mods.inits(Cfg.default or "irc,mdl,rss,wsd", Cfg.ignore)
+        Runtime.forever()
+
+    @staticmethod
+    def console(args):
+        "console script."
+        import readline
+        readline.redisplay()
+        Runtime.boot(args)
+        Mods.scanner(Mods.list(), Cfg.ignore)
+        Commands.add(Cmd.cmd, Cmd.mod, Cmd.ver)
+        Commands.cmd(Cfg.txt)
+        Mods.inits(Cfg.modules, Cfg.ignore, Cfg.wait)
+        csl = Csl()
+        csl.start()
+        Runtime.forever()
+
+    @staticmethod
+    def control(args):
+        "cli script."
+        if len(sys.argv) == 1:
+            return
+        Runtime.boot(args)
+        Mods.scanner(Mods.list(), Cfg.ignore)
+        Commands.add(Cmd.cmd, Cmd.mod, Cmd.srv, Cmd.ver)
+        evt = Commands.cmd(Cfg.txt)
+        for line in evt.result.values():
+            print(line)
+
+    @staticmethod
+    def service(args):
+        "service script."
+        Runtime.privileges()
+        Runtime.banner()
+        Runtime.boot(args)
+        Workdir.pidfile(Cfg.name)
+        Mods.scanner(Mods.list())
+        Commands.add(Cmd.cmd, Cmd.mod, Cmd.ver)
+        Mods.inits(Cfg.default or "irc,mdl,rss,wsd", Cfg.ignore)
+        Runtime.forever()
+
+
+"commands"
+
+
+class Cmd:
+
+    @staticmethod
+    def cmd(event):
+        "list available commands."
+        event.reply(",".join(sorted(Commands.names or Commands.cmds)))
+
+    @staticmethod
+    def mod(event):
+        "list available commands."
+        mods = Mods.list(Cfg.ignore)
+        if not mods:
+            event.reply("no modules available")
+            return
+        event.reply(mods)
+
+    @staticmethod
+    def srv(event):
+        "generate systemd service file."
+        import getpass
+        name = getpass.getuser()
+        event.reply(SYSTEMD % (Cfg.name.upper(), name, name, name, Cfg.name))
+
+    @staticmethod
+    def ver(event):
+        "show verson."
+        event.reply(f"{Cfg.name.upper()} {Cfg.version}")
+
+
 "runtime"
 
 
-def banner():
-    "in the beginning."
-    tme = time.ctime(time.time()).replace("  ", " ")
-    print("%s %s %s since %s (%s)" % (
-        Config.name.upper(),
-        Config.version,
-        Config.opts.strip().upper(),
-        tme,
-        Config.level.upper()
-    ))
-    sys.stdout.flush()
+class Runtime:
+    
+    @staticmethod
+    def banner():
+        "hello."
+        tme = time.ctime(time.time()).replace("  ", " ")
+        print("%s %s since %s (%s)" % (
+            Cfg.name.upper(),
+            Cfg.version,
+            tme,
+            Cfg.level.upper(),
+        ))
+        sys.stdout.flush()
 
+    @staticmethod
+    def boot(args):
+        "in the beginning."
+        Cfg.all = args.all
+        Cfg.level = args.level
+        Cfg.mods = args.mods
+        Cfg.port = args.port
+        Cfg.room = args.room
+        Cfg.server = args.connect
+        Cfg.verbose = args.verbose
+        Cfg.wait = args.wait
+        Cfg.wdr = args.wdr or os.path.expanduser(f"~/.{Utils.pkgname(Cfg)}")
+        Log.level(Cfg.level)
+        Workdir.setwd(Cfg.wdr)
+        if Cfg.wdr:
+            Mods.init("modules", os.path.join(Workdir.workdir(), "mods"))
+        if MODS:
+            Mods.init(MODS.__name__, MODS.__path__[0])
+        if Cfg.verbose:
+            Runtime.banner()
+        if Cfg.all:
+            Cfg.modules = Mods.list(Cfg.ignore)
 
-def boot(txt):
-    "set important variables like workdir and module paths."
-    Workdir.wdr = Workdir.wdr or os.path.expanduser(f"~/.{Config.name}")
-    skel()
-    parse(Config, txt)
-    configure(MODS)
-    if "ignore" in Config.sets:
-        Config.ignore = Config.sets.ignore
-    level(Config.sets.level or Config.level or "info")
-
-
-def check(text):
-    "check for options."
-    args = sys.argv[1:]
-    for arg in args:
-        if not arg.startswith("-"):
-            continue
-        for char in text:
-               if char in arg:
-                   return True
-        return False
-
-
-def daemon(verbose=False, nochdir=False):
-    "run in the background."
-    pid = os.fork()
-    if pid != 0:
-        os._exit(0)
-    os.setsid()
-    pid2 = os.fork()
-    if pid2 != 0:
-        os._exit(0)
-    if not verbose:
+    @staticmethod
+    def daemon(verbose=False, nochdir=False):
+        "run in the background."
+        pid = os.fork()
+        if pid != 0:
+            os._exit(0)
+        os.setsid()
+        pid2 = os.fork()
+        if pid2 != 0:
+            os._exit(0)
         with open('/dev/null', 'r', encoding="utf-8") as sis:
             os.dup2(sis.fileno(), sys.stdin.fileno())
         with open('/dev/null', 'a+', encoding="utf-8") as sos:
             os.dup2(sos.fileno(), sys.stdout.fileno())
         with open('/dev/null', 'a+', encoding="utf-8") as ses:
             os.dup2(ses.fileno(), sys.stderr.fileno())
-    if not nochdir:
         os.umask(0)
         os.chdir("/")
-    os.nice(10)
+        os.nice(10)
 
+    @staticmethod
+    def forever():
+        "run forever until ctrl-c."
+        while True:
+            try:
+                time.sleep(0.1)
+            except (KeyboardInterrupt, EOFError):
+                break
 
-def forever():
-    "run forever until ctrl-c."
-    while True:
+    @staticmethod
+    def getargs():
+        "parse commandline arguments."
+        parser = argparse.ArgumentParser(description="OTP-CR-117/19")
+        parser.add_argument("-a", "--all", action="store_true", help="load all modules")
+        parser.add_argument("-c", "--console", action="store_true", help="start console")
+        parser.add_argument("-d", "--daemon", action="store_true", help="start background daemon")
+        parser.add_argument("-l", "--level", default="info", help='set loglevel')
+        parser.add_argument("-m", "--mods", default="", help='modules to load')
+        parser.add_argument("-p", "--port", default=6667, help='set port to connect to')
+        parser.add_argument("-r", "--room", help='set room/channel to joinl')
+        parser.add_argument("-s", "--service", action="store_true", help="start service")
+        parser.add_argument("-v", "--verbose", action='store_true',help='enable verbose')
+        parser.add_argument("-w", "--wait", action='store_true',help='wait for services to start')
+        parser.add_argument("-z", "--connect", default='localhost', help="server to connect to")
+        parser.add_argument("--wdr", help='set working directory')
+        return parser.parse_known_args()
+
+    @staticmethod
+    def privileges():
+        "drop privileges."
+        import getpass
+        import pwd
+        pwnam2 = pwd.getpwnam(getpass.getuser())
+        os.setgid(pwnam2.pw_gid)
+        os.setuid(pwnam2.pw_uid)
+
+    @staticmethod
+    def wrap(func, *args):
+        "restore console."
+        import termios
+        old = None
         try:
-            time.sleep(0.1)
+            old = termios.tcgetattr(sys.stdin.fileno())
+        except termios.error:
+            pass
+        try:
+            func(*args)
         except (KeyboardInterrupt, EOFError):
-            break
+            pass
+        except Exception as ex:
+            logging.exception(ex)
+        if old:
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
 
 
-def init(names=None, wait=False):
-    "run init function of modules."
-    if names is None:
-        names = modules()
-    mods = []
-    for name in spl(names):
-        module = getmod(name)
-        if not module:
-            continue
-        if "init" in dir(module):
-            thr = launch(module.init)
-            mods.append((module, thr))
-    if wait:
-        for module, thr in mods:
-            thr.join()
-    return mods
+"data"
 
 
-def pidfile(filename):
-    "write pidfile."
-    if os.path.exists(filename):
-        os.unlink(filename)
-    path2 = pathlib.Path(filename)
-    path2.parent.mkdir(parents=True, exist_ok=True)
-    with open(filename, "w", encoding="utf-8") as fds:
-        fds.write(str(os.getpid()))
+SYSTEMD = """[Unit]
+Description=%s
+After=multi-user.target
 
+[Service]
+Type=simple
+User=%s
+Group=%s
+ExecStart=/home/%s/.local/bin/%s -s
 
-def privileges():
-    "drop privileges."
-    import getpass
-    import pwd
-    pwnam2 = pwd.getpwnam(getpass.getuser())
-    os.setgid(pwnam2.pw_gid)
-    os.setuid(pwnam2.pw_uid)
-
-
-def wrap(func):
-    "restore console."
-    import termios
-    old = None
-    try:
-        old = termios.tcgetattr(sys.stdin.fileno())
-    except termios.error:
-        pass
-    try:
-        wrapped(func)
-    finally:
-        pass
-    if old:
-        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
-
-
-"modules"
-
-
-class Mods:
-
-    dirs = {}
-    modules = {}
-
-
-def configure(*pkgs):
-    "add directory from package."
-    for pkg in pkgs:    
-        dirs(pkg.__name__, pkgdir(pkg))
-
-
-def dirs(name: str, path):
-    "add module directory."
-    Mods.dirs[name] = path
-
-
-def importer(name, pth=""):
-    "import module by path."
-    if pth and os.path.exists(pth):
-        spec = importlib.util.spec_from_file_location(name, pth)
-    else:
-        spec = importlib.util.find_spec(name)
-    if not spec or not spec.loader:
-        return None
-    mod = importlib.util.module_from_spec(spec)
-    if not mod:
-        return None
-    Mods.modules[name] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def getmod(name):
-    "import module by name." 
-    if name in spl(Config.ignore):
-        return None
-    if name in Mods.modules:
-        return Mods.modules[name]
-    mname = ""
-    pth = ""
-    for packname, path in Mods.dirs.items():
-        modpath = os.path.join(path, name + ".py")
-        if os.path.exists(modpath):
-            pth = modpath
-            mname = f"{packname}.{name}"
-            break
-    return importer(mname, pth)
-
-
-def mods(names):
-    "list of named modules."
-    return [
-        getmod(x) for x in sorted(spl(names))
-        if x not in spl(Config.ignore)
-        or x in spl(Config.sets.init)
-    ]
-
-
-def modules():
-    "comma seperated list of available modules."
-    mods = []
-    for name, path in Mods.dirs.items():
-        if name in spl(Config.ignore):
-            continue
-        if not os.path.exists(path):
-            continue
-        mods.extend([
-            x[:-3] for x in os.listdir(path)
-            if x.endswith(".py") and not x.startswith("__") and x not in spl(Config.ignore)
-        ])
-    return ",".join(sorted(mods))
-
-
-def scanner(names=None):
-    "scan named modules for commands."
-    if names is None:
-        names = modules()
-    mods = []
-    for name in spl(names):
-        module = getmod(name)
-        if not module:
-            continue
-        scan(module)
-    return mods
-
-
-"scripts"
-
-
-def background():
-    "background script."
-    daemon(check("v"), check("m"))
-    privileges()
-    boot(Config.txt)
-    pidfile(pidname(Config.name))
-    enable(cmd, mod, ver)
-    scanner(modules())
-    init(modules())
-    forever()
-
-
-def console():
-    "console script."
-    import readline
-    readline.redisplay()
-    if check("0"):
-        Config.ignore = list()
-    boot(Config.txt)
-    if "v" in Config.opts:
-        banner()
-    scanner()
-    enable(cmd, mod, ver)
-    if "a" in Config.opts:
-        mds = modules()
-    else:
-        mds = Config.sets.init
-    init(mds, "w" in Config.opts)
-    csl = Console()
-    csl.start()
-    forever()
-
-
-def control():
-    "cli script."
-    if len(sys.argv) == 1:
-        return
-    boot(Config.txt)
-    scanner()
-    enable(cmd, mod, srv, ver)
-    cli = Line()
-    evt = Message()
-    evt.orig = repr(cli)
-    evt.text = " ".join(sys.argv[1:])
-    evt.type = "command"
-    command(evt)
-    evt.wait()
-
-
-def service():
-    "service script."
-    privileges()
-    boot(Config.txt)
-    banner()
-    pidfile(pidname(Config.name))
-    enable(cmd, mod, ver)
-    scanner()
-    init(modules())
-    forever()
-
-
-"commands"
-
-
-def cmd(event):
-    "list available commands."
-    event.reply(",".join(sorted(Commands.names or Commands.cmds)))
-
-
-def mod(event):
-    "list available commands."
-    event.reply(modules())
-
-
-def srv(event):
-    "generate systemd service file."
-    import getpass
-    name = getpass.getuser()
-    event.reply(SYSTEMD % (Config.name.upper(), name, name, name, Config.name))
-
-
-def ver(event):
-    "show version."
-    event.reply(f"{Config.name.upper()} {Config.version} {Config.opts}")
+[Install]
+WantedBy=multi-user.target"""
 
 
 "runtime"
 
 
 def main():
-    "runtime."
-    if check('z'):
-        Config.debug = True
-    if check("c"):
-        wrap(console)
-    elif check("d"):
-        background()
-    elif check("s"):
-        wrapped(service)
+    "main"
+    args, rest = Runtime.getargs()
+    if args.daemon:
+        Scripts.background(args)
+    elif args.console:
+        Runtime.wrap(Scripts.console, args)
+    elif args.service:
+        Runtime.wrap(Scripts.service, args)
     else:
-        wrapped(control)
+        Runtime.wrap(Scripts.control, args)
+    Mods.shutdown()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"internet relay chat"
+
+
 import base64
 import logging
 import os
@@ -11,13 +14,26 @@ import threading
 import time
 
 
-from sbn.defines import Config as Main
-from sbn.defines import Message, Object, Output
-from sbn.defines import broker, command, edit, fmt, getpath, last, launch
-from sbn.defines import keys, write
- 
- 
+from sbn.brokers import Broker
+from sbn.clients import Output
+from sbn.command import Cfg, Commands
+from sbn.message import Message
+from sbn.objects import Default, Dict, Object, Methods
+from sbn.package import Mods
+from sbn.persist import Disk, Locate
+from sbn.threads import Thread
+
+
+"defines"
+
+
+NAME = Mods.pkgname(Broker)
+
+
 lock = threading.RLock()
+
+
+"init"
 
 
 def init():
@@ -25,46 +41,44 @@ def init():
     irc.start()
     irc.events.joined.wait(30.0)
     if irc.events.joined.is_set():
-        logging.warning("%s", fmt(irc.cfg, skip=["name", "word", "realname", "username"]))
+        logging.warning("%s", Methods.fmt(irc.cfg, skip=["name", "word", "realname", "username"]))
     else:
         irc.stop()
     return irc
 
 
-class Config(Object):
+"config"
 
-    channel = f"#{Main.name}"
-    commands = True
-    control = "!"
+
+class Config(Default):
+
     ignore = ["PING", "PONG", "PRIVMSG"] 
-    name = Main.name
-    nick = Main.name
-    word = ""
-    port = 6667
-    realname = Main.name
-    sasl = False
-    server = "localhost"
-    servermodes = ""
-    sleep = 60
-    username = Main.name
-    users = False
-    version = 1
 
-    def __init__(self):
-        super().__init__()
-        self.channel = Config.channel
-        self.commands = Config.commands
-        self.name = Config.name
-        self.nick = Config.nick
-        self.port = Config.port
-        self.realname = Config.realname
-        self.server = Config.server
-        self.username = Config.username
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = Cfg.name or NAME
+        self.channel = Cfg.room or f"#{self.name}"
+        self.commands = Cfg.commands or False
+        self.control = "!"
+        self.nick = Cfg.name or NAME
+        self.word = ""
+        self.port = Cfg.port or 6667
+        self.realname = Cfg.name or NAME
+        self.sasl = (self.port == 6697 and True) or False
+        self.server = Cfg.server or "localhost"
+        self.servermodes = ""
+        self.sleep = 60
+        self.username = Cfg.name or NAME
+        self.users = False
+        self.version = 1
 
     def __getattr__(self, name):
         if name not in self:
             return ""
         return self.__getattribute__(name)
+
+
+"event"
 
 
 class Event(Message):
@@ -84,8 +98,11 @@ class Event(Message):
         self.text = ""
 
     def dosay(self, txt):
-        bot = broker(self.orig)
+        bot = Broker.get(self.orig)
         bot.dosay(self.channel, txt)
+
+
+"wraper"
 
 
 class TextWrap(textwrap.TextWrapper):
@@ -101,6 +118,9 @@ class TextWrap(textwrap.TextWrapper):
 
 
 wrapper = TextWrap()
+
+
+"irc"
 
 
 class IRC(Output):
@@ -233,7 +253,7 @@ class IRC(Output):
                         self.events.joined.set()
                         continue
                     break
-            except (socket.timeout, ssl.SSLError, OSError, ConnectionResetError) as ex:
+            except (socket.error, socket.timeout, ssl.SSLError, OSError, ConnectionResetError) as ex:
                 self.events.joined.set()
                 self.state.error = str(ex)
                 logging.debug("%s", str(type(ex)) + " " + str(ex))
@@ -440,12 +460,13 @@ class IRC(Output):
         self.doconnect(self.cfg.server, self.cfg.nick, int(self.cfg.port))
 
     def restart(self):
+        logging.debug("restart")
         self.events.joined.set()
         self.state.pongcheck = False
         self.state.keeprunning = False
         self.state.stopkeep = True
         self.stop()
-        launch(init)
+        Thread.launch(init)
 
     def size(self, chan):
         if chan in self.cache:
@@ -473,7 +494,6 @@ class IRC(Output):
         self.state.lastline = splitted[-1]
 
     def start(self):
-        last(self.cfg)
         if self.cfg.channel not in self.channels:
             self.channels.append(self.cfg.channel)
         self.events.ready.clear()
@@ -481,8 +501,8 @@ class IRC(Output):
         self.events.joined.clear()
         Output.start(self)
         if not self.state.keeprunning:
-            launch(self.keep)
-        launch(
+           Thread.launch(self.keep)
+        Thread.launch(
             self.doconnect,
             self.cfg.server or "localhost",
             self.cfg.nick,
@@ -490,6 +510,7 @@ class IRC(Output):
         )
 
     def stop(self):
+        logging.warn("stopping")
         self.state.stopkeep = True
         Output.stop(self)
 
@@ -501,12 +522,12 @@ class IRC(Output):
 
 
 def cb_auth(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     bot.docommand(f"AUTHENTICATE {bot.cfg.word or bot.cfg.password}")
 
 
 def cb_cap(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     if (bot.cfg.word or bot.cfg.password) and "ACK" in evt.arguments:
         bot.direct("AUTHENTICATE PLAIN")
     else:
@@ -514,20 +535,20 @@ def cb_cap(evt):
 
 
 def cb_error(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     bot.state.nrerror += 1
     bot.state.error = evt.text
-    logging.debug(fmt(evt))
+    logging.debug(Methods.fmt(evt))
 
 
 def cb_h903(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     bot.direct("CAP END")
     bot.events.authed.set()
 
 
 def cb_h904(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     bot.direct("CAP END")
     bot.events.authed.set()
 
@@ -541,30 +562,28 @@ def cb_log(evt):
 
 
 def cb_ready(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     bot.events.ready.set()
 
 
 def cb_001(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     bot.events.logon.set()
 
 
 def cb_notice(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     if evt.text.startswith("VERSION"):
         txt = f"\001VERSION {Config.name.upper()} {Config.version} - {bot.cfg.username}\001"
         bot.docommand("NOTICE", evt.channel, txt)
 
 
 def cb_privmsg(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     if not bot.cfg.commands:
         return
     if evt.text:
-        if evt.text[0] in [
-            "!",
-        ]:
+        if evt.text[0] in ["!",]:
             evt.text = evt.text[1:]
         elif evt.text.startswith(f"{bot.cfg.nick}:"):
             evt.text = evt.text[len(bot.cfg.nick) + 1 :]
@@ -573,11 +592,11 @@ def cb_privmsg(evt):
         if evt.text:
             evt.text = evt.text[0].lower() + evt.text[1:]
         if evt.text:
-            launch(command, evt)
+            Thread.launch(Commands.command, evt)
 
 
 def cb_quit(evt):
-    bot = broker(evt.orig)
+    bot = Broker.get(evt.orig)
     logging.debug("quit from %s", bot.cfg.server)
     bot.state.nrerror += 1
     bot.state.error = evt.text
@@ -590,18 +609,18 @@ def cb_quit(evt):
 
 def cfg(event):
     config = Config()
-    fnm = last(config)
+    fnm = Locate.last(config) or Methods.ident(config)
     if not event.sets:
         event.reply(
-            fmt(
+            Methods.fmt(
                 config,
-                keys(config),
-                skip="control,name,word,realname,sleep,username".split(",")
+                Dict.keys(config),
+                skip="control,name,password,realname,sleep,username".split(",")
             )
         )
     else:
-        edit(config, event.sets)
-        write(config, fnm or getpath(config))
+        Methods.edit(config, event.sets)
+        Disk.write(config, fnm or Methods.ident(config))
         event.reply("ok")
 
 
@@ -609,7 +628,7 @@ def mre(event):
     if not event.channel:
         event.reply("channel is not set.")
         return
-    bot = broker(event.orig)
+    bot = Broker.get(event.orig)
     if "cache" not in dir(bot):
         event.reply("bot is missing cache")
         return

@@ -9,21 +9,25 @@ import threading
 import time
 
 
-from sbn.defines import Config, Object, launch, objs
+from sbn.brokers import Broker
+from sbn.command import Cfg
+from sbn.objects import Object
+from sbn.threads import Thread
 
 
 def init():
     udp = UDP()
     udp.start()
-    logging.warning("http://%s:%s", Cfg.host, Cfg.port)
+    logging.warning("http://%s:%s", Config.host, Config.port)
     return udp
 
 
-class Cfg(Object):
+class Config(Object):
 
     addr = ""
     host = "localhost"
     port = 5500
+
 
 
 class UDP(Object):
@@ -40,13 +44,13 @@ class UDP(Object):
 
     def output(self, txt, addr=None):
         if addr:
-            Cfg.addr = addr
-        for bot in objs("announce"):
+            Config.addr = addr
+        for bot in Broker.objs("announce"):
             bot.announce(txt.replace("\00", ""))
 
     def loop(self):
         try:
-            self._sock.bind((Cfg.host, Cfg.port))
+            self._sock.bind((Config.host, Config.port))
         except socket.gaierror:
             return
         self.ready.set()
@@ -64,15 +68,15 @@ class UDP(Object):
         self._sock.settimeout(0.01)
         self._sock.sendto(
                           bytes("exit", "utf-8"),
-                          (Cfg.host, Cfg.port)
+                          (Config.host, Config.port)
                          )
 
     def start(self):
-        launch(self.loop)
+        Thread.launch(self.loop)
 
 
 def toudp(host, port, txt):
-    if Config.debug:
+    if Cfg.debug:
         return
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(bytes(txt.strip(), "utf-8"), (host, port))
@@ -80,7 +84,7 @@ def toudp(host, port, txt):
 
 def udp(event):
     if event.rest:
-        toudp(Cfg.host, Cfg.port, event.rest)
+        toudp(Config.host, Config.port, event.rest)
         return
     if not select.select(
                          [sys.stdin, ],
@@ -109,6 +113,6 @@ def udp(event):
                 stop = True
                 break
             size += len(txt)
-            toudp(Cfg.host, Cfg.port, txt)
+            toudp(Config.host, Config.port, txt)
         if stop:
             break

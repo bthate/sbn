@@ -3,30 +3,32 @@
 
 import logging
 import random
+import threading
 import time
 
 
-from sbn.defines import NoDate, Object, Timed
-from sbn.defines import extract, hour, items, today, write
-from sbn.defines import broker, elapsed, day, getpath, last, like
+from sbn.brokers import Broker
+from sbn.objects import Dict, Methods, Object
+from sbn.persist import Disk, Locate
+from sbn.utility import NoDate, Time, Timed
 
 
 rand = random.SystemRandom()
 
 
 def init():
-    Timers.path = last(Timers.timers) or getpath(Timers.timers)
+    Timers.path = Locate.last(Timers.timers) or Methods.ident(Timers.timers)
     remove = []
-    for tme, args in items(Timers.timers):
+    for tme, args in Dict.items(Timers.timers):
         if not args:
             continue
         orig, channel, txt = args
-        for origin in like(orig):
+        for origin in Broker.like(orig):
             if not origin:
                 continue
             diff = float(tme) - time.time()
             if diff > 0:
-                bot = broker(origin)
+                bot = Broker.get(origin)
                 timer = Timed(diff, bot.say, channel, txt)
                 timer.start()
             else:
@@ -34,7 +36,7 @@ def init():
     for tme in remove:
         Timers.delete(tme)
     if Timers.timers:
-        write(Timers.timers, Timers.path)
+        Disk.write(Timers.timers, Timers.path)
     logging.warning("%s timers", len(Timers.timers))
 
 
@@ -47,24 +49,27 @@ class Timers(Object):
 
     path = ""
     timers = Timer()
-
+    lock = threading.RLock()
+    
     @staticmethod
     def add(tme, orig, channel,  txt):
-        setattr(Timers.timers, str(tme), (orig, channel, txt))
+        with Timers.lock:
+            setattr(Timers.timers, str(tme), (orig, channel, txt))
 
     @staticmethod
     def delete(tme):
-         delattr(Timers.timers, str(tme))
+        with Timers.lock:
+            delattr(Timers.timers, str(tme))
 
 
 def tmr(event):
     result = ""
     if not event.rest:
         nmr = 0
-        for tme, txt in items(Timers.timers):
+        for tme, txt in Dict.items(Timers.timers):
             lap = float(tme) - time.time()
             if lap > 0:
-                event.reply(f'{nmr} {" ".join(txt)} {elapsed(lap)}')
+                event.reply(f'{nmr} {" ".join(txt)} {Time.elapsed(lap)}')
                 nmr += 1
         if not nmr:
             event.reply("no timers.")
@@ -84,10 +89,10 @@ def tmr(event):
         target = time.time() + seconds
     else:
         try:
-            target = day(event.rest)
+            target = Time.day(event.rest)
         except NoDate:
-            target = extract(today())
-        hours =  hour(event.rest)
+            target = Time.extract(Time.today())
+        hours =  Time.hour(event.rest)
         if hours:
             target += hours
     target += rand.random() 
@@ -97,8 +102,8 @@ def tmr(event):
     diff = target - time.time()
     txt = " ".join(event.args[1:])
     Timers.add(target, event.orig, event.channel, txt)
-    write(Timers.timers, Timers.path or getpath(Timers.timers))
-    bot = broker(event.orig)
+    Disk.write(Timers.timers, Timers.path or Methods.ident(Timers.timers))
+    bot = Broker.get(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()
-    event.reply("ok " + elapsed(diff))
+    event.reply("ok " + Time.elapsed(diff))

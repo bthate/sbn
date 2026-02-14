@@ -1,14 +1,29 @@
 # This file is placed in the Public Domain.
 
 
-"write your own commands."
+"write your own commands"
 
 
 import inspect
 
 
-from .methods import parse
-from .utility import spl
+from .brokers import Broker
+from .message import Message
+from .objects import Default, Methods
+
+
+"config"
+
+
+class Config(Default):
+
+    pass
+
+
+Cfg = Config()
+
+
+"commands"
 
 
 class Commands:
@@ -16,56 +31,60 @@ class Commands:
     cmds = {}
     names = {}
 
+    @staticmethod
+    def add(*args):
+        "add functions to commands."
+        for func in args:
+            name = func.__name__
+            Commands.cmds[name] = func
+            Commands.names[name] = func.__module__.split(".")[-1]
 
-def cmds(cmd):
-    "return command."
-    return Commands.cmds.get(cmd, None)
+    @staticmethod
+    def cmd(text):
+        "parse text for command and run it."
+        for txt in text.split(" ! "):
+            evt = Message()
+            evt.text = txt
+            evt.type = "command"
+            Commands.command(evt)
+            evt.wait()
+        return evt
+
+    @staticmethod
+    def command(evt):
+        "command callback."
+        Methods.parse(evt, evt.text)
+        func = Commands.get(evt.cmd)
+        if func:
+            func(evt)
+            bot = Broker.get(evt.orig)
+            if bot:
+                bot.display(evt)
+        evt.ready()
+
+    @staticmethod
+    def get(cmd):
+        "get function for command."
+        return Commands.cmds.get(cmd, None)
+
+    @staticmethod
+    def has(cmd):
+        "whether cmd is registered."
+        return cmd in Commands.cmds
+
+    @staticmethod
+    def scan(module):
+        "scan a module for functions with event as argument."
+        for key, cmdz in inspect.getmembers(module, inspect.isfunction):
+            if 'event' not in inspect.signature(cmdz).parameters:
+               continue
+            Commands.add(cmdz)
 
 
-def command(evt):
-    "command callback."
-    parse(evt, evt.text)
-    func = cmds(evt.cmd)
-    if func:
-        func(evt)
-        evt.display()
-    evt.ready()
-
-
-def enable(*args):
-    "add functions to commands."
-    for func in args:
-        name = func.__name__
-        Commands.cmds[name] = func
-        Commands.names[name] = func.__module__.split(".")[-1]
-
-
-def scan(module):
-    "scan a module for command, function with event as first argument."
-    for key, cmdz in inspect.getmembers(module, inspect.isfunction):
-        if 'event' not in inspect.signature(cmdz).parameters:
-            continue
-        enable(cmdz)
-
-
-def scanner(pkg, names=None):
-    "scan package for commands."
-    if names is None:
-        names = ",".join(dir(pkg))
-    mods = []
-    for name in spl(names):
-        module = getattr(pkg, name, None)
-        if not module:
-            continue
-        scan(module)
-    return mods
+"interface"
 
 
 def __dir__():
     return (
         'Commands',
-        'cmds',
-        'command',
-        'enable',
-        'scan'
     )

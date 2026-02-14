@@ -4,10 +4,10 @@
 import os
 
 
-from sbn.defines import Config, where
+d = os.path.dirname
 
 
 def pth(event):
-    fn = where(Config)
-    path = os.path.join(fn, 'nucleus', "index.html")
+    path = d(d(__file__))
+    path = os.path.join(path, "nucleus", "index.html")
     event.reply(f"file://{path}")

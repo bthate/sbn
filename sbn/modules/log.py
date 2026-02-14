@@ -4,7 +4,9 @@
 import time
 
 
-from sbn.defines import Object, elapsed, find, fntime, write
+from sbn.objects import Object
+from sbn.persist import Disk, Locate
+from sbn.utility import Time
 
 
 class Log(Object):
@@ -17,8 +19,8 @@ class Log(Object):
 def log(event):
     if not event.rest:
         nmr = 0
-        for fnm, obj in find('log', event.gets):
-            lap = elapsed(time.time() - fntime(fnm))
+        for fnm, obj in Locate.find('log', event.gets):
+            lap = Time.elapsed(time.time() - Time.fntime(fnm))
             event.reply(f'{nmr} {obj.txt} {lap}')
             nmr += 1
         if not nmr:
@@ -26,5 +28,5 @@ def log(event):
         return
     obj = Log()
     obj.txt = event.rest
-    write(obj)
+    Disk.write(obj)
     event.reply("ok")

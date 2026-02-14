@@ -2,7 +2,6 @@
 # This file is placed in the Public Domain.
 
 
-import importlib.util
 import os
 import queue
 import shutil
@@ -14,44 +13,55 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from sbn.defines import Config, Default, Message, Output, Workdir
-from sbn.defines import command, elapsed, fmt, launch, pkgdir, parse
-from sbn.defines import scan, skel, spl 
+from sbn.clients import Client
+from sbn.command import Cfg, Commands
+from sbn.message import Message
+from sbn.objects import Methods
+from sbn.package import Mods
+from sbn.persist import Disk, Workdir
+from sbn.threads import Thread
+from sbn.utility import Time, Utils
 
 
-import sbn.modules as MODS
+from sbn import modules as MODS
 
 
-Config.debug = True
-Config.gets = Default()
-Config.ignore = "man,mbx,rst,udp,web"
-Config.init = ""
-Config.level = "info"
-Config.name = "sbn"
-Config.opts = ""
-Config.sets = Default()
-Config.txt = " ".join(sys.argv[1:])
-Config.version = 150
-
-
-Workdir.wdr = ".test"
+try:
+    import mods as MODS2
+except ModuleNotFoundError:
+    MODS2 = None
 
 
 events = queue.Queue()
 
 
-class CLI(Output):
+"config"
+
+
+Cfg.debug = True
+Cfg.ignore = ""
+Cfg.level = "info"
+Cfg.name = Mods.pkgname(Commands)
+Cfg.txt = " ".join(sys.argv[1:])
+Cfg.version = 100
+Cfg.wdr = ".test"
+
+
+"clients"
+
+
+class CLI(Client):
 
     def __init__(self):
-        Output.__init__(self)
-        self.register("command", command)
+        Client.__init__(self)
+        self.register("command", Commands.command)
 
     def raw(self, txt):
-        if "v" in Config.opts:
+        if "v" in Cfg.opts:
             print(txt)
 
 
-class Pool:
+class ClientPool:
 
     clients = []
     lock = threading.RLock()
@@ -60,116 +70,33 @@ class Pool:
 
     @staticmethod
     def add(client):
-        Pool.clients.append(client)
+        ClientPool.clients.append(client)
 
     @staticmethod
-    def init(clz, nr):
-        Pool.nrcpu = nr
-        for _x in range(Pool.nrcpu):
-            clt = clz()
+    def init(nrcpu, cls):
+        ClientPool.nrcpu = nrcpu
+        for _x in range(ClientPool.nrcpu):
+            clt = cls()
             clt.start()
-            Pool.add(clt)
+            ClientPool.add(clt)
 
     @staticmethod
-    def put(event):
-        with Pool.lock:
-            if Pool.nrlast >= Pool.nrcpu-1:
-                Pool.nrlast = 0
-            clt = Pool.clients[Pool.nrlast]
-            clt.put(event)
-            Pool.nrlast += 1
+    def put(*args):
+        with ClientPool.lock:
+            if ClientPool.nrlast >= ClientPool.nrcpu-1:
+                ClientPool.nrlast = 0
+            clt = ClientPool.clients[ClientPool.nrlast]
+            clt.put(*args)
+            ClientPool.nrlast += 1
 
 
-class Mods:
 
-    dirs = {}
-    modules = {}
+"utilities"
 
 
-def configure(*pkgs):
-    "add directory from package."
-    for pkg in pkgs:
-        dirs(pkg.__name__, pkgdir(pkg))
-
-
-def dirs(name: str, path):
-    "add module directory."
-    Mods.dirs[name] = path
-
-
-def importer(name, pth=""):
-    "import module by path."
-    if pth and os.path.exists(pth):
-        spec = importlib.util.spec_from_file_location(name, pth)
-    else:
-        spec = importlib.util.find_spec(name)
-    if not spec or not spec.loader:
-        return None
-    mod = importlib.util.module_from_spec(spec)
-    if not mod:
-        return None
-    Mods.modules[name] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def getmod(name):
-    "import module by name." 
-    if name in spl(Config.ignore):
-        return None
-    if name in Mods.modules:
-        return Mods.modules[name]
-    mname = ""
-    pth = ""
-    for packname, path in Mods.dirs.items():
-        modpath = os.path.join(path, name + ".py")
-        if os.path.exists(modpath):
-            pth = modpath
-            mname = f"{packname}.{name}"
-            break
-    return importer(mname, pth)
-
-
-def mods(names):
-    "list of named modules."
-    return [
-        getmod(x) for x in sorted(spl(names))
-        if x not in spl(Config.ignore)
-        or x in spl(Config.sets.init)
-    ]
-
-
-def modules():
-    "comma seperated list of available modules."
-    mods = []
-    for name, path in Mods.dirs.items():
-        if name in spl(Config.ignore):
-            continue
-        if not os.path.exists(path):
-            continue
-        mods.extend([
-            x[:-3] for x in os.listdir(path)
-            if x.endswith(".py") and not x.startswith("__") and x not in spl(Config.ignore)
-        ])
-    return ",".join(sorted(mods))
-
-
-def scanner(names):
-    "scan named modules for commands."
-    if names is None:
-        names = modules()
-    mods = []
-    for name in spl(names):
-        module = getmod(name)
-        if not module:
-            continue
-        scan(module)
-    return mods
-
-
-def banner(name, version):
+def banner():
     tme = time.ctime(time.time()).replace("  ", " ")
-    print(f"{name.upper()} {version} since {tme} ({Config.level})")
+    print(f"{Cfg.name.upper()} {Cfg.version} since {tme} ({Cfg.level})")
     sys.stdout.flush()
 
 
@@ -200,49 +127,111 @@ def payload(todo):
             evt = Message()
             evt.text = f"{cmd} {ex}"
             evt.kind = "command"
-            Pool.put(evt)
+            ClientPool.put(evt)
             events.put(evt)
 
 
-def scanner(names=None):
-    "scan named modules for commands."
-    if names is None:
-        names = modules()
-    mods = []
-    for name in spl(names):
-        module = getmod(name)
-        if not module:
-            continue
-        scan(module)
-    return mods
+"runtime"
+
+
+def wrap(func):
+    "restore console."
+    import termios
+    old = None
+    try:
+        old = termios.tcgetattr(sys.stdin.fileno())
+    except termios.error:
+        pass
+    try:
+        Utils.wrapped(func)
+    finally:
+        pass
+    if old:
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
+
+
+def main():
+    if "p" not in Cfg.opts and os.path.exists(Cfg.wdr):
+        shutil.rmtree(Cfg.wdr)
+    if "b" in Cfg.opts:
+        Disk.cache()
+    Methods.parse(Cfg, " ".join(sys.argv[1:]))
+    Workdir.setwd(Cfg.wdr)
+    Mods.init("modules", MODS.__path__[0])
+    if MODS2:
+        Mods.init("mods", MODS2.__path__[0])
+    Mods.scanner(Mods.list())
+    if "v" in Cfg.opts:
+        banner()
+    if "z" in Cfg.opts:
+        ClientPool.init(os.cpu_count(), CLI)
+    else:
+        ClientPool.init(1, CLI)
+    starttime = time.time()
+    nrs = Cfg.index or 1
+    for _x in range(nrs):
+        payload(pre)
+    for _x in range(nrs):
+        payload(examples)
+    for _x in range(nrs):
+        payload(post)
+    Thread.launch(consume)
+    nrevents = events.qsize()
+    try:
+        events.join()
+    except (KeyboardInterrupt, EOFError):
+        pass
+    endtime = time.time()
+    lap = Time.elapsed(endtime-starttime)
+    percall = (endtime-starttime)/nrevents
+    nrs = events.qsize()
+    if "v" in Cfg.opts:
+        print(f"{Methods.fmt(Cfg, skip='otxt,txt')}")
+        print(f"{nrs} events left.")
+        print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
+
+
+"date"
 
 
 examples = {
+    "atr": [""],
     "cmd": [""],
     "dis": [""],
     "dne": ["", "bla"],
     "dpl": ["hnrss title,url", ""],
-    "flt": [""],
+    "eml": ["", "root@localhost"],
+    "flt": ["", "0"],
     "fnd": ["", "log", "rss", "config", "todo"],
-    "man": [""],
+    "lou": [""],
+    "man": ["", "test"],
+    "mbx": [""],
     "mod": [""],
     "mre": [""],
     "nme": ["", "hnrss hackernews"],
     "now": [""],
+    "pth": [""],
     "pwd": ["", "bla mekker"],
     "req": [""],
     "res": ["", "hnrss"],
+    "sil": [""],
+    "slg": [""],
     "srv": [""],
+    "syn": [""],
     "thr": [""],
-    "upt": [""]
+    "tmr": ["", "22:00 test"],
+    "upt": [""],
+    "wsd": [""]
 }
 
 pre = {
     "cfg": ["", "nick=mekker"],
-    "imp": ["", "testing/feeds.opml"],
+    "imp": ["",
+         "testing/feeds.opml",
+    ],
     "log": ["", "log add"],
     "rss": ["", "http://hnrss.org/newest"],
-    "tdo": ["", "todo add"]
+    "tdo": ["", "test"]
 }
 
 post = {
@@ -253,51 +242,8 @@ post = {
 }
 
 
-
-def main():
-    if os.path.exists(Workdir.wdr):
-        shutil.rmtree(Workdir.wdr)
-    skel()
-    parse(Config, " ".join(sys.argv[1:]))
-    configure(MODS)
-    scanner()
-    if "v" in Config.opts:
-        banner(Config.name, Config.version)
-    if "z" in Config.opts:
-        Pool.init(CLI, os.cpu_count())
-    else:
-        Pool.init(CLI, 1)
-    starttime = time.time()
-    thrs = []
-    nrs = Config.index or 1
-    for _x in range(nrs):
-        thrs.append(launch(payload, pre))
-    for thr in thrs:
-        thr.join()
-    for _x in range(nrs):
-        thrs.append(launch(payload, examples))
-    for thr in thrs:
-        thr.join()
-    for _x in range(nrs):
-        thrs.append(launch(payload, post))
-    for thr in thrs:
-        thr.join()
-    launch(consume)
-    nrevents = events.qsize()
-    try:
-        events.join()
-    except (KeyboardInterrupt, EOFError):
-        os._exit(0)
-    endtime = time.time()
-    lap = elapsed(endtime-starttime)
-    percall = (endtime-starttime)/nrevents
-    nrs = events.qsize()
-    if "v" in Config.opts:
-        print(f"{fmt(Config)}")
-        print(f"{nrs} events left.")
-        print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
-    os._exit(0)
+"trampoline"
 
 
 if __name__ == "__main__":
-    main()
+    wrap(main)

@@ -10,26 +10,29 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from sbn.defines import Config, Object, launch, where
+from sbn.command import Cfg
+from sbn.objects import Object
+from sbn.threads import Thread
+from sbn.utility import Utils
 
 
 def init():
-    Cfg.path = where(Config)
-    #Cfg.path = os.path.join(Mods.path, "network", "html")
-    if not os.path.exists(os.path.join(Cfg.path, 'index.html')):
+    Config.path = os.path.join(Utils.where(Object), "nucleus")
+    if not os.path.exists(os.path.join(Config.path, 'index.html')):
         logging.warning("no index.html")
         return
     try:
-        server = HTTP((Cfg.hostname, int(Cfg.port)), HTTPHandler)
+        server = HTTP((Config.hostname, int(Config.port)), HTTPHandler)
         server.start()
-        logging.warning("http://%s:%s", Cfg.hostname, Cfg.port)
+        logging.warning("http://%s:%s", Config.hostname, Config.port)
         return server
     except OSError as ex:
         logging.warning("%s", str(ex))
 
 
-class Cfg:
+class Config:
 
+    debug = False
     hostname = "localhost"
     path = ""
     port = 8000
@@ -54,7 +57,7 @@ class HTTP(HTTPServer, Object):
         self.shutdown()
 
     def start(self):
-        launch(self.serve_forever)
+        Thread.launch(self.serve_forever)
         self._status = "ok"
 
     def request(self):
@@ -95,11 +98,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if "favicon" in self.path:
             return
-        if Config.debug:
+        if Cfg.debug:
             return
         if self.path == "/":
             self.path = "index.html"
-        self.path = Cfg.path + os.sep + self.path
+        self.path = Config.path + os.sep + self.path
         if not os.path.exists(self.path):
             self.write_header("text/html")
             self.send_response(404)

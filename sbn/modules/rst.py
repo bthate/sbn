@@ -10,24 +10,36 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from sbn.defines import Config, Object
-from sbn.defines import launch, storage, kinds
+from sbn.command import Cfg
+from sbn.objects import Object
+from sbn.persist import Workdir
+from sbn.threads import Thread
+
+
+"init"
 
 
 def init():
     try:
-        rest = REST((Cfg.hostname, int(Cfg.port)), RESTHandler)
+        rest = REST((Config.hostname, int(Config.port)), RESTHandler)
         rest.start()
-        logging.warning("http://%s:%s", Cfg.hostname, Cfg.port)
+        logging.warning("http://%s:%s", Config.hostname, Config.port)
         return rest
     except OSError as ex:
         logging.error(str(ex))
 
 
-class Cfg:
+"config"
 
+
+class Config:
+
+    debug = False
     hostname = "localhost"
     port     = 10102
+
+
+"rest"
 
 
 class REST(HTTPServer, Object):
@@ -50,7 +62,7 @@ class REST(HTTPServer, Object):
 
     def start(self):
         self._status = "ok"
-        launch(self.serve_forever)
+        Thread.launch(self.serve_forever)
 
     def request(self):
         self._last = time.time()
@@ -59,6 +71,9 @@ class REST(HTTPServer, Object):
         exctype, excvalue, _trb = sys.exc_info()
         exc = exctype(excvalue)
         logging.exception(exc)
+
+
+"handler"
 
 
 class RESTHandler(BaseHTTPRequestHandler):
@@ -79,25 +94,25 @@ class RESTHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        if Config.debug:
+        if Cfg.debug:
             return
         if "favicon" in self.path:
             return
         if self.path == "/":
             self.write_header("text/html")
             txt = ""
-            for fnm in kinds():
-                txt += f'<a href="http://{Cfg.hostname}:{Cfg.port}/{fnm}">{fnm}</a><br>\n'
+            for fnm in Workdir.kinds():
+                txt += f'<a href="http://{Config.hostname}:{Config.port}/{fnm}">{fnm}</a><br>\n'
             self.send(html(txt.strip()))
             return
-        fnm = storage() + self.path
+        fnm = os.path.join(Workdir.workdir(), self.path)
         fnm = os.path.abspath(fnm)
         if os.path.isdir(fnm):
             self.write_header("text/html")
             txt = ""
             for fnn in os.listdir(fnm):
                 filename = self.path  + os.sep + fnn
-                txt += f'<a href="http://{Cfg.hostname}:{Cfg.port}/{filename}">{filename}</a><br>\n'
+                txt += f'<a href="http://{Config.hostname}:{Config.port}/{filename}">{filename}</a><br>\n'
             self.send(txt.strip())
             return
         try:
@@ -113,6 +128,9 @@ class RESTHandler(BaseHTTPRequestHandler):
 
     def log(self, code):
         pass
+
+
+"data"
 
 
 def html(txt):

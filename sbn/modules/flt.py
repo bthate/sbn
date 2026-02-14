@@ -1,16 +1,17 @@
 # This file is placed in the Public Domain.
 
 
-from sbn.defines import fmt, name, objs
+from sbn.brokers import Broker
+from sbn.objects import Methods
 
 
 def flt(event):
-    clts = objs("announce")
+    clts = list(Broker.objs("announce"))
     if event.args:
         index = int(event.args[0])
         if index < len(clts):
-            event.reply(fmt(list(clts)[index]), empty=True)
+            event.reply(str(clts[index]))
         else:
-            event.reply(f"only {len(clts)} clients in fleet.")
+            event.reply("no matching client in fleet.")
         return
-    event.reply(' | '.join([name(o) for o in clts]))
+    event.reply(' | '.join([Methods.fqn(o).split(".")[-1] for o in clts]))

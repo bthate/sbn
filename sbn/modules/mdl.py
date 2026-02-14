@@ -9,15 +9,17 @@ import logging
 import time
 
 
-from sbn.brokers import objs
+from sbn.brokers import Broker
 from sbn.message import Message
-from sbn.objects import Object, construct, keys
-from sbn.repeats import Repeater
-from sbn.timings import elapsed
+from sbn.objects import Dict, Object
+from sbn.utility import Repeater, Time
+
+
+"init"
 
 
 def init():
-    for key in keys(oorzaken):
+    for key in Dict.keys(oorzaken):
         if "Psych" not in key:
             continue
         val = getattr(oorzaken, key, None)
@@ -29,7 +31,7 @@ def init():
             name = aliases.get(key)
             repeater = Repeater(sec, cbstats, evt, thrname=name)
             repeater.start()
-            logging.warning("since %s", elapsed(time.time()-STARTTIME))
+            logging.warning("since %s", Time.elapsed(time.time()-STARTTIME))
 
 
 "defines"
@@ -37,7 +39,7 @@ def init():
 
 DAY = 24*60*60
 YEAR = 365*DAY
-SOURCE = "https://github.com/bthate/sbn"
+SOURCE = "https://sbn.github.io"
 STARTDATE = "2019-03-04 00:00:00"
 STARTTIME = time.mktime(time.strptime(STARTDATE, "%Y-%m-%d %H:%M:%S"))
 
@@ -96,7 +98,7 @@ def getday():
 
 
 def getnr(nme):
-    for k in keys(oorzaken):
+    for k in Dict.keys(oorzaken):
         if nme.lower() in k.lower():
             return int(getattr(oorzaken, k))
     return 0
@@ -132,17 +134,17 @@ def hourly():
 "callbacks"
 
 
-def cbnow(_evt):
+def cbnow(evt):
     delta = time.time() - STARTTIME
-    txt = elapsed(delta) + " "
-    for nme in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
+    txt = Time.elapsed(delta) + " "
+    for nme in sorted(Dict.keys(oorzaken), key=lambda x: seconds(getnr(x))):
         needed = seconds(getnr(nme))
         if needed > 60*60:
             continue
         nrtimes = int(delta/needed)
         txt += f"{getalias(nme)} {nrtimes} | "
-    txt += "https://pypi.org/project/sbn"
-    for bot in objs("announce"):
+    txt += SOURCE
+    for bot in Broker.objs("announce"):
         bot.announce(txt)
 
 
@@ -157,15 +159,15 @@ def cbstats(evt):
         delta2 = time.time() - getday()
         thisday = int(delta2/needed)
         txt = "%s %s #%s (%s/%s/%s) every %s" % (
-            elapsed(delta),
+            Time.elapsed(delta),
             getalias(nme).upper(),
             nrtimes,
             thisday,
             nrday,
             nryear,
-            elapsed(needed)
+            Time.elapsed(needed)
         )
-        for bot in objs("announce"):
+        for bot in Broker.objs("announce"):
             bot.announce(txt)
 
 
@@ -174,14 +176,15 @@ def cbstats(evt):
 
 def dis(event):
     delta = time.time() - STARTTIME
-    txt = elapsed(delta) + " "
-    for nme in sorted(keys(oorzaken), key=lambda x: seconds(getnr(x))):
+    txt = Time.elapsed(delta) + " "
+    for nme in sorted(Dict.keys(oorzaken), key=lambda x: seconds(getnr(x))):
         needed = seconds(getnr(nme))
         if needed > 60*60:
             continue
         nrtimes = int(delta/needed)
-        txt += f"{getalias(nme)} {nrtimes} | "
-    txt += "https://pypi.org/project/sbn"
+        pertime = Time.elapsed(needed)
+        txt += f"{getalias(nme)} {nrtimes} ({pertime}) | "
+    txt += SOURCE
     event.reply(txt)
 
 
@@ -195,13 +198,13 @@ def now(event):
         nrday = int(DAY/needed)
         thisday = int(DAY % needed)
         txt = "%s %s #%s (%s/%s/%s) every %s" % (
-            elapsed(delta),
+            Time.elapsed(delta),
             getalias(nme).upper(),
             nrtimes,
             thisday,
             nrday,
             nryear,
-            elapsed(needed)
+            Time.elapsed(needed)
         )
         event.reply(txt)
 
@@ -409,13 +412,13 @@ aantal = """
 
 
 oorzaak = Object()
-construct(oorzaak, zip(oor, aantal))
+Dict.construct(oorzaak, zip([x.strip() for x in oor], [int(x.strip()) for x in aantal]))
 oorzaken = Object()
 
 
 def boot():
     _nr = -1
-    for key in keys(oorzaak):
+    for key in Dict.keys(oorzaak):
         _nr += 1
         if _nr == 0:
             continue
