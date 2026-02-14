@@ -130,7 +130,6 @@ class Output(Client):
 
 def __dir__():
     return (
-        'Cfg',
         'Client',
         'Console',
         'Output'

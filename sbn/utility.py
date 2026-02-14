@@ -311,7 +311,7 @@ class Utils:
     @staticmethod
     def pipxdir(name):
         "return examples directory."
-        return f"~/.local/share/pipx/venvs/{name}/share/{name}/examples"
+        return f"~/.local/share/pipx/venvs/{name}/share/{name}/"
 
     @staticmethod
     def spl(txt):

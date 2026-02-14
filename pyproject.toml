@@ -11,10 +11,9 @@ authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
 readme = "README.rst"
-license = { text="Public Domain"}
+license = "Unlicense"
 classifiers=[
     'Development Status :: 3 - Alpha',
-    'License :: Unlicense',
     'Operating System :: Unix',
     'Programming Language :: Python',
     'Topic :: Utilities'

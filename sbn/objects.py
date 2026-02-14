@@ -51,12 +51,6 @@ class Config(Default):
            Dict.update(self, kwargs)
 
 
-class State(Default):
-
-    pass
-
-
-
 "dict"
 
 
@@ -327,6 +321,5 @@ def __dir__():
         'Default',
         'Dict',
         'Methods',
-        'Object',
-        'State'
+        'Object'
     )

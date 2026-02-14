@@ -31,16 +31,17 @@ from sbn import modules as MODS
 
 
 Cfg.commands = True
-Cfg.ignore = "rst,udp,web"
-Cfg.level = "info"
-Cfg.modules = ""
-Cfg.name = Utils.pkgname(Commands)
-Cfg.poll = 300
-Cfg.port = 6667
-Cfg.room = f"#{Cfg.name}"
-Cfg.txt = " ".join(sys.argv[1:])
-Cfg.version = 150
-Cfg.wdr = os.path.expanduser(f"~/.{Cfg.name}")
+Cfg.ignore   = "rst,udp,web"
+Cfg.level    = "info"
+Cfg.modules  = ""
+Cfg.name     = Utils.pkgname(Commands)
+Cfg.poll     = 300
+Cfg.port     = 6667
+Cfg.room     = f"#{Cfg.name}"
+Cfg.server   = "localhost"
+Cfg.txt      = " ".join(sys.argv[1:])
+Cfg.version  = 150
+Cfg.wdr      = os.path.expanduser(f"~/.{Cfg.name}")
 
 
 "clients"
@@ -235,18 +236,18 @@ class Runtime:
     @staticmethod
     def getargs():
         "parse commandline arguments."
-        parser = argparse.ArgumentParser(description="OTP-CR-117/19")
+        parser = argparse.ArgumentParser(description="Skull, Bones and Number")
         parser.add_argument("-a", "--all", action="store_true", help="load all modules")
         parser.add_argument("-c", "--console", action="store_true", help="start console")
         parser.add_argument("-d", "--daemon", action="store_true", help="start background daemon")
-        parser.add_argument("-l", "--level", default="info", help='set loglevel')
+        parser.add_argument("-l", "--level", default=Cfg.level, help='set loglevel')
         parser.add_argument("-m", "--mods", default="", help='modules to load')
-        parser.add_argument("-p", "--port", default=6667, help='set port to connect to')
+        parser.add_argument("-p", "--port", default=Cfg.port, help='set port to connect to')
         parser.add_argument("-r", "--room", help='set room/channel to joinl')
         parser.add_argument("-s", "--service", action="store_true", help="start service")
         parser.add_argument("-v", "--verbose", action='store_true',help='enable verbose')
         parser.add_argument("-w", "--wait", action='store_true',help='wait for services to start')
-        parser.add_argument("-z", "--connect", default='localhost', help="server to connect to")
+        parser.add_argument("-z", "--connect", default=Cfg.server, help="server to connect to")
         parser.add_argument("--wdr", help='set working directory')
         return parser.parse_known_args()
 
