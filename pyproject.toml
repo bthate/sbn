@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sbn"
 description = "Since 4 March 2019"
-version = "150"
+version = "151"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -18,6 +18,10 @@ classifiers=[
     'Programming Language :: Python',
     'Topic :: Utilities'
 ]
+
+
+[project.scripts]
+"sbn" = "sbn.runtime:main"
 
 
 [project.urls]
