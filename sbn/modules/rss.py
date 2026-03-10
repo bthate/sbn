@@ -24,58 +24,27 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from sbn.brokers import Broker
-from sbn.command import Cfg
-from sbn.objects import Default, Dict, Object, Methods
-from sbn.persist import Disk, Locate
-from sbn.threads import Thread
-from sbn.utility import Repeater, Time, Utils
-
-
-"init"
+from sbn.defines import Configuration
+from sbn.handler import Broker
+from sbn.objects import Data, Dict, Methods
+from sbn.persist import Disk, Locate, Main
+from sbn.threads import Repeater, Thread
+from sbn.utility import Time, Utils
 
 
 def init():
-    "initializer."
     RunnerPool.init(1, Runner)
     Run.fetcher.start()
     logging.warning("%s feeds", Locate.count("rss"))
 
 
 def shutdown():
-    "shutdown."
     Run.fetcher.stop()
 
 
-"persist"
+class Config(Configuration):
 
-
-class Feed(Default):
-
-    pass
-
-
-class Modified:
-
-    pass
-
-
-class Rss(Default):
-
-    def __init__(self):
-        super().__init__()
-        self.display_list = "title,link,author"
-        self.insertid = None
-        self.name = ""
-        self.rss = ""
-
-
-class Urls:
-
-    pass
-
-
-"fetcher"
+    polltime = 300
 
 
 class Fetcher:
@@ -99,16 +68,13 @@ class Fetcher:
         State.seenfn = Locate.last(State.seen) or Methods.ident(State.seen)
         State.modifiedfn = Locate.last(State.modified) or Methods.ident(State.modified)
         if repeat:
-            repeater = Repeater(Cfg.poll or 600, self.run)
+            repeater = Repeater(Config.polltime, self.run)
             repeater.start()
 
     def stop(self):
         logging.debug("stopped fetcher")
         Disk.write(State.modified, State.modifiedfn)
         self.stopped.set()
-
-
-"runner"
 
 
 class Runner:
@@ -140,7 +106,7 @@ class Runner:
     def loop(self):
         while True:
             job = self.queue.get()
-            self.fetch(*job)                                    
+            self.fetch(*job)
 
     def fetch(self, fnm, feed, silent=False):
         with Run.fetchlock:
@@ -186,12 +152,9 @@ class Runner:
 
     def start(self):
         Thread.launch(self.loop)
-    
+
     def stop(self):
         self.stopped.set()
-
-
-"pool"
 
 
 class RunnerPool:
@@ -216,16 +179,13 @@ class RunnerPool:
     @staticmethod
     def put(*args):
         if not RunnerPool.runners:
-            RunnerPool.init(1, Runner)
+            RunnerPool.init(RunnerPool.nrcpu, Runner)
         with RunnerPool.lock:
             if RunnerPool.nrlast >= RunnerPool.nrcpu-1:
                 RunnerPool.nrlast = 0
             clt = RunnerPool.runners[RunnerPool.nrlast]
             clt.put(*args)
             RunnerPool.nrlast += 1
-
-
-"parser"
 
 
 class Parser:
@@ -272,9 +232,6 @@ class Parser:
                 if val:
                     obj[itm] = Helpers.striphtml(Helpers.unescape(val.strip())).replace("\n", "")
             yield obj
-
-
-"opml"
 
 
 class OPML:
@@ -329,9 +286,6 @@ class OPML:
             yield obj
 
 
-"utilities"
-
-
 class Helpers:
 
     skip = [
@@ -361,9 +315,9 @@ class Helpers:
         return line
 
     @staticmethod
-    def doskip(error):
-        for err in Helpers.skip:
-            if err in error:
+    def doskip(errors):
+        for error in Helpers.skip:
+            if error in errors:
                 return True
         return False
 
@@ -374,13 +328,13 @@ class Helpers:
         try:
             response = Helpers.geturl(feed.rss)
             if not response.data:
-               return result
+                return result
             if "link" not in items:
                 items += ",link"
             if feed.rss.endswith("atom"):
-                yield from Parser.parse(str(response.data, "utf-8"), "entry", items) or []
+                yield from Parser.parse(str(response.data, "utf-8", errors='ignore'), "entry", items) or []
             else:
-                yield from Parser.parse(str(response.data, "utf-8"), "item", items) or []
+                yield from Parser.parse(str(response.data, "utf-8", errors='ignore'), "item", items) or []
         except TimeoutError:
             return result
         except (
@@ -404,7 +358,7 @@ class Helpers:
 
     @staticmethod
     def gettinyurl(url):
-        "query tinyurl for a link." 
+        "query tinyurl for a link."
         postarray = [
             ("submit", "submit"),
             ("url", url),
@@ -431,7 +385,7 @@ class Helpers:
         since = getattr(State.modified, url, "")
         if since:
             req.add_header('If-Modified-Since', since)
-        logging.debug(f"fetching {url} {req.headers}")
+        logging.debug("fetching %s %s", url, req.headers)
         with urllib.request.urlopen(req, timeout=5.0) as response:  # nosec
             modi = response.headers.get('Last-Modified', "")
             if modi:
@@ -466,7 +420,29 @@ class Helpers:
         return "Mozilla/5.0 (X11; Linux x86_64) " + txt
 
 
-"state"
+class Feed(Data):
+
+    pass
+
+
+class Modified:
+
+    pass
+
+
+class Rss(Data):
+
+    def __init__(self):
+        super().__init__()
+        self.display_list = "title,link,author"
+        self.insertid = None
+        self.name = ""
+        self.rss = ""
+
+
+class Urls:
+
+    pass
 
 
 class Run:
@@ -478,6 +454,7 @@ class Run:
 
 class State:
 
+    configfn = ""
     modified = Modified()
     modifiedfn = ""
     seenfn = ""
@@ -485,24 +462,21 @@ class State:
     skipped = []
 
 
-"commands"
-
-
 def atr(event):
     if not event.rest:
         event.reply("atr <stringinurl>")
         return
-    for fnm, obj in Locate.find(Methods.fqn(Rss), {'rss': event.rest}):
+    for _fnm, obj in Locate.find(Methods.fqn(Rss), {'rss': event.rest}):
         request = Helpers.geturl(obj.rss)
         if obj.rss.endswith('atom'):
-            res = list(Parser.getitems(str(request.data, 'utf-8', errors='ignore'), 'entry', 1))
+            result = list(Parser.getitems(str(request.data, 'utf-8', errors='ignore'), 'entry', 1))
         else:
-            res = list(Parser.getitems(str(request.data, 'utf-8', errors='ignore'), 'item', 1))
-        result = []
-        for x in re.findall('<.*?>', res[0]):
-           if x[1] == '/' and len(x) > 4:
-              result.append(x[2:-1])
-        event.reply(','.join(result))
+            result = list(Parser.getitems(str(request.data, 'utf-8', errors='ignore'), 'item', 1))
+        resulting = []
+        for x in re.findall('<.*?>', result[0]):
+            if x[1] == '/' and len(x) > 4:
+                resulting.append(x[2:-1])
+        event.reply(','.join(resulting))
 
 
 def dpl(event):
@@ -534,7 +508,9 @@ def err(event):
         if not event.rest:
             nrs += 1
             event.reply(f"{nrs} {Methods.fmt(obj)}")
-    if event.rest:
+    if not nrs:
+        event.reply("no feed errors.")
+    else:
         event.reply(f'{nre} feeds reset.')
 
 
@@ -671,16 +647,16 @@ def rss(event):
     event.reply("ok")
 
 
+rss.flood = True
+
+
 def syn(event):
-    if Cfg.debug:
+    if Main.debug:
         return
     fetcher = Fetcher()
     fetcher.start(False)
     nrs = fetcher.run(True)
     event.reply(f"{nrs} feeds synced")
-
-
-"data"
 
 
 TEMPLATE = """<opml version="1.0">

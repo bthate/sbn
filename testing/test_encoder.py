@@ -1,11 +1,14 @@
 # This file is placed in the Public Domain.
 
 
+"encoder/decoder tests"
+
+
 import unittest
 
 
-from sbn.encoder import *
-from sbn.objects import *
+from sbn.encoder import Json
+from sbn.objects import Dict, Object
 
 
 VALIDJSON = '{"test": "bla"}'

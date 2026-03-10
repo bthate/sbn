@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"wisdom"
+
+
 import logging
 
 
@@ -8,23 +11,56 @@ from random import SystemRandom
 
 
 from sbn.brokers import Broker
-from sbn.message import Message
-from sbn.utility import Repeater
+from sbn.handler import Event
+from sbn.objects import Methods
+from sbn.persist import Disk, Locate
+from sbn.threads import Repeater
 
 
 rand = SystemRandom()
 
 
 def init():
-    event = Message()
-    repeater = Repeater(3600.0,  wsd, event)
+    state.load()
+    event = Event()
+    repeater = Repeater(3600,  wsd, event)
     repeater.start()
-    logging.warning("%s wise", len(TXT.split("\n")))
+    logging.warning("%s wise", len(TXTLIST))
+
+
+class State:
+
+    def __init__(self):
+        super().__init__()
+        self.fnm = ""
+
+    def dump(self):
+        if not self.fnm:
+            self.fnm = Locate.first(self) or Methods.ident(self)
+        Disk.write(self, self.fnm)
+
+    def load(self):
+        Locate.first(self)
+
+
+state = State()
 
 
 def wsd(event):
-    for bot in Broker.objs("announce"):
-        bot.announce(rand.choice(TXT.split("\n")).strip()[2:])
+    txt = ""
+    if 'seen' not in dir(state):
+        state.seen = []
+    for nrs in range(len(TXTLIST)):
+        txt = rand.choice(TXTLIST)
+        if txt in state.seen:
+            continue
+        state.seen.append(txt)
+        break
+    else:
+        state.seen = []
+        txt = "* reset"
+    state.dump()
+    Broker.announce(txt.strip()[2:])
 
 
 TXT = """| wijsheid, wijs !
@@ -208,3 +244,6 @@ TXT = """| wijsheid, wijs !
 | duiding
 | coding
 """
+
+
+TXTLIST = [x for x in TXT.split("\n") if x and '=' not in x]
