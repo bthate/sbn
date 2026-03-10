@@ -1,0 +1,1 @@
+ruff check sbn sbn/modules bin/tinder testing $* ;
