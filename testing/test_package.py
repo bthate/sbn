@@ -4,7 +4,6 @@
 "package"
 
 
-import os
 import unittest
 
 
@@ -14,6 +13,5 @@ from sbn.package import Mods
 class TestPackage(unittest.TestCase):
 
     def test_add(self):
-        if os.path.exists("mods"):
-            Mods.add("mods", "mods")
-            self.assertTrue("mods" in Mods.dirs)
+        Mods.add("mods", "mods")
+        self.assertTrue("mods" in Mods.dirs)
