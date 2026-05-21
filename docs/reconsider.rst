@@ -1,7 +1,3 @@
-.. raw:: html
-
-    <br>
-
 | **Information and Evidence Unit**
 | **Office of the Prosecutor**
 | **Post Office Box 19519**
@@ -50,6 +46,7 @@ on the following victim groups here in the Netherlands:
 (3) ggz patienten (psychiatric patients)
 (4) criminelen (criminials)
 (5) gehandicapten (handicapped)
+
 
 Since the members of the :ref:`chamber <chamber>` and the :ref:`king <king>`
 were aware that these medicine are poison at the time they voted for this law

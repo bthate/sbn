@@ -1,37 +1,37 @@
-.. _evidence:
+.. _echa:
 
 .. raw:: html
 
     <br><br>
 
-.. title:: Evidence
+.. title:: ECHA
 
 
 .. raw:: html
 
-    <center><b>EVIDENCE</b></center><br>
+    <center><b>ECHA</b></center><br>
 
 
-.. _haldol:
+.. _haldol2:
 
 
 **HALDOL**
-
 
 .. raw:: html
 
   <br>
 
 
-.. image:: ECHAhaldol.png
+.. image:: haloperidolnew2.png
     :width: 100%
+
 
 .. raw:: html
 
   <br><br>
 
 
-.. _clozapine:
+.. _clozapine2:
 
 
 **CLOZAPINE**
@@ -41,8 +41,7 @@
 
   <br>
 
-
-.. image:: ECHAclozapine.png
+.. image:: clozapinenew2.png
     :width: 100%
 
 
@@ -50,8 +49,7 @@
 
   <br><br>
 
-
-.. _zyprexa:
+.. _zyprexa2:
 
 
 **ZYPREXA**
@@ -61,15 +59,14 @@
 
   <br>
 
-.. image:: ECHAzyprexa.png
+.. image:: zyprexanew2.png
     :width: 100%
 
 .. raw:: html
 
   <br><br>
 
-
-.. _abilify:
+.. _abilify2:
 
 
 **ABILIFY**
@@ -79,5 +76,13 @@
 
   <br>
 
-.. image:: ECHAabilify.png
+.. raw:: html
+
+  <br><br>
+
+.. image:: abilifynew2.png
      :width: 100%
+
+.. raw:: html
+
+    <br><br>

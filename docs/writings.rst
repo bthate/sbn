@@ -7,12 +7,12 @@
   <br><br>
 
 
-.. title:: Writings
+.. title:: Writing
 
 
 .. raw:: html
 
-    <center><b>WRITINGS</b></center><br>
+    <center><b>WRITING</b></center><br>
 
 
 **ACK**

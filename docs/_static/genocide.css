@@ -12,11 +12,11 @@ div.body a:link, div.body h, div.body p, div.body dd, div.body li, div.body bloc
 body {
     font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva',
                  'Verdana', sans-serif;
-    font-size: 113%;
+    font-size: 110%;
     background-color: #fff;
     color: #555;
-    margin: 20px;
-    padding: 0px 30px 10px 30px;
+    margin: 40px;
+    padding: 0px 30px 0px 30px;
 }
 
 

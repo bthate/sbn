@@ -5,11 +5,11 @@
 # ruff: noqa: E402, E501
 
 
-"Since 4 March 2019"
+"Since 4 March 2019."
 
 
 NAME = "sbn"
-VERSION = "115"
+VERSION = "153"
 
 
 import os
@@ -27,7 +27,12 @@ sys.path.insert(0, os.path.join(curdir, ".."))
 sys.path.insert(0, os.path.join(curdir))
 
 
+# -- Options for GENERIC output ---------------------------------------------
+
+
 project = NAME
+author = 'Bart Thate <bthate@dds.nl>'
+project_copyright = "Public Domain"
 master_doc = 'index'
 version = '%s' % VERSION
 release = '%s' % VERSION
@@ -55,10 +60,14 @@ extensions = [
               'sphinx.ext.viewcode'
              ]
 
-html_title = "Since 4 March 2019"
-html_style = 'sbn.css'
-html_static_path = ["_static", "_static/sbn.css", "files/sitemap.xml"]
-html_css_files = ["sbn.css",]
+
+# -- Options for HTML output -------------------------------------------------
+
+
+html_title = "Since 4 March 2019."
+html_style = 'genocide.css'
+html_static_path = ["_static", "_static/genocide.css", "files/sitemap.xml"]
+html_css_files = ["genocide.css",]
 html_short_title = "%s %s" % (NAME, VERSION)
 html_theme = "alabaster"
 html_theme_options = {
@@ -71,17 +80,17 @@ html_theme_options = {
     'sidebar_width': '0px',
 }
 html_favicon = "skull3.png"
-html_extra_path = ["robots.txt"]
+html_extra_path = ["robots.txt", "googlea6568bcc05c8d50b.html"]
 html_last_updated_fmt = '%Y-%b-%d'
 html_additional_pages = {}
-html_domain_indices = True
+html_domain_indices = False
 html_use_index = True
 html_split_index = True
 html_show_sourcelink = False
 html_show_sphinx = False
-html_show_copyright = True
+html_show_copyright = False
 html_copy_source = False
-html_use_opensearch = 'http://%s.rtfd.io/' % NAME
+html_use_opensearch = 'http://%s.github.io/' % NAME
 html_file_suffix = '.html'
 htmlhelp_basename = 'testdoc'
 
@@ -92,10 +101,13 @@ intersphinx_mapping = {
 intersphinx_cache_limit = 1
 
 
+# header/footer
+
+
 rst_prolog = '''.. image:: genocide.png
     :width: 100%
-    :height: 2.4cm
-    :target: about.html
+    :height: 2.2cm
+    :target: index.html
 
 .. raw:: html
 
@@ -109,17 +121,19 @@ rst_epilog = '''.. raw:: html
     <center>
     <b>
 
-:ref:`reconsider <reconsider>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>`
+:ref:`reconsider <reconsider>` - :ref:`writing <writings>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>`
 
 .. raw:: html
 
     </b>
     </center>
-
 '''
 
 
-autosummary_generate = True
+# code generation
+
+
+autosummary_generate = False
 autodoc_default_flags = ['members', 'undoc-members', 'private-members', "imported-members"]
 autodoc_member_order = 'groupwise'
 autodoc_docstring_signature = False
@@ -127,7 +141,3 @@ autoclass_content = "class"
 nitpick_ignore = [
                   ('py:class', 'builtins.BaseException'),
                  ]
-
-
-def setup(app):
-    app.add_css_file('_static/sbn.css')
