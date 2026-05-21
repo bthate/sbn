@@ -48,11 +48,11 @@ on the following victim groups here in the Netherlands:
 (5) gehandicapten (handicapped)
 
 
-Since the members of the :ref:`chamber <chamber>` and the :ref:`king <king>`
-were aware that these medicine are poison at the time they voted for this law
-and the day the Wfz law took effect (1-1-2019), i ask the prosecutor to
-prosecute the king for making the commiting of the above mentioned crimes
-(killing, torture and impotent making) possible.
+Since the members of the chamber and the king  were aware that these medicine
+are poison at the time they voted for this law and the day the Wfz law took
+effect (1-1-2019), i ask the prosecutor to prosecute the king for making the
+commiting of the above mentioned crimes (killing, torture and impotent making)
+possible.
 
 
 
